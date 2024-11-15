@@ -9,6 +9,14 @@ readme = "README.md"
 python = "^3.12"
 fastapi = "^0.115.5"
 uvicorn = "^0.32.0"
+pyyaml = "^6.0.2"
+requests = "^2.32.3"
+pytz = "^2024.2"
+finance-datareader = "^0.9.94"
+pandas-datareader = "^0.10.0"
+pykrx = "^1.0.48"
+bs4 = "^0.0.2"
+plotly = "^5.24.1"
 
 
 [build-system]
