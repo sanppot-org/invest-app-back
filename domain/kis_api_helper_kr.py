@@ -46,7 +46,6 @@ from pykrx import stock
 
 from domain.env_type import EnvType
 
-
 # 오늘 개장일인지 조회! (휴장일이면 'N'을 리턴!)
 def is_today_open_check():
     time.sleep(0.2)
