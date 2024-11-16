@@ -17,6 +17,7 @@ pandas-datareader = "^0.10.0"
 pykrx = "^1.0.48"
 bs4 = "^0.0.2"
 plotly = "^5.24.1"
+yfinance = "^0.2.49"
 
 
 [build-system]

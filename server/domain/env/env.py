@@ -112,6 +112,10 @@ virtual_env: Env = VirtualEnv()
 env: Env = real_env
 
 
+def is_real() -> bool:
+    return env.is_real()
+
+
 def get_env_type() -> EnvType:
     return env.get_env_type()
 
@@ -119,6 +123,11 @@ def get_env_type() -> EnvType:
 def change_env():
     global env
     env = virtual_env if env.is_real() else real_env
+
+
+def set_env(env_type: EnvType):
+    global env
+    env = real_env if env_type == EnvType.REAL else virtual_env
 
 
 def get_prop() -> dict:

@@ -1,22 +1,30 @@
+import uvicorn
 from fastapi import FastAPI
 import domain.chat_client as chat
-import domain.kis_api_helper_kr as kis_kr
-import domain.env.env as env
+from domain.helper import KIS_Common as common
+from domain.helper import KIS_API_Helper_KR as kis_kr
 
 app = FastAPI()
 
 
 @app.get("/")
 def root():
-    return f"ENV: {env.get_env_type()} Prop: {env.get_prop()}"
+    return f"ENV: {common.GetNowDist()} Prop: {common.stock_info}"
 
 
 @app.put("/change-env")
 def change_env():
-    env.change_env()
-    return env.get_env_type()
+    if common.GetNowDist() == "REAL":
+        common.SetChangeMode("VIRTUAL")
+    else:
+        common.SetChangeMode("REAL")
+    return common.GetNowDist()
 
 
 @app.get("/balance")
 def get_account():
-    return kis_kr.get_balance()
+    return kis_kr.GetBalance()
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
