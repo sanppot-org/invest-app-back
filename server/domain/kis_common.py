@@ -1,4 +1,3 @@
-import yaml
 import json
 import requests
 from datetime import datetime, timedelta
@@ -28,30 +27,6 @@ def get_now_dist():
 
 
 ############################################################################################################################################################
-
-
-def get_app_key():
-    return env.get_app_key()
-
-
-def get_app_secret():
-    return env.get_app_secret()
-
-
-def get_account_no():
-    return env.get_account_no()
-
-
-def get_account_prd_no():
-    return env.get_account_prd_no()
-
-
-def get_url_base():
-    return env.get_url_base()
-
-
-def get_token_path():
-    return env.get_token_path()
 
 
 # 토큰 값을 리퀘스트 해서 실제로 만들어서 파일에 저장하는 함수!! 첫번째 파라미터: "REAL" 실계좌, "VIRTUAL" 모의계좌
@@ -90,7 +65,7 @@ def get_token():
     dataDict = dict()
     try:
         # 이 부분이 파일을 읽어서 딕셔너리에 넣어주는 로직입니다.
-        with open(get_token_path(), "r") as json_file:
+        with open(env.get_token_path(), "r") as json_file:
             dataDict = json.load(json_file)
         return dataDict["authorization"]
     except Exception as e:

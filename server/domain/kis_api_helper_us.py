@@ -43,6 +43,7 @@ import time
 import pandas as pd
 
 from domain.env.env_type import EnvType
+from domain.env import env
 
 
 # 시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외!
@@ -159,7 +160,7 @@ def get_exrt():
     time.sleep(0.2)
 
     PATH = "/uapi/overseas-stock/v1/trading/inquire-present-balance"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     TrId = "CTRP6504R"
     if common.get_now_dist() == EnvType.VIRTUAL:
@@ -169,15 +170,15 @@ def get_exrt():
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
     }
 
     params = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "WCRC_FRCR_DVSN_CD": "02",
         "NATN_CD": "840",
         "TR_MKET_CD": "00",
@@ -213,13 +214,13 @@ def GetDayOrNight():
     time.sleep(0.2)
     
     PATH = "uapi/overseas-stock/v1/trading/dayornight"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
             "authorization": f"Bearer {common.get_token()}",
-            "appKey":common.get_app_key(),
-            "appSecret":common.get_app_secret(),
+            "appKey":env.get_app_key(),
+            "appSecret":env.get_app_secret(),
             "tr_id":"JTTT3010R"}
 
     params = {
@@ -242,7 +243,7 @@ def get_balance(st="USD"):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-present-balance"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     TrId = "CTRP6504R"
     if common.get_now_dist() == EnvType.VIRTUAL:
@@ -252,15 +253,15 @@ def get_balance(st="USD"):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
     }
 
     params = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "WCRC_FRCR_DVSN_CD": "02",
         "NATN_CD": "840",
         "TR_MKET_CD": "00",
@@ -416,7 +417,7 @@ def get_balance(st="USD"):
 def get_my_stock_list(st="USD"):
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-balance"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     StockList = list()
 
@@ -460,16 +461,16 @@ def get_my_stock_list(st="USD"):
             headers = {
                 "Content-Type": "application/json",
                 "authorization": f"Bearer {common.get_token()}",
-                "appKey": common.get_app_key(),
-                "appSecret": common.get_app_secret(),
+                "appKey": env.get_app_key(),
+                "appSecret": env.get_app_secret(),
                 "tr_id": TrId,
                 "tr_cont": tr_cont,
                 "custtype": "P",
             }
 
             params = {
-                "CANO": common.get_account_no(),
-                "ACNT_PRDT_CD": common.get_account_prd_no(),
+                "CANO": env.get_account_no(),
+                "ACNT_PRDT_CD": env.get_account_prd_no(),
                 "OVRS_EXCG_CD": try_market,
                 "TR_CRCY_CD": "USD",
                 "CTX_AREA_FK200": FKKey,
@@ -579,14 +580,14 @@ def get_current_price_ori(market, stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": "HHDFS00000300",
     }
 
@@ -613,7 +614,7 @@ def get_current_price(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     for i in range(1, 4):
 
@@ -630,8 +631,8 @@ def get_current_price(stock_code):
         headers = {
             "Content-Type": "application/json",
             "authorization": f"Bearer {common.get_token()}",
-            "appKey": common.get_app_key(),
-            "appSecret": common.get_app_secret(),
+            "appKey": env.get_app_key(),
+            "appSecret": env.get_app_secret(),
             "tr_id": "HHDFS00000300",
         }
 
@@ -685,10 +686,10 @@ def make_buy_limit_order_ori(stockcode, amt, price, market, adjustAmt=False):
         TrId = "VTTT1002U"
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
     data = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -699,8 +700,8 @@ def make_buy_limit_order_ori(stockcode, amt, price, market, adjustAmt=False):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
         "hashkey": common.get_hash_key(data),
@@ -735,10 +736,10 @@ def make_sell_limit_order_ori(stockcode, amt, price, market):
         TrId = "VTTT1001U"
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
     data = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -749,8 +750,8 @@ def make_sell_limit_order_ori(stockcode, amt, price, market):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
         "hashkey": common.get_hash_key(data),
@@ -797,10 +798,10 @@ def make_buy_limit_order(stockcode, amt, price, adjustAmt=False):
     market = get_market_code_us(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
     data = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "OVRS_EXCG_CD": market,
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -811,8 +812,8 @@ def make_buy_limit_order(stockcode, amt, price, adjustAmt=False):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
         "hashkey": common.get_hash_key(data),
@@ -849,10 +850,10 @@ def make_sell_limit_order(stockcode, amt, price):
     market = get_market_code_us(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
     data = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "OVRS_EXCG_CD": market,
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -863,8 +864,8 @@ def make_sell_limit_order(stockcode, amt, price):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
         "hashkey": common.get_hash_key(data),
@@ -893,7 +894,7 @@ def get_market_code_us(stock_code, return_ori_market=False):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     for i in range(1, 4):
 
@@ -910,8 +911,8 @@ def get_market_code_us(stock_code, return_ori_market=False):
         headers = {
             "Content-Type": "application/json",
             "authorization": f"Bearer {common.get_token()}",
-            "appKey": common.get_app_key(),
-            "appSecret": common.get_app_secret(),
+            "appKey": env.get_app_key(),
+            "appSecret": env.get_app_secret(),
             "tr_id": "HHDFS00000300",
         }
 
@@ -974,7 +975,7 @@ def check_possible_buy_info(stockcode, price):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-psamount"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     TrId = "TTTS3007R"
     """
@@ -988,15 +989,15 @@ def check_possible_buy_info(stockcode, price):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
     }
 
     params = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "OVRS_EXCG_CD": market,
         "OVRS_ORD_UNPR": str(price_adjust(price)),
         "ITEM_CD": stockcode,
@@ -1078,13 +1079,13 @@ def get_order_list(stockcode="", side="ALL", status="ALL", limit=5):
         status_code = "00"
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-ccnl"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     print("stockcode - >", stockcode)
 
     params = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "PDNO": stockcode,
         "ORD_STRT_DT": common.get_from_now_date_str("US", "NONE", -limit),
         "ORD_END_DT": common.get_now_date_str("US"),
@@ -1102,8 +1103,8 @@ def get_order_list(stockcode="", side="ALL", status="ALL", limit=5):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
         "hashkey": common.get_hash_key(params),
@@ -1242,10 +1243,10 @@ def cancel_modify_order(
     market = get_market_code_us(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order-rvsecncl"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
     data = {
-        "CANO": common.get_account_no(),
-        "ACNT_PRDT_CD": common.get_account_prd_no(),
+        "CANO": env.get_account_no(),
+        "ACNT_PRDT_CD": env.get_account_prd_no(),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORGN_ODNO": str(order_num),
@@ -1259,8 +1260,8 @@ def cancel_modify_order(
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": TrId,
         "custtype": "P",
         "hashkey": common.get_hash_key(data),
@@ -1310,7 +1311,7 @@ def get_ohlcv(stock_code, p_code, adj_ok="1"):
     time.sleep(0.2)
 
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     gubun = 0
     if p_code == "W":
@@ -1322,8 +1323,8 @@ def get_ohlcv(stock_code, p_code, adj_ok="1"):
     headers = {
         "Content-Type": "application/json",
         "authorization": f"Bearer {common.get_token()}",
-        "appKey": common.get_app_key(),
-        "appSecret": common.get_app_secret(),
+        "appKey": env.get_app_key(),
+        "appSecret": env.get_app_secret(),
         "tr_id": "HHDFS76240000",
     }
 
@@ -1401,7 +1402,7 @@ def get_ohlcv(stock_code, p_code, adj_ok="1"):
 # 일봉 정보 여러개 가져오는 개선된 함수!
 def get_ohlcv_new(stock_code, p_code, get_count, adj_ok="1"):
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
-    URL = f"{common.get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
 
     gubun = 0
     if p_code == "W":
@@ -1431,8 +1432,8 @@ def get_ohlcv_new(stock_code, p_code, get_count, adj_ok="1"):
         headers = {
             "Content-Type": "application/json",
             "authorization": f"Bearer {common.get_token()}",
-            "appKey": common.get_app_key(),
-            "appSecret": common.get_app_secret(),
+            "appKey": env.get_app_key(),
+            "appSecret": env.get_app_secret(),
             "tr_id": "HHDFS76240000",
             "tr_cont": tr_cont,
         }

@@ -28,6 +28,26 @@ class Env(ABC):
     def get_tr_id_get_balance(self) -> str:
         pass
 
+    @abstractmethod
+    def get_tr_id_buy(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_tr_id_sell(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_tr_id_psbl_order(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_tr_id_order_list(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_tr_id_cancel_order(self) -> str:
+        pass
+
 
 class RealEnv(Env):
     def is_real(self) -> bool:
@@ -42,6 +62,21 @@ class RealEnv(Env):
     def get_tr_id_get_balance(self) -> str:
         return "TTTC8434R"
 
+    def get_tr_id_buy(self) -> str:
+        return "TTTC0802U"
+
+    def get_tr_id_sell(self) -> str:
+        return "TTTC0801U"
+
+    def get_tr_id_psbl_order(self) -> str:
+        return "TTTC8908R"
+
+    def get_tr_id_order_list(self) -> str:
+        return "TTTC8001R"
+
+    def get_tr_id_cancel_order(self) -> str:
+        return "TTTC0803U"
+
 
 class VirtualEnv(Env):
     def is_real(self) -> bool:
@@ -55,6 +90,21 @@ class VirtualEnv(Env):
 
     def get_tr_id_get_balance(self) -> str:
         return "VTTC8434R"
+
+    def get_tr_id_buy(self) -> str:
+        return "VTTC0802U"
+
+    def get_tr_id_sell(self) -> str:
+        return "VTTC0801U"
+
+    def get_tr_id_psbl_order(self) -> str:
+        return "VTTC8908R"
+
+    def get_tr_id_order_list(self) -> str:
+        return "VTTC8001R"
+
+    def get_tr_id_cancel_order(self) -> str:
+        return "VTTC0803U"
 
 
 real_env: Env = RealEnv()
@@ -101,3 +151,23 @@ def get_url_base() -> str:
 
 def get_token_path() -> str:
     return env.get_prop()["token-path"]
+
+
+def get_tr_id_buy() -> str:
+    return env.get_tr_id_buy()
+
+
+def get_tr_id_sell() -> str:
+    return env.get_tr_id_sell()
+
+
+def get_tr_id_psbl_order() -> str:
+    return env.get_tr_id_psbl_order()
+
+
+def get_tr_id_order_list() -> str:
+    return env.get_tr_id_order_list()
+
+
+def get_tr_id_cancel_order() -> str:
+    return env.get_tr_id_cancel_order()
