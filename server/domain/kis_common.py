@@ -9,19 +9,15 @@ import time
 import FinanceDataReader as fdr
 import pandas_datareader.data as web
 import pandas as pd
-from domain.env_type import EnvType
-
-stock_info = None
-
-with open("config/hantu-stock-config.yml", encoding="UTF-8") as f:
-    stock_info = yaml.load(f, Loader=yaml.FullLoader)
+from domain.env.env_type import EnvType
+import domain.env.env as env
 
 ############################################################################################################################################################
-NOW_DIST: EnvType = EnvType.R
+NOW_DIST: EnvType = EnvType.REAL
 
 
 # 계좌 전환 함수! REAL 실계좌 VIRTUAL 모의계좌
-def set_change_mode(dist: EnvType = EnvType.R):
+def set_change_mode(dist: EnvType = EnvType.REAL):
     global NOW_DIST
     NOW_DIST = dist
 
@@ -35,57 +31,27 @@ def get_now_dist():
 
 
 def get_app_key():
-    global stock_info
-
-    if NOW_DIST == EnvType.V:
-        return stock_info["virtual"]["app-key"]
-
-    return stock_info["real"]["app-key"]
+    return env.get_app_key()
 
 
 def get_app_secret():
-    global stock_info
-
-    if NOW_DIST == EnvType.V:
-        return stock_info["virtual"]["app-secret"]
-
-    return stock_info["real"]["app-secret"]
+    return env.get_app_secret()
 
 
 def get_account_no():
-    global stock_info
-
-    if NOW_DIST == EnvType.V:
-        return stock_info["virtual"]["cano"]
-
-    return stock_info["real"]["cano"]
+    return env.get_account_no()
 
 
 def get_account_prd_no():
-    global stock_info
-
-    if NOW_DIST == EnvType.V:
-        return stock_info["virtual"]["acnt-prdt-cd"]
-
-    return stock_info["real"]["acnt-prdt-cd"]
+    return env.get_account_prd_no()
 
 
 def get_url_base():
-    global stock_info
-
-    if NOW_DIST == EnvType.V:
-        return stock_info["virtual"]["url-base"]
-
-    return stock_info["real"]["url-base"]
+    return env.get_url_base()
 
 
 def get_token_path():
-    global stock_info
-
-    if NOW_DIST == EnvType.V:
-        return stock_info["virtual"]["token-path"]
-
-    return stock_info["real"]["token-path"]
+    return env.get_token_path()
 
 
 # 토큰 값을 리퀘스트 해서 실제로 만들어서 파일에 저장하는 함수!! 첫번째 파라미터: "REAL" 실계좌, "VIRTUAL" 모의계좌
@@ -93,12 +59,12 @@ def make_token():
     headers = {"content-type": "application/json"}
     body = {
         "grant_type": "client_credentials",
-        "appkey": get_app_key(),
-        "appsecret": get_app_secret(),
+        "appkey": env.get_app_key(),
+        "appsecret": env.get_app_secret(),
     }
 
     PATH = "oauth2/tokenP"
-    URL = f"{get_url_base()}/{PATH}"
+    URL = f"{env.get_url_base()}/{PATH}"
     res = requests.post(URL, headers=headers, data=json.dumps(body))
 
     if res.status_code == 200:
@@ -109,7 +75,7 @@ def make_token():
 
         # 해당 토큰을 파일로 저장해 둡니다!
         dataDict["authorization"] = my_token
-        with open(get_token_path(), "w") as outfile:
+        with open(env.get_token_path(), "w") as outfile:
             json.dump(dataDict, outfile)
         print("TOKEN : ", my_token)
         return my_token
@@ -137,12 +103,12 @@ def get_token():
 # 해시키를 리턴한다!
 def get_hash_key(datas):
     PATH = "uapi/hashkey"
-    URL = f"{get_url_base(NOW_DIST)}/{PATH}"
+    URL = f"{env.get_url_base(NOW_DIST)}/{PATH}"
 
     headers = {
         "content-Type": "application/json",
-        "appKey": get_app_key(NOW_DIST),
-        "appSecret": get_app_secret(NOW_DIST),
+        "appKey": env.get_app_key(NOW_DIST),
+        "appSecret": env.get_app_secret(NOW_DIST),
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(datas))

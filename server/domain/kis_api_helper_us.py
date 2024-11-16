@@ -42,7 +42,7 @@ import pprint
 import time
 import pandas as pd
 
-from domain.env_type import EnvType
+from domain.env.env_type import EnvType
 
 
 # 시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외!
@@ -162,7 +162,7 @@ def get_exrt():
     URL = f"{common.get_url_base()}/{PATH}"
 
     TrId = "CTRP6504R"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTRP6504R"
 
     # 헤더 설정
@@ -245,7 +245,7 @@ def get_balance(st="USD"):
     URL = f"{common.get_url_base()}/{PATH}"
 
     TrId = "CTRP6504R"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTRP6504R"
 
     # 헤더 설정
@@ -310,7 +310,7 @@ def get_balance(st="USD"):
 
             # 임시로 모의 계좌 잔고가 0으로
             if (
-                common.get_now_dist() == EnvType.V
+                common.get_now_dist() == EnvType.VIRTUAL
                 and float(balanceDict["RemainMoney"]) == 0
             ):
 
@@ -369,7 +369,7 @@ def get_balance(st="USD"):
 
             # 임시로 모의 계좌 잔고가 0으로 나오면
             if (
-                common.get_now_dist() == EnvType.V
+                common.get_now_dist() == EnvType.VIRTUAL
                 and float(balanceDict["RemainMoney"]) == 0
             ):
 
@@ -432,13 +432,13 @@ def get_my_stock_list(st="USD"):
             try_market = "NASD"
 
         TrId = "TTTS3012R"
-        if common.get_now_dist() == EnvType.V:
+        if common.get_now_dist() == EnvType.VIRTUAL:
             TrId = "VTTS3012R"
 
         """
         if GetDayOrNight() == 'N':
             TrId = "TTTS3012R"
-            if common.get_now_dist() == EnvType.V:
+            if common.get_now_dist() == EnvType.VIRTUAL:
                 TrId = "VTTS3012R"
         """
 
@@ -671,7 +671,7 @@ def make_buy_limit_order_ori(stockcode, amt, price, market, adjustAmt=False):
     if adjustAmt == True:
         try:
             # 가상 계좌는 미지원
-            if common.get_now_dist() != EnvType.V:
+            if common.get_now_dist() != EnvType.VIRTUAL:
                 # 매수 가능한수량으로 보정
                 amt = adjust_possible_amt(stockcode, amt)
 
@@ -681,7 +681,7 @@ def make_buy_limit_order_ori(stockcode, amt, price, market, adjustAmt=False):
     time.sleep(0.2)
 
     TrId = "JTTT1002U"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTTT1002U"
 
     PATH = "uapi/overseas-stock/v1/trading/order"
@@ -731,7 +731,7 @@ def make_sell_limit_order_ori(stockcode, amt, price, market):
     time.sleep(0.2)
 
     TrId = "JTTT1006U"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTTT1001U"
 
     PATH = "uapi/overseas-stock/v1/trading/order"
@@ -781,7 +781,7 @@ def make_buy_limit_order(stockcode, amt, price, adjustAmt=False):
     if adjustAmt == True:
         try:
             # 가상 계좌는 미지원
-            if common.get_now_dist() != EnvType.V:
+            if common.get_now_dist() != EnvType.VIRTUAL:
                 # 매수 가능한수량으로 보정
                 amt = adjust_possible_amt(stockcode, amt)
 
@@ -791,7 +791,7 @@ def make_buy_limit_order(stockcode, amt, price, adjustAmt=False):
     time.sleep(0.2)
 
     TrId = "JTTT1002U"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTTT1002U"
 
     market = get_market_code_us(stockcode)
@@ -843,7 +843,7 @@ def make_sell_limit_order(stockcode, amt, price):
     time.sleep(0.2)
 
     TrId = "JTTT1006U"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTTT1001U"
 
     market = get_market_code_us(stockcode)
@@ -1051,13 +1051,13 @@ def get_order_list(stockcode="", side="ALL", status="ALL", limit=5):
     time.sleep(0.2)
 
     TrId = "TTTS3035R"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTTS3035R"  # VTTT3001R #야간은 미지원...으앙! 어쩌라공~~
 
     """
     if GetDayOrNight() == 'N':
         TrId = "TTTS3035R"
-        if common.get_now_dist() == EnvType.V:
+        if common.get_now_dist() == EnvType.VIRTUAL:
             TrId = "VTTS3035R"
     """
 
@@ -1232,7 +1232,7 @@ def cancel_modify_order(
     time.sleep(0.2)
 
     TrId = "JTTT1004U"
-    if common.get_now_dist() == EnvType.V:
+    if common.get_now_dist() == EnvType.VIRTUAL:
         TrId = "VTTT1004U"
 
     mode_type = "02"
