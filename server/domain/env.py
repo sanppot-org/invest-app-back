@@ -1,6 +1,6 @@
 import yaml
 from abc import ABC, abstractmethod
-from domain.env.env_type import EnvType
+from type import EnvType
 
 stock_info = None
 

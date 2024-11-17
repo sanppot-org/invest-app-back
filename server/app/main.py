@@ -1,3 +1,4 @@
+import schedule
 import uvicorn
 from fastapi import FastAPI
 import domain.chat_client as chat

@@ -27,21 +27,11 @@ import pprint
 from domain import chat_client
 
 
-# 계좌 선택.. "VIRTUAL" 는 모의 계좌!
-Common.SetChangeMode("VIRTUAL")  # REAL or VIRTUAL
-
-
-BOT_NAME = Common.GetNowDist() + "_MyStaticAssetBotUS"
-
-# 시간 정보를 읽는다
-time_info = time.gmtime()
-# 년월 문자열을 만든다 즉 2022년 9월이라면 2022_9 라는 문자열이 만들어져 strYM에 들어간다!
-strYM = str(time_info.tm_year) + "_" + str(time_info.tm_mon)
-print("ym_st: ", strYM)
-
-
-# 포트폴리오 이름
+# 1. 포트폴리오 이름
 PortfolioName = "정적자산배분전략_영구변형"
+
+# 2. 계좌 선택.. "VIRTUAL" 는 모의 계좌!
+Common.SetChangeMode("VIRTUAL")  # REAL or VIRTUAL
 
 
 #####################################################################################################################################
@@ -52,35 +42,39 @@ PortfolioName = "정적자산배분전략_영구변형"
 # 0 16 * * 1-5 python3 /var/autobot/Static_Asset_US.py
 
 
+def get_YM_dict() -> dict:
+    BOT_NAME = f"{Common.GetNowDist()}_MyStaticAssetBotUS"
+
+    # 파일 경로입니다.
+    static_asset_tym_file_path = f"/var/autobot/{BOT_NAME}_YM1.json"
+
+    try:
+        # 파일에 저장된 년월 문자열 (ex> 2022_9)를 읽는다
+        with open(static_asset_tym_file_path, "r") as json_file:
+            return json.load(json_file)
+
+    except Exception as e:
+        print("Exception by First")
+
+    return YMDict
+
+
+YMDict = get_YM_dict()
+
+# 시간 정보를 읽는다
+time_info = time.gmtime()
+# 년월 문자열을 만든다 즉 2022년 9월이라면 2022_9 라는 문자열이 만들어져 strYM에 들어간다!
+strYM = f"{str(time_info.tm_year)}_{str(time_info.tm_mon)}"
+print("ym_st: ", strYM)
+
+
 # 리밸런싱이 가능한지 여부를 판단!
-Is_Rebalance_Go = False
+Is_Rebalance_Go: bool = False
 
-
-# 파일에 저장된 년월 문자열 (ex> 2022_9)를 읽는다
-YMDict = dict()
-
-# 파일 경로입니다.
-static_asset_tym_file_path = "/var/autobot/" + BOT_NAME + "_YM1.json"
-try:
-    with open(static_asset_tym_file_path, "r") as json_file:
-        YMDict = json.load(json_file)
-
-except Exception as e:
-    print("Exception by First")
-
-
-# 만약 키가 존재 하지 않는다 즉 아직 한번도 매매가 안된 상태라면
-if YMDict.get("ym_st") == None:
-
+# 만약 키가 존재 하지 않는다 즉 아직 한번도 매매가 안된 상태라면 or 이번 달에 리밸런스하지 않은 경우
+if YMDict.get("ym_st") == None or YMDict["ym_st"] != strYM:
     # 리밸런싱 가능! (리밸런싱이라기보다 첫 매수해야 되는 상황!)
     Is_Rebalance_Go = True
-
-# 매매가 된 상태라면! 매매 당시 혹은 리밸런싱 당시 년월 정보(ex> 2022_9) 가 들어가 있다.
-else:
-    # 그럼 그 정보랑 다를때만 즉 달이 바뀌었을 때만 리밸런싱을 해야 된다
-    if YMDict["ym_st"] != strYM:
-        # 리밸런싱 가능!
-        Is_Rebalance_Go = True
 
 
 # 강제 리밸런싱 수행!
@@ -90,19 +84,19 @@ else:
 # 마켓이 열렸는지 여부~!
 IsMarketOpen = KisUS.IsMarketOpen()
 
-if IsMarketOpen == True:
+if IsMarketOpen == True and Is_Rebalance_Go:
     print("Market Is Open!!!!!!!!!!!")
     # 영상엔 없지만 리밸런싱이 가능할때만 내게 메시지를 보내자!
-    if Is_Rebalance_Go == True:
-        chat_client.send_message(
-            PortfolioName + " (" + strYM + ") 장이 열려서 포트폴리오 리밸런싱 가능!!"
-        )
+    chat_client.send_message(
+        f"{PortfolioName} ({strYM}) 장이 열려서 포트폴리오 리밸런싱 가능!!"
+    )
+
 else:
     print("Market Is Close!!!!!!!!!!!")
     # 영상엔 없지만 리밸런싱이 가능할때만 내게 메시지를 보내자!
     if Is_Rebalance_Go == True:
         chat_client.send_message(
-            PortfolioName + " (" + strYM + ") 장이 닫혀서 포트폴리오 리밸런싱 불가능!!"
+            f"{PortfolioName} ({strYM}) 장이 닫혀서 포트폴리오 리밸런싱 불가능!!"
         )
 
 
@@ -114,11 +108,8 @@ else:
 # 계좌 잔고를 가지고 온다!
 Balance = KisUS.GetBalance()
 
-
 print("--------------내 보유 잔고---------------------")
-
 pprint.pprint(Balance)
-
 print("--------------------------------------------")
 # 총 평가금액에서 해당 봇에게 할당할 총 금액비율 1.0 = 100%  0.5 = 50%
 InvestRate = 0.04
@@ -152,7 +143,7 @@ SHY       12.5% - 단기 채권
 
 ##########################################################
 
-# 투자 주식 리스트
+# 투자 주식 리스트 설정
 MyPortfolioList = list()
 
 

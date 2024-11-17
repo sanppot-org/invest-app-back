@@ -1,0 +1,19 @@
+services:
+  db:
+    image: mysql:8.1
+    container_name: invest-app-db
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: invest
+      MYSQL_ROOT_PASSWORD: 1234
+      TZ: Asia/Seoul
+    volumes:
+      - "mysqldata:/var/lib/mysql"
+    platform: linux/x86_64
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mysqldata:
