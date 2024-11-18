@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 
 아래 구글 드라이브 링크에 권한 요청을 해주세요!
 이후 업데이트 사항은 여기서 실시간으로 편하게 다운로드 하시면 됩니다. (클래스 구독이 끝나더라도..)
@@ -30,9 +30,9 @@ https://blog.naver.com/zacra
 
 기다릴게요 ^^!
 
-'''
+"""
 
-import KIS_Common as Common
+import KIS_Common as common
 import requests
 import json
 from datetime import datetime
@@ -42,24 +42,22 @@ import time
 import pandas as pd
 
 
+# 시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외!
+def is_market_open():
 
-#시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외! 
-def IsMarketOpen():
-
-
-    now_time = datetime.now(timezone('America/New_York'))
+    now_time = datetime.now(timezone("America/New_York"))
     pprint.pprint(now_time)
-    strNow = now_time.strftime('%Y/%m/%d')
+    strNow = now_time.strftime("%Y/%m/%d")
 
     date_week = now_time.weekday()
 
     IsOpen = False
 
-    #주말은 무조건 장이 안열리니 False 리턴!
-    if date_week == 5 or date_week == 6:  
+    # 주말은 무조건 장이 안열리니 False 리턴!
+    if date_week == 5 or date_week == 6:
         IsOpen = False
     else:
-        #현지시간 기준 9시 반부터 4시
+        # 현지시간 기준 9시 반부터 4시
         if now_time.hour >= 9 and now_time.hour <= 15:
             IsOpen = True
 
@@ -69,57 +67,50 @@ def IsMarketOpen():
             if now_time.hour == 15 and now_time.minute > 50:
                 IsOpen = False
 
-    #평일 장 시간이어도 공휴일같은날 장이 안열린다. 그래서 1번 더 체크!!
+    # 평일 장 시간이어도 공휴일같은날 장이 안열린다. 그래서 1번 더 체크!!
     if IsOpen == True:
-
 
         print("Time is OK... but one more checked!!!")
 
         Is_CheckTody = False
 
-
         CheckDict = dict()
 
-        #파일 경로입니다.
+        # 파일 경로입니다.
         file_path = "./US_Market_OpenCheck.json"
         try:
-            with open(file_path, 'r') as json_file:
+            with open(file_path, "r") as json_file:
                 CheckDict = json.load(json_file)
 
         except Exception as e:
             print("Exception by First")
 
-
-        #만약 키가 존재 하지 않는다 즉 아직 한번도 체크하지 않은 상황
+        # 만약 키가 존재 하지 않는다 즉 아직 한번도 체크하지 않은 상황
         if CheckDict.get("CheckTody") == None:
 
             Is_CheckTody = True
-            
-        else:
-      
-            #날짜가 바뀌었다면 체크 해야 한다!
-            if CheckDict['CheckTody'] != strNow:
-                Is_CheckTody = True
 
+        else:
+
+            # 날짜가 바뀌었다면 체크 해야 한다!
+            if CheckDict["CheckTody"] != strNow:
+                Is_CheckTody = True
 
         Is_Ok = False
 
-        #체크할 필요가 있을 때만 체크한다!
+        # 체크할 필요가 있을 때만 체크한다!
         if Is_CheckTody == True:
-
 
             try:
 
-
-                #시간 정보를 읽는다
+                # 시간 정보를 읽는다
                 time_info = time.gmtime()
 
-
                 day_n = time_info.tm_mday
-                df = Common.GetOhlcv("US", "AAPL",10) 
+                df = common.GetOhlcv("US", "AAPL", 10)
                 date = df.iloc[-1].name
 
-                #날짜 정보를 획득
+                # 날짜 정보를 획득
                 date_format = "%Y-%m-%d %H:%M:%S"
                 date_object = None
 
@@ -134,27 +125,24 @@ def IsMarketOpen():
                     except Exception as e2:
                         date_format = "%Y-%m-%d"
                         date_object = datetime.strptime(str(date), date_format)
-                        
+
                 if int(date_object.strftime("%d")) == day_n:
                     Is_Ok = True
 
-
             except Exception as e:
 
-                print("EXCEPTION ",e)
-
+                print("EXCEPTION ", e)
 
             if Is_Ok == True:
 
-
-                #마켓이 열린 시간내에 가짜주문이 유효하다면 장이 열렸으니 더이상 이 시간내에 또 체크할 필요가 없다.
-                CheckDict['CheckTody'] = strNow
-                with open(file_path, 'w') as outfile:
+                # 마켓이 열린 시간내에 가짜주문이 유효하다면 장이 열렸으니 더이상 이 시간내에 또 체크할 필요가 없다.
+                CheckDict["CheckTody"] = strNow
+                with open(file_path, "w") as outfile:
                     json.dump(CheckDict, outfile)
 
                 print("Market is Open!!")
                 return True
-            
+
             else:
 
                 print("Market is Close!!")
@@ -165,87 +153,86 @@ def IsMarketOpen():
 
     else:
 
-        print("Time is NO!!!")        
+        print("Time is NO!!!")
         return False
-    
-    
-#price_pricision 호가 단위에 맞게 변형해준다. 지정가 매매시 사용
+
+
+# price_pricision 호가 단위에 맞게 변형해준다. 지정가 매매시 사용
 def PriceAdjust(price):
-    
-    return round(float(price),2)
+
+    return round(float(price), 2)
 
 
-
-#환율 리턴!
+# 환율 리턴!
 def GetExrt():
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
-
     PATH = "/uapi/overseas-stock/v1/trading/inquire-present-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "CTRP6504R"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTRP6504R"
-
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTRP6504R"
 
     # 헤더 설정
-    headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-            "tr_id": TrId,
-            "custtype": "P"}
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
+        "tr_id": TrId,
+        "custtype": "P",
+    }
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
-        "WCRC_FRCR_DVSN_CD" : "02",
-        'NATN_CD': '840', 
-        'TR_MKET_CD': '00', 
-        'INQR_DVSN_CD': '00'
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
+        "WCRC_FRCR_DVSN_CD": "02",
+        "NATN_CD": "840",
+        "TR_MKET_CD": "00",
+        "INQR_DVSN_CD": "00",
     }
 
     # 호출
     res = requests.get(URL, headers=headers, params=params)
-    #pprint.pprint(res.json())
+    # pprint.pprint(res.json())
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-        result = res.json()['output2']
+        result = res.json()["output2"]
 
         Rate = 1200
 
         for data in result:
-            if data['crcy_cd'] == "USD":
-                Rate = data['frst_bltn_exrt']
+            if data["crcy_cd"] == "USD":
+                Rate = data["frst_bltn_exrt"]
                 break
 
         return Rate
-       
+
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
 
 
-''' 23.5.13일 이후 사용하지 않게됨
+""" 23.5.13일 이후 사용하지 않게됨
 #미국 주식 주간 / 야간 여부를 리턴 하는 함수!
 def GetDayOrNight():
 
     time.sleep(0.2)
     
     PATH = "uapi/overseas-stock/v1/trading/dayornight"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey":common.GetAppKey(common.GetNowDist()),
+            "appSecret":common.GetAppSecret(common.GetNowDist()),
             "tr_id":"JTTT3010R"}
 
     params = {
@@ -259,174 +246,197 @@ def GetDayOrNight():
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
-'''
+"""
 
 
-
-
-#미국 잔고! 달러로 리턴할건지 원화로 리턴할건지!
-def GetBalance(st = "USD"):
+# 미국 잔고! 달러로 리턴할건지 원화로 리턴할건지!
+def GetBalance(st="USD"):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-present-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "CTRP6504R"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTRP6504R"
-
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTRP6504R"
 
     # 헤더 설정
-    headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-            "tr_id": TrId,
-            "custtype": "P"}
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
+        "tr_id": TrId,
+        "custtype": "P",
+    }
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
-        "WCRC_FRCR_DVSN_CD" : "02",
-        'NATN_CD': '840', 
-        'TR_MKET_CD': '00', 
-        'INQR_DVSN_CD': '00'
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
+        "WCRC_FRCR_DVSN_CD": "02",
+        "NATN_CD": "840",
+        "TR_MKET_CD": "00",
+        "INQR_DVSN_CD": "00",
     }
 
     # 호출
     res = requests.get(URL, headers=headers, params=params)
-    #pprint.pprint(res.json())
+    # pprint.pprint(res.json())
 
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
+        result = res.json()["output2"]
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+        # 실시간 주식 상태가 반영이 안되서 주식 정보를 직접 읽어서 계산!
+        my_stock_list = GetMyStockList(st)
 
-        result = res.json()['output2']
-
-        #실시간 주식 상태가 반영이 안되서 주식 정보를 직접 읽어서 계산!
-        MyStockList = GetMyStockList(st)
-        
         StockOriMoneyTotal = 0
         StockNowMoneyTotal = 0
-        
-        for stock in MyStockList:
-            #pprint.pprint(stock)
-            StockOriMoneyTotal += float(stock['StockOriMoney'])
-            StockNowMoneyTotal += float(stock['StockNowMoney'])
-            
-            #print("--", StockNowMoneyTotal, StockOriMoneyTotal)
-            
-            
+
+        for stock in my_stock_list:
+            # pprint.pprint(stock)
+            StockOriMoneyTotal += float(stock["StockOriMoney"])
+            StockNowMoneyTotal += float(stock["StockNowMoney"])
+
+            # print("--", StockNowMoneyTotal, StockOriMoneyTotal)
+
         balanceDict = dict()
-        balanceDict['RemainMoney'] = 0
+        balanceDict["RemainMoney"] = 0
 
         Rate = 1200
 
-
         if st == "USD":
 
-
             for data in result:
-                if data['crcy_cd'] == "USD":
-                    #예수금 총금액 (즉 주문가능 금액)
-                    balanceDict['RemainMoney'] = float(data['frcr_dncl_amt_2']) - float(data['frcr_buy_amt_smtl']) + float(data['frcr_sll_amt_smtl']) #모의계좌는 0으로 나온다 이유는 모르겠음!
-                    Rate = data['frst_bltn_exrt']
+                if data["crcy_cd"] == "USD":
+                    # 예수금 총금액 (즉 주문가능 금액)
+                    balanceDict["RemainMoney"] = (
+                        float(data["frcr_dncl_amt_2"])
+                        - float(data["frcr_buy_amt_smtl"])
+                        + float(data["frcr_sll_amt_smtl"])
+                    )  # 모의계좌는 0으로 나온다 이유는 모르겠음!
+                    Rate = data["frst_bltn_exrt"]
                     break
 
+            result = res.json()["output3"]
 
-            result = res.json()['output3']
+            # 임시로 모의 계좌 잔고가 0으로
+            if (
+                common.GetNowDist() == "VIRTUAL"
+                and float(balanceDict["RemainMoney"]) == 0
+            ):
 
-            #임시로 모의 계좌 잔고가 0으로 
-            if Common.GetNowDist() == "VIRTUAL" and float(balanceDict['RemainMoney']) == 0:
+                # 주식 총 평가 금액
+                balanceDict["stock_money"] = (
+                    StockNowMoneyTotal  # (float(result['evlu_amt_smtl_amt']) / float(Rate))
+                )
+                # 평가 손익 금액
+                balanceDict["StockRevenue"] = float(StockNowMoneyTotal) - float(
+                    StockOriMoneyTotal
+                )  # round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
 
-                #주식 총 평가 금액
-                balanceDict['StockMoney'] = StockNowMoneyTotal#(float(result['evlu_amt_smtl_amt']) / float(Rate))
-                #평가 손익 금액
-                balanceDict['StockRevenue'] = float(StockNowMoneyTotal) - float(StockOriMoneyTotal) #round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
-                
-                balanceDict['RemainMoney'] = (float(result['frcr_evlu_tota']) / float(Rate))
-                
-                #총 평가 금액
-                balanceDict['TotalMoney'] = float(balanceDict['StockMoney']) + float(balanceDict['RemainMoney'])
-                
+                balanceDict["RemainMoney"] = float(result["frcr_evlu_tota"]) / float(
+                    Rate
+                )
 
+                # 총 평가 금액
+                balanceDict["total_money"] = float(balanceDict["stock_money"]) + float(
+                    balanceDict["RemainMoney"]
+                )
 
             else:
 
+                # 주식 총 평가 금액
+                balanceDict["stock_money"] = (
+                    StockNowMoneyTotal  # (float(result['evlu_amt_smtl_amt']) / float(Rate))
+                )
+                # 평가 손익 금액
+                balanceDict["StockRevenue"] = float(StockNowMoneyTotal) - float(
+                    StockOriMoneyTotal
+                )  # round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
 
-                #주식 총 평가 금액
-                balanceDict['StockMoney'] = StockNowMoneyTotal#(float(result['evlu_amt_smtl_amt']) / float(Rate))
-                #평가 손익 금액
-                balanceDict['StockRevenue'] = float(StockNowMoneyTotal) - float(StockOriMoneyTotal) #round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
-                
-                #총 평가 금액
-                balanceDict['TotalMoney'] = float(balanceDict['StockMoney']) + float(balanceDict['RemainMoney'])
-
+                # 총 평가 금액
+                balanceDict["total_money"] = float(balanceDict["stock_money"]) + float(
+                    balanceDict["RemainMoney"]
+                )
 
         else:
 
             for data in result:
-                if data['crcy_cd'] == "USD":
-                    Rate = data['frst_bltn_exrt']
-                    #예수금 총금액 (즉 주문가능현금)
-                    balanceDict['RemainMoney'] = (float(data['frcr_dncl_amt_2']) - float(data['frcr_buy_amt_smtl']) + float(data['frcr_sll_amt_smtl'])) * float(Rate)
-                    #balanceDict['RemainMoney'] = data['frcr_evlu_amt2'] #모의계좌는 0으로 나온다 이유는 모르겠음!
-                    
+                if data["crcy_cd"] == "USD":
+                    Rate = data["frst_bltn_exrt"]
+                    # 예수금 총금액 (즉 주문가능현금)
+                    balanceDict["RemainMoney"] = (
+                        float(data["frcr_dncl_amt_2"])
+                        - float(data["frcr_buy_amt_smtl"])
+                        + float(data["frcr_sll_amt_smtl"])
+                    ) * float(Rate)
+                    # balanceDict['RemainMoney'] = data['frcr_evlu_amt2'] #모의계좌는 0으로 나온다 이유는 모르겠음!
+
                     break
 
-            #print("balanceDict['RemainMoney'] ", balanceDict['RemainMoney'] )
+            # print("balanceDict['RemainMoney'] ", balanceDict['RemainMoney'] )
 
-            result = res.json()['output3']
+            result = res.json()["output3"]
 
-            #임시로 모의 계좌 잔고가 0으로 나오면 
-            if Common.GetNowDist() == "VIRTUAL" and float(balanceDict['RemainMoney']) == 0:
-                
+            # 임시로 모의 계좌 잔고가 0으로 나오면
+            if (
+                common.GetNowDist() == "VIRTUAL"
+                and float(balanceDict["RemainMoney"]) == 0
+            ):
 
-  
-                #주식 총 평가 금액
-                balanceDict['StockMoney'] = StockNowMoneyTotal#result['evlu_amt_smtl_amt']
-                #평가 손익 금액
-                balanceDict['StockRevenue'] = float(StockNowMoneyTotal) - float(StockOriMoneyTotal) #round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
-                
-                balanceDict['RemainMoney'] =  float(result['frcr_evlu_tota'])
+                # 주식 총 평가 금액
+                balanceDict["stock_money"] = (
+                    StockNowMoneyTotal  # result['evlu_amt_smtl_amt']
+                )
+                # 평가 손익 금액
+                balanceDict["StockRevenue"] = float(StockNowMoneyTotal) - float(
+                    StockOriMoneyTotal
+                )  # round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
 
-                #총 평가 금액
-                balanceDict['TotalMoney'] = float(balanceDict['StockMoney']) + float(balanceDict['RemainMoney'])
-                
+                balanceDict["RemainMoney"] = float(result["frcr_evlu_tota"])
+
+                # 총 평가 금액
+                balanceDict["total_money"] = float(balanceDict["stock_money"]) + float(
+                    balanceDict["RemainMoney"]
+                )
+
             else:
 
+                # 주식 총 평가 금액
+                balanceDict["stock_money"] = (
+                    StockNowMoneyTotal  # result['evlu_amt_smtl_amt']
+                )
+                # 평가 손익 금액
+                balanceDict["StockRevenue"] = float(StockNowMoneyTotal) - float(
+                    StockOriMoneyTotal
+                )  # round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
 
-                #주식 총 평가 금액
-                balanceDict['StockMoney'] = StockNowMoneyTotal#result['evlu_amt_smtl_amt']
-                #평가 손익 금액
-                balanceDict['StockRevenue'] = float(StockNowMoneyTotal) - float(StockOriMoneyTotal) #round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
-                
-                #총 평가 금액
-                balanceDict['TotalMoney'] = float(balanceDict['StockMoney']) + float(balanceDict['RemainMoney'])
-
+                # 총 평가 금액
+                balanceDict["total_money"] = float(balanceDict["stock_money"]) + float(
+                    balanceDict["RemainMoney"]
+                )
 
         return balanceDict
-       
 
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
-    
-#미국 보유 주식 리스트 
-def GetMyStockList(st = "USD"):
 
+
+# 미국 보유 주식 리스트
+def GetMyStockList(st="USD"):
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
-
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     StockList = list()
-    
-    for i in range(1,4):
+
+    for i in range(1, 4):
 
         try_market = "NASD"
 
@@ -437,208 +447,197 @@ def GetMyStockList(st = "USD"):
         else:
             try_market = "NASD"
 
-        
-
-
         TrId = "TTTS3012R"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTS3012R"
 
-        '''
+        """
         if GetDayOrNight() == 'N':
             TrId = "TTTS3012R"
-            if Common.GetNowDist() == "VIRTUAL":
+            if common.GetNowDist() == "VIRTUAL":
                 TrId = "VTTS3012R"
-        '''
+        """
 
-        
         DataLoad = True
-        
-    
+
         FKKey = ""
         NKKey = ""
         PrevNKKey = ""
         tr_cont = ""
-    
+
         count = 0
 
-        #드물지만 보유종목이 아주 많으면 한 번에 못가져 오므로 SeqKey를 이용해 연속조회를 하기 위한 반복 처리 
+        # 드물지만 보유종목이 아주 많으면 한 번에 못가져 오므로 SeqKey를 이용해 연속조회를 하기 위한 반복 처리
         while DataLoad:
 
             time.sleep(0.2)
-            #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-            if Common.GetNowDist() == "VIRTUAL":
+            # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+            if common.GetNowDist() == "VIRTUAL":
                 time.sleep(0.31)
 
-                    
             # 헤더 설정
-            headers = {"Content-Type":"application/json", 
-                    "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                    "appKey":Common.GetAppKey(Common.GetNowDist()),
-                    "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-                    "tr_id": TrId,
-                    "tr_cont": tr_cont,
-                    "custtype": "P"}
+            headers = {
+                "Content-Type": "application/json",
+                "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+                "appKey": common.GetAppKey(common.GetNowDist()),
+                "appSecret": common.GetAppSecret(common.GetNowDist()),
+                "tr_id": TrId,
+                "tr_cont": tr_cont,
+                "custtype": "P",
+            }
 
             params = {
-                "CANO": Common.GetAccountNo(Common.GetNowDist()),
-                "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
-                "OVRS_EXCG_CD" : try_market,
+                "CANO": common.GetAccountNo(common.GetNowDist()),
+                "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
+                "OVRS_EXCG_CD": try_market,
                 "TR_CRCY_CD": "USD",
-                "CTX_AREA_FK200" : FKKey,
-                "CTX_AREA_NK200" : NKKey
+                "CTX_AREA_FK200": FKKey,
+                "CTX_AREA_NK200": NKKey,
             }
 
             # 호출
             res = requests.get(URL, headers=headers, params=params)
-            
-            if res.headers['tr_cont'] == "M" or res.headers['tr_cont'] == "F":
+
+            if res.headers["tr_cont"] == "M" or res.headers["tr_cont"] == "F":
                 tr_cont = "N"
             else:
                 tr_cont = ""
 
+            if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-            if res.status_code == 200 and res.json()["rt_cd"] == '0':
-
-
-                NKKey = res.json()['ctx_area_nk200'].strip()
+                NKKey = res.json()["ctx_area_nk200"].strip()
                 if NKKey != "":
                     print("---> CTX_AREA_NK200: ", NKKey)
 
-                FKKey = res.json()['ctx_area_fk200'].strip()
+                FKKey = res.json()["ctx_area_fk200"].strip()
                 if FKKey != "":
                     print("---> CTX_AREA_FK200: ", FKKey)
-
-
 
                 if PrevNKKey == NKKey:
                     DataLoad = False
                 else:
                     PrevNKKey = NKKey
-                    
+
                 if NKKey == "":
                     DataLoad = False
-                
-                
 
-                ResultList = res.json()['output1']
-                #pprint.pprint(ResultList)
-
-
+                ResultList = res.json()["output1"]
+                # pprint.pprint(ResultList)
 
                 for stock in ResultList:
-                    #잔고 수량이 0 이상인것만
-                    if int(stock['ovrs_cblc_qty']) > 0:
+                    # 잔고 수량이 0 이상인것만
+                    if int(stock["ovrs_cblc_qty"]) > 0:
 
                         StockInfo = dict()
-                        
-                        StockInfo["StockCode"] = stock['ovrs_pdno']
-                        StockInfo["StockName"] = stock['ovrs_item_name']
-                        StockInfo["StockAmt"] = stock['ovrs_cblc_qty']
+
+                        StockInfo["StockCode"] = stock["ovrs_pdno"]
+                        StockInfo["StockName"] = stock["ovrs_item_name"]
+                        StockInfo["StockAmt"] = stock["ovrs_cblc_qty"]
 
                         if st == "USD":
 
-                            StockInfo["StockAvgPrice"] = stock['pchs_avg_pric']
-                            StockInfo["StockOriMoney"] = stock['frcr_pchs_amt1']
-                            StockInfo["StockNowMoney"] = stock['ovrs_stck_evlu_amt']
-                            StockInfo["StockNowPrice"] = stock['now_pric2']
-                            StockInfo["StockRevenueMoney"] = stock['frcr_evlu_pfls_amt']
+                            StockInfo["StockAvgPrice"] = stock["pchs_avg_pric"]
+                            StockInfo["StockOriMoney"] = stock["frcr_pchs_amt1"]
+                            StockInfo["StockNowMoney"] = stock["ovrs_stck_evlu_amt"]
+                            StockInfo["StockNowPrice"] = stock["now_pric2"]
+                            StockInfo["StockRevenueMoney"] = stock["frcr_evlu_pfls_amt"]
 
                         else:
 
                             Rate = GetExrt()
-                            
-                            StockInfo["StockAvgPrice"] = float(stock['pchs_avg_pric']) * float(Rate)
-                            StockInfo["StockOriMoney"] = float(stock['frcr_pchs_amt1']) * float(Rate)
-                            StockInfo["StockNowMoney"] = float(stock['ovrs_stck_evlu_amt']) * float(Rate)
-                            StockInfo["StockNowPrice"] = float(stock['now_pric2']) * float(Rate)
-                            StockInfo["StockRevenueMoney"] = float(stock['frcr_evlu_pfls_amt']) * float(Rate)
 
+                            StockInfo["StockAvgPrice"] = float(
+                                stock["pchs_avg_pric"]
+                            ) * float(Rate)
+                            StockInfo["StockOriMoney"] = float(
+                                stock["frcr_pchs_amt1"]
+                            ) * float(Rate)
+                            StockInfo["StockNowMoney"] = float(
+                                stock["ovrs_stck_evlu_amt"]
+                            ) * float(Rate)
+                            StockInfo["StockNowPrice"] = float(
+                                stock["now_pric2"]
+                            ) * float(Rate)
+                            StockInfo["StockRevenueMoney"] = float(
+                                stock["frcr_evlu_pfls_amt"]
+                            ) * float(Rate)
 
+                        StockInfo["StockRevenueRate"] = stock["evlu_pfls_rt"]
 
-                        StockInfo["StockRevenueRate"] = stock['evlu_pfls_rt']
-                        
                         Is_Duple = False
                         for exist_stock in StockList:
                             if exist_stock["StockCode"] == StockInfo["StockCode"]:
                                 Is_Duple = True
                                 break
-                                
 
                         if Is_Duple == False:
                             StockList.append(StockInfo)
-
-
 
             else:
                 print("Error Code : " + str(res.status_code) + " | " + res.text)
                 if res.json()["msg_cd"] == "EGW00123":
                     DataLoad = False
-                    
+
                 count += 1
 
                 if count > 100:
                     DataLoad = False
-        
-    return StockList
-        
 
+    return StockList
 
 
 ############################################################################################################################################################
 
 
-
-
-#미국 주식현재가 시세
+# 미국 주식현재가 시세
 def GetCurrentPriceOri(market, stock_code):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
-
-
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
-    headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-            "tr_id":"HHDFS00000300"}
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
+        "tr_id": "HHDFS00000300",
+    }
 
     params = {
         "AUTH": "",
-        "EXCD":market.upper(),
-        "SYMB":stock_code,
+        "EXCD": market.upper(),
+        "SYMB": stock_code,
     }
 
     # 호출
     res = requests.get(URL, headers=headers, params=params)
-   # pprint.pprint(res.json())
+    # pprint.pprint(res.json())
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
-        return float(res.json()['output']['last'])
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
+        return float(res.json()["output"]["last"])
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
 
 
-#미국의 나스닥,뉴욕거래소, 아멕스를 뒤져서 있는 증권의 현재가를 가지고 옵니다!
+# 미국의 나스닥,뉴욕거래소, 아멕스를 뒤져서 있는 증권의 현재가를 가지고 옵니다!
 def GetCurrentPrice(stock_code):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
-    for i in range(1,4):
+    for i in range(1, 4):
 
         try_market = "NAS"
 
@@ -649,38 +648,37 @@ def GetCurrentPrice(stock_code):
         else:
             try_market = "NAS"
 
-
-
-
         # 헤더 설정
-        headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-                "tr_id":"HHDFS00000300"}
+        headers = {
+            "Content-Type": "application/json",
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
+            "tr_id": "HHDFS00000300",
+        }
 
         params = {
             "AUTH": "",
-            "EXCD":try_market,
-            "SYMB":stock_code,
+            "EXCD": try_market,
+            "SYMB": stock_code,
         }
 
         # 호출
         res = requests.get(URL, headers=headers, params=params)
 
-        if res.status_code == 200 and res.json()["rt_cd"] == '0':
+        if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-            if res.json()['output']['last'] == '':
-               #print(try_market, " is Failed.. Next market.. ")
+            if res.json()["output"]["last"] == "":
+                # print(try_market, " is Failed.. Next market.. ")
                 time.sleep(0.2)
-                #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-                if Common.GetNowDist() == "VIRTUAL":
+                # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+                if common.GetNowDist() == "VIRTUAL":
                     time.sleep(0.31)
 
-                continue # 다음 시도를 한다!
+                continue  # 다음 시도를 한다!
             else:
-                #print(try_market, " is Succeed!! ")
-                return float(res.json()['output']['last'])
+                # print(try_market, " is Succeed!! ")
+                return float(res.json()["output"]["last"])
 
         else:
             print("Error Code : " + str(res.status_code) + " | " + res.text)
@@ -689,151 +687,134 @@ def GetCurrentPrice(stock_code):
     return None
 
 
-
-
 ############################################################################################################################################################
 
 
-#미국 지정가 주문하기!
-def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt = False):
-
-    '''
+# 미국 지정가 주문하기!
+def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt=False):
+    """
     #매수가능 수량으로 보정할지 여부
     if adjustAmt == True:
         try:
             #가상 계좌는 미지원
-            if Common.GetNowDist() != "VIRTUAL":
+            if common.GetNowDist() != "VIRTUAL":
                 #매수 가능한수량으로 보정
                 amt = AdjustPossibleAmt(stockcode, amt)
 
         except Exception as e:
             print("Exception")
-    '''
-
-        
-
+    """
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "JTTT1002U"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTTT1002U"
-
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTTT1002U"
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
         "OVRS_ORD_UNPR": str(PriceAdjust(price)),
-        "ORD_SVR_DVSN_CD": "0"
-
+        "ORD_SVR_DVSN_CD": "0",
     }
-    headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
-        "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "custtype": "P",
+        "hashkey": common.GetHashKey(data),
     }
 
-    
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-        order = res.json()['output']
+        order = res.json()["output"]
 
         OrderInfo = dict()
-        
 
-        OrderInfo["OrderNum"] = order['KRX_FWDG_ORD_ORGNO']
-        OrderInfo["OrderNum2"] = order['ODNO']
-        OrderInfo["OrderTime"] = order['ORD_TMD'] 
-
+        OrderInfo["OrderNum"] = order["KRX_FWDG_ORD_ORGNO"]
+        OrderInfo["OrderNum2"] = order["ODNO"]
+        OrderInfo["OrderTime"] = order["ORD_TMD"]
 
         return OrderInfo
 
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
-        
-#미국 지정가 주문하기!
+
+
+# 미국 지정가 주문하기!
 def MakeSellLimitOrderOri(stockcode, amt, price, market):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "JTTT1006U"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTTT1001U"
-
-
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTTT1001U"
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
         "OVRS_ORD_UNPR": str(PriceAdjust(price)),
-        "ORD_SVR_DVSN_CD": "0"
-
+        "ORD_SVR_DVSN_CD": "0",
     }
-    headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
-        "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "custtype": "P",
+        "hashkey": common.GetHashKey(data),
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
-    
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
 
-        order = res.json()['output']
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
+
+        order = res.json()["output"]
 
         OrderInfo = dict()
-        
 
-        OrderInfo["OrderNum"] = order['KRX_FWDG_ORD_ORGNO']
-        OrderInfo["OrderNum2"] = order['ODNO']
-        OrderInfo["OrderTime"] = order['ORD_TMD'] 
-
-
+        OrderInfo["OrderNum"] = order["KRX_FWDG_ORD_ORGNO"]
+        OrderInfo["OrderNum2"] = order["ODNO"]
+        OrderInfo["OrderTime"] = order["ORD_TMD"]
 
         return OrderInfo
-
 
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
 
-#미국 지정가 주문하기! 마켓을 모를 경우 자동으로 뒤져서!
-def MakeBuyLimitOrder(stockcode, amt, price ,adjustAmt = False):
 
-    '''
+# 미국 지정가 주문하기! 마켓을 모를 경우 자동으로 뒤져서!
+def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False):
+    """
     if adjustAmt == True:
         try:
             #가상 계좌는 미지원
-            if Common.GetNowDist() != "VIRTUAL":
+            if common.GetNowDist() != "VIRTUAL":
                 #매수 가능한수량으로 보정
                 amt = AdjustPossibleAmt(stockcode, amt)
 
@@ -841,118 +822,107 @@ def MakeBuyLimitOrder(stockcode, amt, price ,adjustAmt = False):
         except Exception as e:
             print("Exception")
 
-    '''
-    
+    """
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "JTTT1002U"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTTT1002U"
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTTT1002U"
 
     market = GetMarketCodeUS(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "OVRS_EXCG_CD": market,
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
         "OVRS_ORD_UNPR": str(PriceAdjust(price)),
-        "ORD_SVR_DVSN_CD": "0"
-
+        "ORD_SVR_DVSN_CD": "0",
     }
-    headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
-        "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "custtype": "P",
+        "hashkey": common.GetHashKey(data),
     }
 
-    
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
-
-        order = res.json()['output']
+        order = res.json()["output"]
 
         OrderInfo = dict()
-        
 
-        OrderInfo["OrderNum"] = order['KRX_FWDG_ORD_ORGNO']
-        OrderInfo["OrderNum2"] = order['ODNO']
-        OrderInfo["OrderTime"] = order['ORD_TMD'] 
-
-
+        OrderInfo["OrderNum"] = order["KRX_FWDG_ORD_ORGNO"]
+        OrderInfo["OrderNum2"] = order["ODNO"]
+        OrderInfo["OrderTime"] = order["ORD_TMD"]
 
         return OrderInfo
-
 
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return res.json()["msg_cd"]
-        
-#미국 지정가 주문하기! 마켓을 모를 경우 자동으로 뒤져서!
+
+
+# 미국 지정가 주문하기! 마켓을 모를 경우 자동으로 뒤져서!
 def MakeSellLimitOrder(stockcode, amt, price):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "JTTT1006U"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTTT1001U"
-
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTTT1001U"
 
     market = GetMarketCodeUS(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "OVRS_EXCG_CD": market,
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
         "OVRS_ORD_UNPR": str(PriceAdjust(price)),
-        "ORD_SVR_DVSN_CD": "0"
-
+        "ORD_SVR_DVSN_CD": "0",
     }
-    headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
-        "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "custtype": "P",
+        "hashkey": common.GetHashKey(data),
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
-    
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
 
-        order = res.json()['output']
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
+
+        order = res.json()["output"]
 
         OrderInfo = dict()
-        
 
-        OrderInfo["OrderNum"] = order['KRX_FWDG_ORD_ORGNO']
-        OrderInfo["OrderNum2"] = order['ODNO']
-        OrderInfo["OrderTime"] = order['ORD_TMD'] 
-
+        OrderInfo["OrderNum"] = order["KRX_FWDG_ORD_ORGNO"]
+        OrderInfo["OrderNum2"] = order["ODNO"]
+        OrderInfo["OrderTime"] = order["ORD_TMD"]
 
         return OrderInfo
     else:
@@ -960,18 +930,18 @@ def MakeSellLimitOrder(stockcode, amt, price):
         return None
 
 
-#미국의 나스닥,뉴욕거래소, 아멕스를 뒤져서 있는 해당 주식의 거래소 코드를 리턴합니다!!
-def GetMarketCodeUS(stock_code, return_ori_market = False):
+# 미국의 나스닥,뉴욕거래소, 아멕스를 뒤져서 있는 해당 주식의 거래소 코드를 리턴합니다!!
+def GetMarketCodeUS(stock_code, return_ori_market=False):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
-    for i in range(1,4):
+    for i in range(1, 4):
 
         try_market = "NAS"
 
@@ -982,44 +952,42 @@ def GetMarketCodeUS(stock_code, return_ori_market = False):
         else:
             try_market = "NAS"
 
-
-
-
         # 헤더 설정
-        headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-                "tr_id":"HHDFS00000300"}
+        headers = {
+            "Content-Type": "application/json",
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
+            "tr_id": "HHDFS00000300",
+        }
 
         params = {
             "AUTH": "",
-            "EXCD":try_market,
-            "SYMB":stock_code,
+            "EXCD": try_market,
+            "SYMB": stock_code,
         }
 
         # 호출
         res = requests.get(URL, headers=headers, params=params)
 
-        if res.status_code == 200 and res.json()["rt_cd"] == '0':
+        if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-            if res.json()['output']['last'] == '':
-                #print(try_market, " is Failed.. Next market.. ")
+            if res.json()["output"]["last"] == "":
+                # print(try_market, " is Failed.. Next market.. ")
                 time.sleep(0.2)
 
-                #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-                if Common.GetNowDist() == "VIRTUAL":
+                # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+                if common.GetNowDist() == "VIRTUAL":
                     time.sleep(0.31)
 
-
-                continue # 다음 시도를 한다!
+                continue  # 다음 시도를 한다!
             else:
-                #print(try_market, " is Succeed!! ")
-                
+                # print(try_market, " is Succeed!! ")
+
                 if return_ori_market == True:
-                    
+
                     return try_market
-                
+
                 else:
 
                     if try_market == "NYS":
@@ -1036,71 +1004,70 @@ def GetMarketCodeUS(stock_code, return_ori_market = False):
     return None
 
 
-
-
-
-
-#보유한 주식을 모두 매도하는 극단적 함수 
+# 보유한 주식을 모두 매도하는 극단적 함수
 def SellAllStock():
     StockList = GetMyStockList()
 
-    #시장가로 모두 매도 한다
+    # 시장가로 모두 매도 한다
     for stock_info in StockList:
-        pprint.pprint(MakeSellLimitOrder(stock_info['StockCode'],stock_info['StockAmt'],stock_info['StockAvgPrice']))
+        pprint.pprint(
+            MakeSellLimitOrder(
+                stock_info["StockCode"],
+                stock_info["StockAmt"],
+                stock_info["StockAvgPrice"],
+            )
+        )
 
 
-
-#매수 가능한지 체크 하기!
+# 매수 가능한지 체크 하기!
 def CheckPossibleBuyInfo(stockcode, price):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
-
     PATH = "uapi/overseas-stock/v1/trading/inquire-psamount"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
-
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "TTTS3007R"
-    '''
+    """
     if GetDayOrNight() == 'N':
         TrId = "TTTS3007R"
-    '''
-
-
+    """
 
     market = GetMarketCodeUS(stockcode)
 
     # 헤더 설정
-    headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-            "tr_id": TrId,
-            "custtype": "P"}
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
+        "tr_id": TrId,
+        "custtype": "P",
+    }
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
-        "OVRS_EXCG_CD" : market,
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
+        "OVRS_EXCG_CD": market,
         "OVRS_ORD_UNPR": str(PriceAdjust(price)),
-        "ITEM_CD" : stockcode
+        "ITEM_CD": stockcode,
     }
 
     # 호출
     res = requests.get(URL, headers=headers, params=params)
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-        result = res.json()['output']
-       # pprint.pprint(result)
+        result = res.json()["output"]
+        # pprint.pprint(result)
 
         CheckDict = dict()
 
-        CheckDict['RemainMoney'] = result['ord_psbl_frcr_amt']
-        CheckDict['MaxAmt'] = result['max_ord_psbl_qty']
+        CheckDict["RemainMoney"] = result["ord_psbl_frcr_amt"]
+        CheckDict["MaxAmt"] = result["max_ord_psbl_qty"]
 
         return CheckDict
 
@@ -1109,17 +1076,17 @@ def CheckPossibleBuyInfo(stockcode, price):
         return res.json()["msg_cd"]
 
 
-#매수 가능한수량으로 보정
+# 매수 가능한수량으로 보정
 def AdjustPossibleAmt(stockcode, amt):
     NowPrice = GetCurrentPrice(stockcode)
 
-    data = CheckPossibleBuyInfo(stockcode,NowPrice)
-    
+    data = CheckPossibleBuyInfo(stockcode, NowPrice)
+
     if str(data) == "MCA00124" or str(data) == "OPSQ0002":
         return int(amt)
     else:
-        
-        MaxAmt = int(data['MaxAmt'])
+
+        MaxAmt = int(data["MaxAmt"])
 
         if MaxAmt <= int(amt):
             print("!!!!!!!!!!!!MaxAmt Over!!!!!!!!!!!!!!!!!!")
@@ -1129,29 +1096,27 @@ def AdjustPossibleAmt(stockcode, amt):
             return int(amt)
 
 
-
 ############################################################################################################################################################
 
 
-#주문 리스트를 얻어온다! 종목 코드, side는 ALL or BUY or SELL, 상태는 OPEN or CLOSE
-def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
-    
+# 주문 리스트를 얻어온다! 종목 코드, side는 ALL or BUY or SELL, 상태는 OPEN or CLOSE
+def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
+
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
-
     TrId = "TTTS3035R"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTTS3035R" # VTTT3001R #야간은 미지원...으앙! 어쩌라공~~
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTTS3035R"  # VTTT3001R #야간은 미지원...으앙! 어쩌라공~~
 
-    '''
+    """
     if GetDayOrNight() == 'N':
         TrId = "TTTS3035R"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTS3035R"
-    '''
+    """
 
     sell_buy_code = "00"
     if side.upper() == "BUY":
@@ -1161,7 +1126,7 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     else:
         sell_buy_code = "00"
 
-    status_code= "00"
+    status_code = "00"
     if status.upper() == "OPEN":
         status_code = "02"
     elif status.upper() == "CLOSE":
@@ -1169,18 +1134,17 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     else:
         status_code = "00"
 
-
     PATH = "uapi/overseas-stock/v1/trading/inquire-ccnl"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
-    
-    print("stockcode - >" , stockcode)
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
+
+    print("stockcode - >", stockcode)
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "PDNO": stockcode,
-        "ORD_STRT_DT": Common.GetFromNowDateStr("US","NONE", -limit),
-        "ORD_END_DT": Common.GetNowDateStr("US"),
+        "ORD_STRT_DT": common.GetFromNowDateStr("US", "NONE", -limit),
+        "ORD_END_DT": common.GetNowDateStr("US"),
         "SLL_BUY_DVSN": sell_buy_code,
         "CCLD_NCCS_DVSN": status_code,
         "OVRS_EXCG_CD": "",
@@ -1190,108 +1154,104 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
         "ODNO": "",
         "CTX_AREA_FK200": "",
         "CTX_AREA_NK200": "",
-
     }
-    
-    headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
-        "custtype":"P",
-        "hashkey" : Common.GetHashKey(params)
+        "custtype": "P",
+        "hashkey": common.GetHashKey(params),
     }
 
-    res = requests.get(URL, headers=headers, params=params) 
-    #pprint.pprint(res.json())
-    
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+    res = requests.get(URL, headers=headers, params=params)
+    # pprint.pprint(res.json())
 
-        ResultList = res.json()['output']
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-        
+        ResultList = res.json()["output"]
 
         OrderList = list()
 
-
         for order in ResultList:
-            #잔고 수량이 0 이상인것만
+            # 잔고 수량이 0 이상인것만
 
             OrderInfo = dict()
-            
-            OrderInfo["OrderStock"] = order['pdno']
-            OrderInfo["OrderStockName"] = order['prdt_name']
 
-            #주문 구분
+            OrderInfo["OrderStock"] = order["pdno"]
+            OrderInfo["OrderStockName"] = order["prdt_name"]
+
+            # 주문 구분
             OrderInfo["OrderType"] = "Limit"
-   
 
-            #주문 사이드
-            if order['sll_buy_dvsn_cd'] == "01":
+            # 주문 사이드
+            if order["sll_buy_dvsn_cd"] == "01":
                 OrderInfo["OrderSide"] = "Sell"
             else:
                 OrderInfo["OrderSide"] = "Buy"
 
-
-            if (float(order['ft_ord_qty']) - float(order['ft_ccld_qty'])) == 0 or order['prcs_stat_name'] == "완료":
+            if (float(order["ft_ord_qty"]) - float(order["ft_ccld_qty"])) == 0 or order[
+                "prcs_stat_name"
+            ] == "완료":
                 OrderInfo["OrderSatus"] = "Close"
             else:
                 OrderInfo["OrderSatus"] = "Open"
 
-            '''
+            """
             #주문정보 날짜가 다르다.
-            if Common.GetNowDateStr("KR") != order['ord_dt']: 
+            if common.GetNowDateStr("KR") != order['ord_dt']: 
                 #그런데 전날이다!
-                if Common.GetFromNowDateStr("KR","NONE",-1) == order['ord_dt']:
+                if common.GetFromNowDateStr("KR","NONE",-1) == order['ord_dt']:
                     if int(order['ord_tmd']) < 203000: #10시30분00초 보다 작다
                         OrderInfo["OrderSatus"] = "Close"     
                 else:
                     OrderInfo["OrderSatus"] = "Close"   #전날도 아니면 무조건 취소가 되었을 터!
-            '''
+            """
 
+            # 주문 수량~
+            OrderInfo["OrderAmt"] = int(float(order["ft_ord_qty"]))
 
-            #주문 수량~
-            OrderInfo["OrderAmt"] = int(float(order['ft_ord_qty']))
+            # 주문 최종 수량~
+            OrderInfo["OrderResultAmt"] = int(float(order["ft_ccld_qty"]))
 
-            #주문 최종 수량~
-            OrderInfo["OrderResultAmt"] = int(float(order['ft_ccld_qty']))
+            # 주문넘버..
+            OrderInfo["OrderNum"] = order["ord_gno_brno"]
+            OrderInfo["OrderNum2"] = order["odno"]
 
-            #주문넘버..
-            OrderInfo["OrderNum"] = order['ord_gno_brno']
-            OrderInfo["OrderNum2"] = order['odno']
-
-            #아직 미체결 주문이라면 주문 단가를
+            # 아직 미체결 주문이라면 주문 단가를
             if OrderInfo["OrderSatus"] == "Open":
 
-                OrderInfo["OrderAvgPrice"] = order['ft_ord_unpr3']
+                OrderInfo["OrderAvgPrice"] = order["ft_ord_unpr3"]
 
-            #체결된 주문이면 평균체결금액을!
+            # 체결된 주문이면 평균체결금액을!
             else:
-                if order['ft_ccld_qty'] == '0':
-                    OrderInfo["OrderAvgPrice"] = order['ft_ord_unpr3']
+                if order["ft_ccld_qty"] == "0":
+                    OrderInfo["OrderAvgPrice"] = order["ft_ord_unpr3"]
                 else:
-                    OrderInfo["OrderAvgPrice"] = order['ft_ccld_unpr3']
+                    OrderInfo["OrderAvgPrice"] = order["ft_ccld_unpr3"]
 
-            if order['rvse_cncl_dvsn']  == "02":
+            if order["rvse_cncl_dvsn"] == "02":
 
-                OrderInfo["OrderIsCancel"] = 'Y' 
+                OrderInfo["OrderIsCancel"] = "Y"
             else:
 
-                OrderInfo["OrderIsCancel"] = 'N' 
-            OrderInfo['OrderMarket'] = order['ovrs_excg_cd'] #마켓인데 미국과 통일성을 위해!
+                OrderInfo["OrderIsCancel"] = "N"
+            OrderInfo["OrderMarket"] = order[
+                "ovrs_excg_cd"
+            ]  # 마켓인데 미국과 통일성을 위해!
 
-            OrderInfo["OrderDate"] = order['ord_dt']
-            OrderInfo["OrderTime"] = order['ord_tmd'] 
-
+            OrderInfo["OrderDate"] = order["ord_dt"]
+            OrderInfo["OrderTime"] = order["ord_tmd"]
 
             Is_Ok = False
-            
+
             if status == "ALL":
                 Is_Ok = True
             else:
                 if status == OrderInfo["OrderSatus"].upper():
                     Is_Ok = True
-
 
             if Is_Ok == True:
 
@@ -1305,7 +1265,6 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
                         Is_Ok = True
 
-
             if Is_Ok == True:
 
                 if stockcode != "":
@@ -1315,8 +1274,6 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
                     OrderList.append(OrderInfo)
 
-
-
         return OrderList
 
     else:
@@ -1324,18 +1281,19 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
         return None
 
 
-#주문 취소하거나 종료하기
-def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CANCEL", Errlog="YES"):
+# 주문 취소하거나 종료하기
+def CancelModifyOrder(
+    stockcode, order_num, order_amt, order_price, mode="CANCEL", Errlog="YES"
+):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "JTTT1004U"
-    if Common.GetNowDist() == "VIRTUAL":
-         TrId = "VTTT1004U"
-
+    if common.GetNowDist() == "VIRTUAL":
+        TrId = "VTTT1004U"
 
     mode_type = "02"
     if mode.upper() == "MODIFY":
@@ -1343,46 +1301,42 @@ def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CA
 
     market = GetMarketCodeUS(stockcode)
 
-
     PATH = "uapi/overseas-stock/v1/trading/order-rvsecncl"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "OVRS_EXCG_CD": market.upper(),
-        "PDNO" : stockcode,
+        "PDNO": stockcode,
         "ORGN_ODNO": str(order_num),
         "RVSE_CNCL_DVSN_CD": mode_type,
         "ORD_QTY": str(order_amt),
-        "OVRS_ORD_UNPR": str(PriceAdjust(order_price))
-
+        "OVRS_ORD_UNPR": str(PriceAdjust(order_price)),
     }
 
-    #pprint.pprint(data)
+    # pprint.pprint(data)
 
-    headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
-        "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "custtype": "P",
+        "hashkey": common.GetHashKey(data),
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-        order = res.json()['output']
+        order = res.json()["output"]
 
         OrderInfo = dict()
-        
 
-        OrderInfo["OrderNum"] = order['KRX_FWDG_ORD_ORGNO']
-        OrderInfo["OrderNum2"] = order['ODNO']
-        OrderInfo["OrderTime"] = order['ORD_TMD'] 
-
+        OrderInfo["OrderNum"] = order["KRX_FWDG_ORD_ORGNO"]
+        OrderInfo["OrderNum2"] = order["ODNO"]
+        OrderInfo["OrderTime"] = order["ORD_TMD"]
 
         return OrderInfo
     else:
@@ -1391,188 +1345,182 @@ def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CA
         return res.json()["msg_cd"]
 
 
-def CancelAllOrders(stockcode = "", side = "ALL"):
+def CancelAllOrders(stockcode="", side="ALL"):
 
-    OrderList = GetOrderList(stockcode,side,'OPEN')
+    OrderList = GetOrderList(stockcode, side, "OPEN")
 
     for order in OrderList:
-        if order['OrderSatus'].upper() == "OPEN":
-            pprint.pprint(CancelModifyOrder(order['OrderStock'],str(int(order['OrderNum2'])),int(order['OrderAmt']),order['OrderAvgPrice']))
+        if order["OrderSatus"].upper() == "OPEN":
+            pprint.pprint(
+                CancelModifyOrder(
+                    order["OrderStock"],
+                    str(int(order["OrderNum2"])),
+                    int(order["OrderAmt"]),
+                    order["OrderAvgPrice"],
+                )
+            )
 
-
-
-        
 
 ############################################################################################################################################################
-    
-#p_code -> D:일, W:주, M:월 
-def GetOhlcv(stock_code, p_code, adj_ok = "1"):
+
+
+# p_code -> D:일, W:주, M:월
+def GetOhlcv(stock_code, p_code, adj_ok="1"):
 
     time.sleep(0.2)
-    #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
-
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     gubun = 0
-    if p_code == 'W':
+    if p_code == "W":
         gubun = 1
-    elif p_code == 'M':
+    elif p_code == "M":
         gubun = 2
 
     # 헤더 설정
-    headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-            "tr_id":"HHDFS76240000"
-            }
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
+        "tr_id": "HHDFS76240000",
+    }
 
-    date_str = Common.GetNowDateStr("US")
-    
+    date_str = common.GetNowDateStr("US")
+
     params = {
         "AUTH": "",
-        "EXCD": GetMarketCodeUS(stock_code,True),
+        "EXCD": GetMarketCodeUS(stock_code, True),
         "SYMB": stock_code,
-        "GUBN" : str(gubun),
+        "GUBN": str(gubun),
         "BYMD": date_str,
-        "MODP": adj_ok
+        "MODP": adj_ok,
     }
 
     # 호출
     res = requests.get(URL, headers=headers, params=params)
-    
 
-    if res.status_code == 200 and res.json()["rt_cd"] == '0':
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
-        ResultList = res.json()['output2']
+        ResultList = res.json()["output2"]
 
-        
         df = list()
 
         if len(pd.DataFrame(ResultList)) > 0:
 
             OhlcvList = list()
 
-
             for ohlcv in ResultList:
-                        
+
                 if len(ohlcv) == 0:
                     continue
-                
+
                 OhlcvData = dict()
 
                 try:
-                    if ohlcv['open'] != "":
-                        
-                        OhlcvData['Date'] = ohlcv['xymd']
-                        OhlcvData['open'] = float(ohlcv['open'])
-                        OhlcvData['high'] = float(ohlcv['high'])
-                        OhlcvData['low'] = float(ohlcv['low'])
-                        OhlcvData['close'] = float(ohlcv['clos'])
-                        OhlcvData['volume'] = float(ohlcv['tvol'])
-                        OhlcvData['value'] = float(ohlcv['tamt'])
+                    if ohlcv["open"] != "":
+
+                        OhlcvData["Date"] = ohlcv["xymd"]
+                        OhlcvData["open"] = float(ohlcv["open"])
+                        OhlcvData["high"] = float(ohlcv["high"])
+                        OhlcvData["low"] = float(ohlcv["low"])
+                        OhlcvData["close"] = float(ohlcv["clos"])
+                        OhlcvData["volume"] = float(ohlcv["tvol"])
+                        OhlcvData["value"] = float(ohlcv["tamt"])
 
                         OhlcvList.append(OhlcvData)
                 except Exception as e:
                     print("E:", e)
 
             if len(OhlcvList) > 0:
-                    
+
                 df = pd.DataFrame(OhlcvList)
-                df = df.set_index('Date')
+                df = df.set_index("Date")
 
                 df = df.sort_values(by="Date")
-                df.insert(6,'change',(df['close'] - df['close'].shift(1)) / df['close'].shift(1))
+                df.insert(
+                    6,
+                    "change",
+                    (df["close"] - df["close"].shift(1)) / df["close"].shift(1),
+                )
 
-                df[[ 'open', 'high', 'low', 'close', 'volume', 'change']] = df[[ 'open', 'high', 'low', 'close', 'volume', 'change']].apply(pd.to_numeric)
+                df[["open", "high", "low", "close", "volume", "change"]] = df[
+                    ["open", "high", "low", "close", "volume", "change"]
+                ].apply(pd.to_numeric)
 
-                df.index = pd.to_datetime(df.index).strftime('%Y-%m-%d')
+                df.index = pd.to_datetime(df.index).strftime("%Y-%m-%d")
 
-                
         return df
-
 
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
 
-   
-#일봉 정보 여러개 가져오는 개선된 함수!
-def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
 
+# 일봉 정보 여러개 가져오는 개선된 함수!
+def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
 
-    
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     gubun = 0
-    if p_code == 'W':
+    if p_code == "W":
         gubun = 1
-    elif p_code == 'M':
+    elif p_code == "M":
         gubun = 2
-
-
 
     OhlcvList = list()
 
     DataLoad = True
-    
+
     tr_cont = ""
-    
+
     count = 0
     request_count = 0
 
-    date_str = Common.GetNowDateStr("US")
-
-
+    date_str = common.GetNowDateStr("US")
 
     while DataLoad:
         time.sleep(0.2)
-        #모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         print("...Data.Length..", len(OhlcvList), "-->", get_count)
         if len(OhlcvList) >= get_count:
             DataLoad = False
 
-
-            
         # 헤더 설정
-        headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
-                "tr_id":"HHDFS76240000",
-                "tr_cont": tr_cont
-                }
+        headers = {
+            "Content-Type": "application/json",
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
+            "tr_id": "HHDFS76240000",
+            "tr_cont": tr_cont,
+        }
         print("...Get..Data...", tr_cont)
 
-        
+        # if request_count > 0:
+        #    date_str = common.GetFromNowDateStr("US","NONE",-150*request_count)
 
-        #if request_count > 0:
-        #    date_str = Common.GetFromNowDateStr("US","NONE",-150*request_count)
-
-        
         params = {
             "AUTH": "",
-            "EXCD": GetMarketCodeUS(stock_code,True),
+            "EXCD": GetMarketCodeUS(stock_code, True),
             "SYMB": stock_code,
-            "GUBN" : str(gubun),
+            "GUBN": str(gubun),
             "BYMD": date_str,
-            "MODP": adj_ok
+            "MODP": adj_ok,
         }
 
         # 호출
         res = requests.get(URL, headers=headers, params=params)
 
-        
-
-        if res.headers['tr_cont'] == "M" or res.headers['tr_cont'] == "F":
+        if res.headers["tr_cont"] == "M" or res.headers["tr_cont"] == "F":
             tr_cont = "N"
         else:
             tr_cont = ""
@@ -1580,43 +1528,39 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
         if tr_cont == "":
             DataLoad = False
 
-        if res.status_code == 200 and res.json()["rt_cd"] == '0':
+        if res.status_code == 200 and res.json()["rt_cd"] == "0":
 
             request_count += 1
 
+            ResultList = res.json()["output2"]
 
-            ResultList = res.json()['output2']
-
-            
             df = list()
 
             add_cnt = 0
 
             if len(pd.DataFrame(ResultList)) > 0:
 
-
                 for ohlcv in ResultList:
-                            
+
                     if len(ohlcv) == 0:
                         continue
-                    
+
                     OhlcvData = dict()
 
-                    if ohlcv['open'] != "":
-                        
-                        OhlcvData['Date'] = ohlcv['xymd']
-                        OhlcvData['open'] = float(ohlcv['open'])
-                        OhlcvData['high'] = float(ohlcv['high'])
-                        OhlcvData['low'] = float(ohlcv['low'])
-                        OhlcvData['close'] = float(ohlcv['clos'])
-                        OhlcvData['volume'] = float(ohlcv['tvol'])
-                        OhlcvData['value'] = float(ohlcv['tamt'])
+                    if ohlcv["open"] != "":
 
+                        OhlcvData["Date"] = ohlcv["xymd"]
+                        OhlcvData["open"] = float(ohlcv["open"])
+                        OhlcvData["high"] = float(ohlcv["high"])
+                        OhlcvData["low"] = float(ohlcv["low"])
+                        OhlcvData["close"] = float(ohlcv["clos"])
+                        OhlcvData["volume"] = float(ohlcv["tvol"])
+                        OhlcvData["value"] = float(ohlcv["tamt"])
 
                         Is_Duple = False
-          
+
                         for exist_stock in OhlcvList:
-                            if exist_stock['Date'] == OhlcvData['Date']:
+                            if exist_stock["Date"] == OhlcvData["Date"]:
                                 Is_Duple = True
                                 break
 
@@ -1625,12 +1569,10 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
                                 OhlcvList.append(OhlcvData)
                                 add_cnt += 1
 
-                                date_str = OhlcvData['Date']
-            
+                                date_str = OhlcvData["Date"]
 
             if add_cnt == 0:
                 DataLoad = False
-
 
         else:
             print("Error Code : " + str(res.status_code) + " | " + res.text)
@@ -1642,27 +1584,26 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
             if count > 10:
                 DataLoad = False
 
-
     if len(OhlcvList) > 0:
 
-
-        #for exist_stock in OhlcvList:
+        # for exist_stock in OhlcvList:
         #    pprint.pprint(exist_stock['Date'])
 
-        print("len(OhlcvList):",len(OhlcvList))
-
+        print("len(OhlcvList):", len(OhlcvList))
 
         df = pd.DataFrame(OhlcvList)
-        df = df.set_index('Date')
+        df = df.set_index("Date")
 
         df = df.sort_values(by="Date")
-        df.insert(6,'change',(df['close'] - df['close'].shift(1)) / df['close'].shift(1))
+        df.insert(
+            6, "change", (df["close"] - df["close"].shift(1)) / df["close"].shift(1)
+        )
 
-        df[[ 'open', 'high', 'low', 'close', 'volume', 'change']] = df[[ 'open', 'high', 'low', 'close', 'volume', 'change']].apply(pd.to_numeric)
+        df[["open", "high", "low", "close", "volume", "change"]] = df[
+            ["open", "high", "low", "close", "volume", "change"]
+        ].apply(pd.to_numeric)
 
-        df.index = pd.to_datetime(df.index).strftime('%Y-%m-%d')
+        df.index = pd.to_datetime(df.index).strftime("%Y-%m-%d")
         return df
     else:
         return None
-
-

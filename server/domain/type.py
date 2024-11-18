@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class TriggerType(Enum):
@@ -10,3 +10,8 @@ class TriggerType(Enum):
 class EnvType(Enum):
     REAL = "REAL"
     VIRTUAL = "VIRTUAL"
+
+
+class Market(Enum):
+    KR = auto()
+    US = auto()

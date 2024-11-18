@@ -220,10 +220,10 @@ for stock_info in my_portfolio_list:
 
 
     #비중대로 매수할 총 금액을 계산한다 
-    StockMoney = total_money * stock_target_rate
+    stock_money = total_money * stock_target_rate
 
     #매수할 수량을 계산한다!
-    Amt = int(StockMoney / current_price)
+    Amt = int(stock_money / current_price)
 
     print("stock_code " , stock_code , " buy_amt", Amt)
 """
@@ -241,7 +241,7 @@ print("--------------------------------------------")
 
 print("--------------리밸런싱 수량 계산 ---------------------")
 
-strResult = "-- 현재 포트폴리오 상황 --\n"
+str_result = "-- 현재 포트폴리오 상황 --\n"
 
 # 매수된 자산의 총합!
 total_stock_money = 0
@@ -395,7 +395,7 @@ for stock_info in my_portfolio_list:
     # 만약 아래 한번에 보내는 라인메시지가 짤린다면 아래 주석을 해제하여 개별로 보내면 됩니다
     # if is_rebalance_go == True:
     #    line_alert.SendMessage(line_data)
-    strResult += line_data
+    str_result += line_data
 
 
 ##########################################################
@@ -406,7 +406,7 @@ data_str = (
     "\n"
     + portfolio_name
     + "\n"
-    + strResult
+    + str_result
     + "\n포트폴리오할당금액: "
     + str(format(round(total_money), ","))
     + "\n매수한자산총액: "

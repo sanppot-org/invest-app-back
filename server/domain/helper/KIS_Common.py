@@ -310,16 +310,16 @@ def GetBalanceKrwTotal():
         float(kr_data["RemainMoney"]) + float(us_data["RemainMoney"])
     )
     # 주식 총 평가 금액
-    balanceDict["StockMoney"] = str(
-        float(kr_data["StockMoney"]) + float(us_data["StockMoney"])
+    balanceDict["stock_money"] = str(
+        float(kr_data["stock_money"]) + float(us_data["stock_money"])
     )
     # 평가 손익 금액
     balanceDict["StockRevenue"] = str(
         float(kr_data["StockRevenue"]) + float(us_data["StockRevenue"])
     )
     # 총 평가 금액
-    balanceDict["TotalMoney"] = str(
-        float(kr_data["TotalMoney"]) + float(us_data["TotalMoney"])
+    balanceDict["total_money"] = str(
+        float(kr_data["total_money"]) + float(us_data["total_money"])
     )
 
     return balanceDict
@@ -566,10 +566,10 @@ def AutoLimitDoAgain(
     if area == "KR":
         print("KR")
 
-        MyStockList = KisKR.GetMyStockList()
+        my_stock_list = KisKR.GetMyStockList()
 
         stock_amt = 0
-        for my_stock in MyStockList:
+        for my_stock in my_stock_list:
             if my_stock["StockCode"] == stock_code:
                 stock_amt = int(my_stock["StockAmt"])
                 break
@@ -670,10 +670,10 @@ def AutoLimitDoAgain(
     else:
         print("US")
 
-        MyStockList = KisUS.GetMyStockList()
+        my_stock_list = KisUS.GetMyStockList()
 
         stock_amt = 0
-        for my_stock in MyStockList:
+        for my_stock in my_stock_list:
             if my_stock["StockCode"] == stock_code:
                 stock_amt = int(my_stock["StockAmt"])
                 break
@@ -871,15 +871,15 @@ def DelAutoLimitOrder(AutoOrderId):
                     ########## 현재 살아있는 주문을 취소!!! #######
 
                     # 내 주식 잔고 리스트를 읽어서 현재 보유 수량 정보를 stock_amt에 넣어요!
-                    MyStockList = KisUS.GetMyStockList()
+                    my_stock_list = KisUS.GetMyStockList()
                     if AutoLimitData["Area"] == "KR":
-                        MyStockList = KisKR.GetMyStockList()
+                        my_stock_list = KisKR.GetMyStockList()
 
                     # 미체결 수량이 들어갈 변수!
-                    GapAmt = 0
+                    gap_amt = 0
 
                     stock_amt = 0
-                    for my_stock in MyStockList:
+                    for my_stock in my_stock_list:
                         if my_stock["StockCode"] == AutoLimitData["StockCode"]:
                             stock_amt = int(my_stock["StockAmt"])
                             print(my_stock["StockName"], stock_amt)
@@ -887,7 +887,7 @@ def DelAutoLimitOrder(AutoOrderId):
 
                     # 일단 목표로 하는 수량에서 현재 보유수량을 빼줍니다.
                     # 이는 종목의 주문이 1개일 때 유효합니다. 왜 그런지 그리고TargetAmt값이 뭔지는 KIS_Common의 AutoLimitDoAgain함수를 살펴보세요
-                    GapAmt = abs(AutoLimitData["TargetAmt"] - stock_amt)
+                    gap_amt = abs(AutoLimitData["TargetAmt"] - stock_amt)
 
                     Is_Except = False
                     try:
@@ -904,7 +904,7 @@ def DelAutoLimitOrder(AutoOrderId):
                             ] and float(OrderInfo["OrderNum2"]) == float(
                                 AutoLimitData["OrderNum2"]
                             ):
-                                GapAmt = abs(
+                                gap_amt = abs(
                                     OrderInfo["OrderResultAmt"] - OrderInfo["OrderAmt"]
                                 )
 
@@ -913,7 +913,7 @@ def DelAutoLimitOrder(AutoOrderId):
                                         AutoLimitData["StockCode"],
                                         AutoLimitData["OrderNum"],
                                         AutoLimitData["OrderNum2"],
-                                        abs(GapAmt),
+                                        abs(gap_amt),
                                         KisKR.GetCurrentPrice(
                                             AutoLimitData["StockCode"]
                                         ),
@@ -946,7 +946,7 @@ def DelAutoLimitOrder(AutoOrderId):
                                     AutoLimitData["StockCode"],
                                     AutoLimitData["OrderNum"],
                                     AutoLimitData["OrderNum2"],
-                                    abs(GapAmt),
+                                    abs(gap_amt),
                                     KisKR.GetCurrentPrice(AutoLimitData["StockCode"]),
                                     "CANCEL",
                                 )
@@ -955,7 +955,7 @@ def DelAutoLimitOrder(AutoOrderId):
                                 KisUS.CancelModifyOrder(
                                     AutoLimitData["StockCode"],
                                     AutoLimitData["OrderNum2"],
-                                    abs(GapAmt),
+                                    abs(gap_amt),
                                     KisUS.GetCurrentPrice(AutoLimitData["StockCode"]),
                                     "CANCEL",
                                 )

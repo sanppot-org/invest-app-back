@@ -32,7 +32,7 @@ https://blog.naver.com/zacra
 기다릴게요 ^^!
 
 """
-from domain.helper import KIS_Common as Common
+from domain.helper import KIS_Common as common
 import requests
 import json
 from datetime import datetime
@@ -49,17 +49,17 @@ def MarketStatus(stock_code="069500"):
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "FHKST01010200",
     }
 
@@ -91,21 +91,21 @@ def IsTodayOpenCheck():
     time.sleep(0.2)
 
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
     now_time = datetime.now(timezone("Asia/Seoul"))
     formattedDate = now_time.strftime("%Y%m%d")
     pprint.pprint(formattedDate)
 
     PATH = "uapi/domestic-stock/v1/quotations/chk-holiday"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "CTCA0903R",
     }
 
@@ -131,7 +131,7 @@ def IsTodayOpenCheck():
 
 
 # 시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외!
-def IsMarketOpen():
+def is_market_open():
 
     now_time = datetime.now(timezone("Asia/Seoul"))
     pprint.pprint(now_time)
@@ -184,14 +184,14 @@ def IsMarketOpen():
         Is_Ok = False
         if Is_CheckTody == True:
 
-            # NowDist = Common.GetNowDist()
+            # NowDist = common.GetNowDist()
             try:
 
                 # 시간 정보를 읽는다
                 time_info = time.gmtime()
 
                 day_n = time_info.tm_mday
-                df = Common.GetOhlcv("KR", "005930", 10)
+                df = common.GetOhlcv("KR", "005930", 10)
                 date = df.iloc[-1].name
 
                 # 날짜 정보를 획득
@@ -214,7 +214,7 @@ def IsMarketOpen():
                     Is_Ok = True
 
             except Exception as e:
-                # Common.SetChangeMode(NowDist)
+                # common.SetChangeMode(NowDist)
                 print("EXCEPTION ", e)
 
             market = MarketStatus()
@@ -298,35 +298,35 @@ def PriceAdjust(price, stock_code):
 def GetBalance():
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
         return GetBalanceIRP()
     else:
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
         TrId = "TTTC8434R"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTC8434R"
 
         # 헤더 설정
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "custtype": "P",
         }
 
         params = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "AFHR_FLPR_YN": "N",
             "OFL_YN": "",
             "INQR_DVSN": "02",
@@ -348,26 +348,26 @@ def GetBalance():
 
             balanceDict = dict()
             # 주식 총 평가 금액
-            balanceDict["StockMoney"] = float(result["scts_evlu_amt"])
+            balanceDict["stock_money"] = float(result["scts_evlu_amt"])
             # 평가 손익 금액
             balanceDict["StockRevenue"] = float(result["evlu_pfls_smtl_amt"])
 
             # 총 평가 금액
-            balanceDict["TotalMoney"] = float(result["tot_evlu_amt"])
+            balanceDict["total_money"] = float(result["tot_evlu_amt"])
 
             # 예수금이 아예 0이거나 총평가금액이랑 주식평가금액이 같은 상황일때는.. 좀 이상한 특이사항이다 풀매수하더라도 1원이라도 남을 테니깐
             # 퇴직연금 계좌에서 tot_evlu_amt가 제대로 반영이 안되는 경우가 있는데..이때는 전일 총평가금액을 가져오도록 한다!
             if (
                 float(result["dnca_tot_amt"]) == 0
-                or balanceDict["TotalMoney"] == balanceDict["StockMoney"]
+                or balanceDict["total_money"] == balanceDict["stock_money"]
             ):
                 # 장이 안열린 상황을 가정
-                # if IsMarketOpen() == False:
-                balanceDict["TotalMoney"] = float(result["bfdy_tot_asst_evlu_amt"])
+                # if is_market_open() == False:
+                balanceDict["total_money"] = float(result["bfdy_tot_asst_evlu_amt"])
 
             # 예수금 총금액 (즉 주문가능현금)
-            balanceDict["RemainMoney"] = float(balanceDict["TotalMoney"]) - float(
-                balanceDict["StockMoney"]
+            balanceDict["RemainMoney"] = float(balanceDict["total_money"]) - float(
+                balanceDict["stock_money"]
             )  # result['dnca_tot_amt']
 
             # 그래도 아직도 남은 금액이 0이라면 dnca_tot_amt 예수금 항목에서 정보를 가지고 온다
@@ -386,29 +386,29 @@ def GetBalanceIRP():
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/trading/pension/inquire-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "TTTC8434R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         TrId = "VTTC8434R"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
     }
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "AFHR_FLPR_YN": "N",
         "OFL_YN": "",
         "UNPR_DVSN": "01",
@@ -432,7 +432,7 @@ def GetBalanceIRP():
 
         balanceDict = dict()
         # 주식 총 평가 금액
-        balanceDict["StockMoney"] = float(result["scts_evlu_amt"])
+        balanceDict["stock_money"] = float(result["scts_evlu_amt"])
         # 평가 손익 금액
         balanceDict["StockRevenue"] = float(result["evlu_pfls_smtl_amt"])
 
@@ -441,11 +441,11 @@ def GetBalanceIRP():
         # 예수금 총금액 (즉 주문가능현금)
         balanceDict["RemainMoney"] = float(
             Data["RemainMoney"]
-        )  # float(balanceDict['TotalMoney']) - float(balanceDict['StockMoney'])
+        )  # float(balanceDict['total_money']) - float(balanceDict['stock_money'])
 
         # 총 평가 금액
-        balanceDict["TotalMoney"] = (
-            balanceDict["StockMoney"] + balanceDict["RemainMoney"]
+        balanceDict["total_money"] = (
+            balanceDict["stock_money"] + balanceDict["RemainMoney"]
         )
 
         return balanceDict
@@ -459,10 +459,10 @@ def GetBalanceIRP():
 def GetMyStockList():
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "TTTC8434R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         TrId = "VTTC8434R"
 
     StockList = list()
@@ -481,22 +481,22 @@ def GetMyStockList():
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
         # 헤더 설정
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "tr_cont": tr_cont,
             "custtype": "P",
         }
 
         params = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "AFHR_FLPR_YN": "N",
             "OFL_YN": "",
             "INQR_DVSN": "01",
@@ -584,18 +584,18 @@ def GetMyStockList():
 def GetCurrentPrice(stock_code):
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "FHKST01010100",
     }
 
@@ -616,18 +616,18 @@ def GetCurrentPrice(stock_code):
 def GetHoga(stock_code):
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "FHKST01010100",
     }
 
@@ -648,26 +648,26 @@ def GetHoga(stock_code):
 def GetStockName(stock_code):
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "FHKST03010100",
     }
 
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_DATE_1": Common.GetFromNowDateStr("KR", "NONE", -7),
-        "FID_INPUT_DATE_2": Common.GetNowDateStr("KR"),
+        "FID_INPUT_DATE_1": common.GetFromNowDateStr("KR", "NONE", -7),
+        "FID_INPUT_DATE_2": common.GetNowDateStr("KR"),
         "FID_PERIOD_DIV_CODE": "D",
         "FID_ORG_ADJ_PRC": "0",
     }
@@ -688,18 +688,18 @@ def GetStockName(stock_code):
 def GetCurrentStatus(stock_code):
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "FHKST01010100",
     }
 
@@ -779,23 +779,23 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt=False):
             print("Exception")
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
         return MakeBuyMarketOrderIRP(stockcode, amt)
     else:
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
         TrId = "TTTC0802U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTC0802U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "PDNO": stockcode,
             "ORD_DVSN": "01",
             "ORD_QTY": str(int(amt)),
@@ -803,12 +803,12 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt=False):
         }
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "custtype": "P",
-            "hashkey": Common.GetHashKey(data),
+            "hashkey": common.GetHashKey(data),
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -836,24 +836,24 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt=False):
 def MakeSellMarketOrder(stockcode, amt):
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
         return MakeSellMarketOrderIRP(stockcode, amt)
     else:
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         TrId = "TTTC0801U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTC0801U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "PDNO": stockcode,
             "ORD_DVSN": "01",
             "ORD_QTY": str(int(amt)),
@@ -861,12 +861,12 @@ def MakeSellMarketOrder(stockcode, amt):
         }
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "custtype": "P",
-            "hashkey": Common.GetHashKey(data),
+            "hashkey": common.GetHashKey(data),
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -903,24 +903,24 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
             print("Exception")
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
         return MakeBuyLimitOrderIRP(stockcode, amt, price)
     else:
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         TrId = "TTTC0802U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTC0802U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "PDNO": stockcode,
             "ORD_DVSN": "00",
             "ORD_QTY": str(int(amt)),
@@ -928,12 +928,12 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
         }
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "custtype": "P",
-            "hashkey": Common.GetHashKey(data),
+            "hashkey": common.GetHashKey(data),
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -965,23 +965,23 @@ def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
     time.sleep(0.2)
 
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
         return MakeSellLimitOrderIRP(stockcode, amt, price)
     else:
 
         TrId = "TTTC0801U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTC0801U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "PDNO": stockcode,
             "ORD_DVSN": "00",
             "ORD_QTY": str(int(amt)),
@@ -989,12 +989,12 @@ def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
         }
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "custtype": "P",
-            "hashkey": Common.GetHashKey(data),
+            "hashkey": common.GetHashKey(data),
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1039,16 +1039,16 @@ def MakeBuyMarketOrderIRP(stockcode, amt):
     time.sleep(0.2)
 
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "TTTC0502U"
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "SLL_BUY_DVSN_CD": "02",
         "SLL_TYPE": "01",
         "ORD_DVSN": "01",
@@ -1063,12 +1063,12 @@ def MakeBuyMarketOrderIRP(stockcode, amt):
     }
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
-        "hashkey": Common.GetHashKey(data),
+        "hashkey": common.GetHashKey(data),
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1095,16 +1095,16 @@ def MakeSellMarketOrderIRP(stockcode, amt):
     time.sleep(0.2)
 
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "TTTC0502U"
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "SLL_BUY_DVSN_CD": "01",
         "SLL_TYPE": "01",
         "ORD_DVSN": "01",
@@ -1119,12 +1119,12 @@ def MakeSellMarketOrderIRP(stockcode, amt):
     }
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
-        "hashkey": Common.GetHashKey(data),
+        "hashkey": common.GetHashKey(data),
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1150,16 +1150,16 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "TTTC0502U"
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "SLL_BUY_DVSN_CD": "02",
         "SLL_TYPE": "01",
         "ORD_DVSN": "00",
@@ -1174,12 +1174,12 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
     }
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
-        "hashkey": Common.GetHashKey(data),
+        "hashkey": common.GetHashKey(data),
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1205,16 +1205,16 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "TTTC0502U"
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "SLL_BUY_DVSN_CD": "01",
         "SLL_TYPE": "01",
         "ORD_DVSN": "00",
@@ -1229,12 +1229,12 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
     }
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
-        "hashkey": Common.GetHashKey(data),
+        "hashkey": common.GetHashKey(data),
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1277,14 +1277,14 @@ def CheckPossibleBuyInfo(stockcode, price, type):
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-psbl-order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "TTTC8908R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         TrId = "VTTC8908R"
 
     type_code = "00"  # 지정가
@@ -1294,16 +1294,16 @@ def CheckPossibleBuyInfo(stockcode, price, type):
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
     }
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "PDNO": stockcode,
         "ORD_UNPR": str(PriceAdjust(price, stockcode)),
         "ORD_DVSN": type_code,
@@ -1338,7 +1338,7 @@ def AdjustPossibleAmt(stockcode, amt, type):
     data = None
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
 
         data = CheckPossibleBuyInfoIRP(stockcode, NowPrice, type)
     else:
@@ -1360,11 +1360,11 @@ def CheckPossibleBuyInfoIRP(stockcode, price, type):
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "uapi/domestic-stock/v1/trading/pension/inquire-psbl-order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     TrId = "TTTC0503R"
 
@@ -1375,16 +1375,16 @@ def CheckPossibleBuyInfoIRP(stockcode, price, type):
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
     }
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "PDNO": stockcode,
         "ORD_UNPR": str(PriceAdjust(price, stockcode)),
         "ORD_DVSN": type_code,
@@ -1420,11 +1420,11 @@ def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     TrId = "TTTC8001R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         TrId = "VTTC8001R"
 
     sell_buy_code = "00"
@@ -1444,13 +1444,13 @@ def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
         status_code = "00"
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-daily-ccld"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
-        "INQR_STRT_DT": Common.GetFromNowDateStr("KR", "NONE", -limit),
-        "INQR_END_DT": Common.GetNowDateStr("KR"),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
+        "INQR_STRT_DT": common.GetFromNowDateStr("KR", "NONE", -limit),
+        "INQR_END_DT": common.GetNowDateStr("KR"),
         "SLL_BUY_DVSN_CD": sell_buy_code,
         "INQR_DVSN": "00",
         "PDNO": stockcode,
@@ -1466,12 +1466,12 @@ def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
 
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
-        "hashkey": Common.GetHashKey(params),
+        "hashkey": common.GetHashKey(params),
     }
 
     res = requests.get(URL, headers=headers, params=params)
@@ -1514,7 +1514,7 @@ def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
             else:
                 OrderInfo["OrderSatus"] = "Open"
 
-            if Common.GetNowDateStr("KR") != order["ord_dt"]:
+            if common.GetNowDateStr("KR") != order["ord_dt"]:
                 OrderInfo["OrderSatus"] = "Close"
 
             # 주문 수량~
@@ -1590,7 +1590,7 @@ def CancelModifyOrder(
 ):
 
     # 퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.GetPrdtNo(common.GetNowDist())) == 29:
         return CancelModifyOrderIRP(
             stockcode,
             order_num1,
@@ -1605,11 +1605,11 @@ def CancelModifyOrder(
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         TrId = "TTTC0803U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             TrId = "VTTC0803U"
 
         order_type = "00"
@@ -1621,10 +1621,10 @@ def CancelModifyOrder(
             mode_type = "01"
 
         PATH = "uapi/domestic-stock/v1/trading/order-rvsecncl"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.GetAccountNo(common.GetNowDist()),
+            "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
             "KRX_FWDG_ORD_ORGNO": order_num1,
             "ORGN_ODNO": order_num2,
             "ORD_DVSN": order_type,
@@ -1635,12 +1635,12 @@ def CancelModifyOrder(
         }
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": TrId,
             "custtype": "P",
-            "hashkey": Common.GetHashKey(data),
+            "hashkey": common.GetHashKey(data),
         }
 
         res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -1675,7 +1675,7 @@ def CancelModifyOrderIRP(
 
     time.sleep(0.2)
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     order_dist = "02"
@@ -1693,10 +1693,10 @@ def CancelModifyOrderIRP(
     TrId = "TTTC0502U"
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.GetAccountNo(common.GetNowDist()),
+        "ACNT_PRDT_CD": common.GetPrdtNo(common.GetNowDist()),
         "SLL_BUY_DVSN_CD": order_dist,
         "SLL_TYPE": "01",
         "ORD_DVSN": order_type,
@@ -1711,12 +1711,12 @@ def CancelModifyOrderIRP(
     }
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": TrId,
         "custtype": "P",
-        "hashkey": Common.GetHashKey(data),
+        "hashkey": common.GetHashKey(data),
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1760,7 +1760,7 @@ def GetMarketOrderPrice(stockcode, ResultOrder):
     time.sleep(0.2)
 
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     OrderList = GetOrderList(stockcode)
@@ -1791,11 +1791,11 @@ def GetOhlcv(stock_code, p_code, adj_ok="1"):
     time.sleep(0.2)
 
     # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.GetNowDist() == "VIRTUAL":
         time.sleep(0.31)
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     FID_ORG_ADJ_PRC = "0"
     if adj_ok == "1":
@@ -1806,17 +1806,17 @@ def GetOhlcv(stock_code, p_code, adj_ok="1"):
     # 헤더 설정
     headers = {
         "Content-Type": "application/json",
-        "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey": Common.GetAppKey(Common.GetNowDist()),
-        "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+        "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+        "appKey": common.GetAppKey(common.GetNowDist()),
+        "appSecret": common.GetAppSecret(common.GetNowDist()),
         "tr_id": "FHKST03010100",
     }
 
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_DATE_1": Common.GetFromNowDateStr("KR", "NONE", -36500),
-        "FID_INPUT_DATE_2": Common.GetNowDateStr("KR"),
+        "FID_INPUT_DATE_1": common.GetFromNowDateStr("KR", "NONE", -36500),
+        "FID_INPUT_DATE_2": common.GetNowDateStr("KR"),
         "FID_PERIOD_DIV_CODE": p_code,
         "FID_ORG_ADJ_PRC": FID_ORG_ADJ_PRC,
     }
@@ -1884,7 +1884,7 @@ def GetOhlcv(stock_code, p_code, adj_ok="1"):
 def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     FID_ORG_ADJ_PRC = "0"
     if adj_ok == "1":
@@ -1898,15 +1898,15 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
 
     count = 0
 
-    now_date = Common.GetNowDateStr("KR")
-    date_str_start = Common.GetFromDateStr(pd.to_datetime(now_date), "NONE", -100)
+    now_date = common.GetNowDateStr("KR")
+    date_str_start = common.GetFromDateStr(pd.to_datetime(now_date), "NONE", -100)
     date_str_end = now_date
 
     while DataLoad:
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         print("...Data.Length..", len(OhlcvList), "-->", get_count)
@@ -1916,9 +1916,9 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
         # 헤더 설정
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": "FHKST03010100",
         }
 
@@ -1981,7 +1981,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
             if add_cnt == 0:
                 DataLoad = False
             else:
-                date_str_start = Common.GetFromDateStr(
+                date_str_start = common.GetFromDateStr(
                     pd.to_datetime(date_str_end), "NONE", -100
                 )
 
@@ -2017,7 +2017,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
 def GetOhlcvMinute(stock_code, MinSt="1T"):
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.GetUrlBase(common.GetNowDist())}/{PATH}"
 
     get_count = 500
 
@@ -2041,7 +2041,7 @@ def GetOhlcvMinute(stock_code, MinSt="1T"):
 
         time.sleep(0.2)
         # 모의계좌는 초당 2건만 허용하게 변경 - 24.04.01
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.GetNowDist() == "VIRTUAL":
             time.sleep(0.31)
 
         print("get.data...", len(OhlcvList))
@@ -2052,9 +2052,9 @@ def GetOhlcvMinute(stock_code, MinSt="1T"):
         # 헤더 설정
         headers = {
             "Content-Type": "application/json",
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey": Common.GetAppKey(Common.GetNowDist()),
-            "appSecret": Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.GetToken(common.GetNowDist())}",
+            "appKey": common.GetAppKey(common.GetNowDist()),
+            "appSecret": common.GetAppSecret(common.GetNowDist()),
             "tr_id": "FHKST03010200",
         }
 
@@ -2212,8 +2212,8 @@ def GetETF_Nav(stock_code, Log="N"):
         try:
 
             df = stock.get_etf_price_deviation(
-                Common.GetFromNowDateStr("KR", "NONE", -5),
-                Common.GetNowDateStr("KR"),
+                common.GetFromNowDateStr("KR", "NONE", -5),
+                common.GetNowDateStr("KR"),
                 stock_code,
             )
 
@@ -2242,8 +2242,8 @@ def GetETFGapAvg(stock_code, Log="N"):
     # pykrx 모듈 통해서 괴리율 평균을 구해옴!!!
     try:
         df = stock.get_etf_price_deviation(
-            Common.GetFromNowDateStr("KR", "NONE", -120),
-            Common.GetNowDateStr("KR"),
+            common.GetFromNowDateStr("KR", "NONE", -120),
+            common.GetNowDateStr("KR"),
             stock_code,
         )
         if Log == "Y":
