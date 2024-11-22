@@ -13,13 +13,15 @@ def find_all():
 
 @router.post("/")
 def save(req: StrategyCreateReq):
-    return strategy_repo.save(Strategy(name=req.name))
+    return strategy_repo.save(
+        Strategy(name=req.name, invest_rate=req.invest_rate, env=req.env)
+    )
 
 
 @router.put("/{id}")
 def update(id: int, req: StrategyUpdateReq):
     return strategy_repo.update(
-        id, Strategy(name=req.name, invest_rate=req.invest_rate)
+        id, Strategy(name=req.name, invest_rate=req.invest_rate, env=req.env)
     )
 
 
