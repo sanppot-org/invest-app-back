@@ -2,6 +2,11 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class StrategyReq(BaseModel):
+class StrategyCreateReq(BaseModel):
     name: str
-    description: Optional[str] = None
+    invest_rate: Optional[float] = None
+
+
+class StrategyUpdateReq(BaseModel):
+    name: str
+    invest_rate: Optional[float] = None
