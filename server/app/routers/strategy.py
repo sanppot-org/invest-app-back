@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from infra import strategy_repo
 from infra.schema import Strategy
-from web.strategy_req import StrategyCreateReq, StrategyUpdateReq
+from web.request import StrategyCreateReq
 
 router = APIRouter(prefix="/strategies", tags=["strategy"])
 
@@ -13,16 +13,12 @@ def find_all():
 
 @router.post("/")
 def save(req: StrategyCreateReq):
-    return strategy_repo.save(
-        Strategy(name=req.name, invest_rate=req.invest_rate, env=req.env)
-    )
+    return strategy_repo.save(req.toDomain())
 
 
 @router.put("/{id}")
-def update(id: int, req: StrategyUpdateReq):
-    return strategy_repo.update(
-        id, Strategy(name=req.name, invest_rate=req.invest_rate, env=req.env)
-    )
+def update(id: int, req: StrategyCreateReq):
+    return strategy_repo.update(id, req.toDomain())
 
 
 @router.get("/{id}")
