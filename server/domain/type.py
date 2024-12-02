@@ -15,3 +15,12 @@ class EnvType(Enum):
 class Market(Enum):
     KR = auto()
     US = auto()
+
+
+class TimeUnit(Enum):
+    MINUTE = "MINUTE"
+    HOUR = "HOUR"
+    DAY = "DAY"
+    WEEK = "WEEK"
+    MONTH = "MONTH"
+    YEAR = "YEAR"

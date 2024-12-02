@@ -3,8 +3,11 @@ from sqlalchemy import JSON, TypeDecorator
 from sqlalchemy.ext.declarative import declarative_base
 from domain.stock_info import StockInfo
 from infra import engine
+from sqlalchemy import func
 from sqlalchemy.dialects import sqlite
 from sqlalchemy.orm import Mapped, mapped_column
+from infra.model import Interval
+
 
 Base = declarative_base()
 
@@ -23,16 +26,47 @@ class StockInfoList(TypeDecorator):
         return None
 
 
-class Strategy(Base):
-    __tablename__ = "starategy"
+class IntervalType(TypeDecorator):
+    impl = JSON
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return value.to_dict()
+        return None
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return Interval(**value)
+        return None
+
+
+class BaseEntity(Base):
+    __abstract__ = True
     id: Mapped[int] = mapped_column(primary_key=True)
+    created_at: Mapped[str] = mapped_column(
+        sqlite.DATETIME,
+        server_default=func.now(),  # INSERT 시 서버에서 시간 생성
+        nullable=False,
+    )
+    updated_at: Mapped[str] = mapped_column(
+        sqlite.DATETIME,
+        server_default=func.now(),  # INSERT 시 서버에서 시간 생성
+        onupdate=func.now(),  # UPDATE 시 자동 업데이트
+        nullable=False,
+    )
+
+
+class Strategy(BaseEntity):
+    __tablename__ = "starategy"
     name: Mapped[str] = mapped_column(sqlite.VARCHAR(30), index=True)
     invest_rate: Mapped[float] = mapped_column(sqlite.FLOAT)
     env: Mapped[str] = mapped_column(sqlite.CHAR(1), default="R")
     stocks: Mapped[List[StockInfo]] = mapped_column(StockInfoList, nullable=True)
+    interval: Mapped[Interval] = mapped_column(IntervalType)
+    last_run: Mapped[str] = mapped_column(sqlite.DATETIME, nullable=True)
 
 
-class Account(Base):
+class Account(BaseEntity):
     __tablename__ = "account"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(sqlite.VARCHAR(30))

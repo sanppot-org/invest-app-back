@@ -1,5 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
+from domain.type import TimeUnit
+from infra.model import Interval
 from infra.schema import Account, Strategy
 from domain.stock_info import StockInfo
 
@@ -17,11 +19,23 @@ class StockInfoReq(BaseModel):
         )
 
 
+class IntervalReq(BaseModel):
+    time_unit: TimeUnit
+    value: List[int]
+
+    def toDomain(self) -> Interval:
+        return Interval(
+            time_unit=self.time_unit,
+            value=self.value,
+        )
+
+
 class StrategyCreateReq(BaseModel):
     name: str
     invest_rate: Optional[float] = None
     env: Optional[str] = None
     stocks: list[StockInfoReq]
+    interval: Optional[IntervalReq] = None
 
     def toDomain(self) -> Strategy:
         return Strategy(
@@ -29,6 +43,7 @@ class StrategyCreateReq(BaseModel):
             invest_rate=self.invest_rate,
             env=self.env,
             stocks=[stock.toDomain() for stock in self.stocks],
+            interval=self.interval.toDomain(),
         )
 
 
