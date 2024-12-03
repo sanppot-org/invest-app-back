@@ -20,7 +20,6 @@ plotly = "^5.24.1"
 yfinance = "^0.2.49"
 schedule = "^1.2.2"
 apscheduler = "^3.10.4"
-pymysql = "^1.1.1"
 sqlalchemy = "^2.0.36"
 
 
