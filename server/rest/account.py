@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from infra import account_repo
-from web.request import AccountCreateReq
+from infra.persistance import account_repo
+from rest.request.request import AccountCreateReq
 
 router = APIRouter(prefix="/accounts", tags=["account"])
 

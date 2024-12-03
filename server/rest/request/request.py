@@ -1,8 +1,8 @@
 from typing import List, Optional
 from pydantic import BaseModel
 from domain.type import TimeUnit
-from infra.model import Interval
-from infra.schema import Account, Strategy
+from infra.persistance.model import Interval
+from infra.persistance.schema import Account, Strategy
 from domain.stock_info import StockInfo
 
 

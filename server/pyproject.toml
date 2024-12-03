@@ -21,6 +21,7 @@ yfinance = "^0.2.49"
 schedule = "^1.2.2"
 apscheduler = "^3.10.4"
 sqlalchemy = "^2.0.36"
+alembic = "^1.14.0"
 
 
 [build-system]

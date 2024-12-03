@@ -2,11 +2,12 @@ from typing import List
 from sqlalchemy import JSON, TypeDecorator
 from sqlalchemy.ext.declarative import declarative_base
 from domain.stock_info import StockInfo
-from infra import engine
+from infra.persistance import engine
 from sqlalchemy import func
 from sqlalchemy.dialects import sqlite
 from sqlalchemy.orm import Mapped, mapped_column
-from infra.model import Interval
+from infra.persistance.model import Interval
+from enum import Enum
 
 
 Base = declarative_base()
@@ -66,6 +67,11 @@ class Strategy(BaseEntity):
     last_run: Mapped[str] = mapped_column(sqlite.DATETIME, nullable=True)
 
 
+class BrokerType(Enum):
+    KIS = "kis"  # 한국투자증권
+    UPBIT = "upbit"  # 업비트
+
+
 class Account(BaseEntity):
     __tablename__ = "account"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -76,6 +82,7 @@ class Account(BaseEntity):
     secret_key: Mapped[str] = mapped_column(sqlite.VARCHAR(100))
     url_base: Mapped[str] = mapped_column(sqlite.VARCHAR(100))
     token: Mapped[str] = mapped_column(sqlite.VARCHAR(200), nullable=True)
+    broker_type: Mapped[str] = mapped_column(sqlite.CHAR(10))
 
 
 Base.metadata.create_all(bind=engine.engine)
