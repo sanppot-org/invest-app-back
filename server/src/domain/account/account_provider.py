@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-from src.domain.account.account import Account
+from src.domain.account.interface import Account
 from src.domain.account.dto import AccountDto
 from src.domain.common.exception import ExeptionType, InvestAppException
 from src.domain.common.port import Repository

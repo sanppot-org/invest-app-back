@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from src.containers import Container
-from src.domain.account.account import Account
+from src.domain.account.interface import Account
 from src.infra.account.kis import token_refresher
-from src.rest.request_model import AccountCreateReq
+from src.infra.account.rest.model import AccountCreateReq
 
 
 router = APIRouter(prefix="/accounts", tags=["account"])

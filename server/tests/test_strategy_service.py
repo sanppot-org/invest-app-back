@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
 from src.containers import Container
-from src.domain.account.account import Account
+from src.domain.account.interface import Account
 from src.domain.account.account_provider import AccountProvider
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.port import Repository, StockMarketClient, TimeHolder

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from src.containers import Container
 from src.domain.strategy.strategy_service import StrategyService
-from src.rest.request_model import StrategyCreateReq
+from src.infra.strategy.rest.model import StrategyCreateReq
 
 router = APIRouter(prefix="/strategies", tags=["strategy"])
 
@@ -16,12 +16,12 @@ def find_all():
 
 @router.post("/")
 def save(req: StrategyCreateReq):
-    return strategy_service.save(req.toDomain())
+    return strategy_service.save(req.to_domain())
 
 
 @router.put("/{id}")
 def update(id: int, req: StrategyCreateReq):
-    return strategy_service.update(id, req.toDomain())
+    return strategy_service.update(id, req.to_domain())
 
 
 @router.get("/{id}")

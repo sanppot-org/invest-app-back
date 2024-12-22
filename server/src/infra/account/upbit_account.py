@@ -2,7 +2,7 @@ from time import sleep
 import pyupbit
 from pyupbit import Upbit
 
-from src.domain.account.account import Account
+from src.domain.account.interface import Account
 from src.domain.account.dto import AccountDto
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.exception import ExeptionType, InvestAppException

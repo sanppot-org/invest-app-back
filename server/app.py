@@ -1,6 +1,7 @@
 from src.domain.common.config import logger
 from fastapi import FastAPI, Request
-from src.rest import strategy, account
+from src.infra.account.rest import account
+from src.infra.strategy.rest import strategy
 from fastapi.responses import JSONResponse
 from src.domain.common.exception import InvestAppException
 from src.scheduler import scheduler

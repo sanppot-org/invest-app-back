@@ -1,5 +1,5 @@
 from venv import logger
-from src.domain.account.account import Account
+from src.domain.account.interface import Account
 from src.domain.account.dto import AccountDto
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.type import Market
