@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.domain.account.interface import HoldingsInfo
+from src.account.domain.interface import HoldingsInfo
 
 
 @dataclass

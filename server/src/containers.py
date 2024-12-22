@@ -1,10 +1,10 @@
 from dependency_injector import containers, providers
-from src.domain.account.account_provider import RealAccountProvider
-from src.domain.common.time_holder import TimeHolderImpl
-from src.infra.common.stock_market import StockMarketClientImpl
-from src.infra.common.persistence import engine
-from src.infra.account.persistence.account_mapper import AccountMapper
-from src.infra.account.persistence.account_repo import SqlAlchemyAccountRepository
+from src.account.application.account_service import AccountService
+from src.account.application.port.out.account_repository import AccountRepository
+from src.account.adapter.out.stock.stock_market import StockMarketClientImpl
+from src.common.persistence import engine
+from src.account.adapter.out.persistence.account_mapper import AccountMapper
+from src.account.adapter.out.persistence.sqlalchemy_account_repository import SqlAlchemyAccountRepository
 from src.domain.strategy.strategy_service import StrategyService
 from src.infra.strategy.persistance.strategy_mapper import StrategyMapper
 from src.infra.strategy.persistance.strategy_repo import SqlAlchemyStrategyRepository
@@ -38,6 +38,8 @@ class Container(containers.DeclarativeContainer):
         session=session,
         mapper=account_mapper,
     )
+
+    account_service = providers.Singleton(AccountService, account_repository=account_repository)
 
     account_provider = providers.Singleton(RealAccountProvider, account_repository=account_repository)
 

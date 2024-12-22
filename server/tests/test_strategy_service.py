@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
 from src.containers import Container
-from src.domain.account.interface import Account
+from src.account.domain.interface import Account
 from src.domain.account.account_provider import AccountProvider
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.port import Repository, StockMarketClient, TimeHolder
@@ -9,7 +9,7 @@ from src.domain.strategy.stock_info import StockInfo
 from src.domain.strategy.strategy import Strategy
 from src.domain.strategy.strategy_service import StrategyService
 from src.domain.common.type import Market, TimeUnit
-from src.infra.account.persistence.account import AccountEntity
+from src.account.adapter.out.persistence.account import AccountEntity
 from src.domain.strategy.interval import Interval
 
 

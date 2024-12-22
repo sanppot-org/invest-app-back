@@ -5,12 +5,10 @@ from datetime import datetime, timedelta
 @dataclass
 class KisAccessToken:
     token: str
-    expiration: str
+    expiration: datetime
 
     def of(json: dict):
-        return KisAccessToken(
-            token=json["access_token"], expiration=json["access_token_token_expired"]
-        )
+        return KisAccessToken(token=json["access_token"], expiration=json["access_token_token_expired"])
 
     def to_dict(self):
         return {
@@ -22,6 +20,4 @@ class KisAccessToken:
         return self._get_token_expiration() < datetime.now()
 
     def _get_token_expiration(self) -> datetime:
-        return datetime.strptime(self.expiration, "%Y-%m-%d %H:%M:%S") - timedelta(
-            hours=12
-        )
+        return datetime.strptime(self.expiration, "%Y-%m-%d %H:%M:%S") - timedelta(hours=12)

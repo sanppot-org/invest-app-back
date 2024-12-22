@@ -1,6 +1,6 @@
 from src.domain.common.config import logger
 from fastapi import FastAPI, Request
-from src.infra.account.rest import account
+from src.account.adapter.in.web import account
 from src.infra.strategy.rest import strategy
 from fastapi.responses import JSONResponse
 from src.domain.common.exception import InvestAppException

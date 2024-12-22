@@ -1,14 +1,11 @@
-from src.domain.account.dto import AccountDto
-from src.domain.common.exception import ExeptionType, InvestAppException
-from src.domain.common.type import BrokerType
-from src.infra.account.kis.account import KisAccount
-from src.infra.account.persistence.account import AccountEntity
-from src.infra.common.persistence.mapper import Mapper
+from src.account.application.port.out.account_repository import AccountInfo
+from src.account.adapter.out.persistence.account import AccountEntity
+from src.common.sqlalchmey.sqlalchmy_entity_mapper import SqlalchemyEntityMapper
 
 
-class AccountMapper(Mapper[AccountEntity, AccountDto]):
-    def to_model(self, entity: AccountEntity) -> AccountDto:
-        return AccountDto(
+class AccountMapper(SqlalchemyEntityMapper[AccountEntity, AccountInfo]):
+    def to_model(self, entity: AccountEntity) -> AccountInfo:
+        return AccountInfo(
             id=entity.id,
             name=entity.name,
             app_key=entity.app_key,
@@ -22,7 +19,7 @@ class AccountMapper(Mapper[AccountEntity, AccountDto]):
             token=entity.token,
         )
 
-    def to_entity(self, dto: AccountDto) -> AccountEntity:
+    def to_entity(self, dto: AccountInfo) -> AccountEntity:
         return AccountEntity(
             id=dto.id,
             name=dto.name,
@@ -36,8 +33,3 @@ class AccountMapper(Mapper[AccountEntity, AccountDto]):
             is_virtual=dto.is_virtual,
             token=dto.token,
         )
-
-    def to_kis_domain(self, entity: AccountEntity) -> KisAccount:
-        if entity.broker_type != BrokerType.KIS:
-            raise InvestAppException(ExeptionType.INVALID_ACCOUNT_TYPE, entity.broker_type)
-        return KisAccount(account_dto=self.to_model(entity))

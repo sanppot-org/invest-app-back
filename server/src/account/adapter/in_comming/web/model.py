@@ -1,7 +1,8 @@
 from typing import Optional
 from pydantic import BaseModel
-from src.domain.account.dto import AccountDto
-from src.domain.common.type import BrokerType
+
+from src.common.type import BrokerType
+from src.account.application.port.out.account_repository import AccountInfo
 
 
 class AccountCreateReq(BaseModel):
@@ -14,8 +15,8 @@ class AccountCreateReq(BaseModel):
     token: Optional[str] = None
     broker_type: BrokerType
 
-    def to_domain(self) -> AccountDto:
-        return AccountDto(
+    def to_domain(self) -> AccountInfo:
+        return AccountInfo(
             name=self.name,
             number=self.number,
             product_code=self.product_code,

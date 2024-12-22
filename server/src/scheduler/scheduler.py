@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from src.infra.account.kis import token_refresher
+from src.account.adapter.out.kis import token_refresher
 
 
 scheduler = BackgroundScheduler()

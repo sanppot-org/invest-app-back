@@ -1,9 +1,9 @@
 from venv import logger
-from src.domain.account.interface import Account
+from src.account.domain.interface import Account
 from src.domain.account.dto import AccountDto
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.type import Market
-from src.infra.account.kis import kis_client
+from src.account.adapter.out.kis import kis_client
 from src.infra.account.kis.access_token import KisAccessToken
 from src.infra.account.kis.dto import KisInfo
 

@@ -1,4 +1,4 @@
-from src.domain.account.interface import HoldingsInfo
+from src.account.domain.interface import HoldingsInfo
 from src.domain.strategy.stock_info import StockInfo
 
 
