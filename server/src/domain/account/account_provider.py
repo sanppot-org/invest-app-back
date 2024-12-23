@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 from src.domain.account.interface import Account
-from src.domain.account.dto import AccountDto
+from src.account.domain.account_info import AccountInfo
 from src.domain.common.exception import ExeptionType, InvestAppException
 from src.domain.common.port import Repository
 from src.domain.common.type import BrokerType
@@ -17,11 +17,11 @@ class AccountProvider(ABC):
 
 
 class RealAccountProvider(AccountProvider):
-    def __init__(self, account_repository: Repository[AccountDto]):
+    def __init__(self, account_repository: Repository[AccountInfo]):
         self.account_repository = account_repository
 
     def get_account(self, account_id: int) -> Account:
-        account_dto: AccountDto = self.account_repository.find_by_id(account_id)
+        account_dto: AccountInfo = self.account_repository.find_by_id(account_id)
 
         if account_dto.broker_type == BrokerType.KIS and not account_dto.is_virtual:
             return KisRealAccount(account_dto)

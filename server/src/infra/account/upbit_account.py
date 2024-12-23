@@ -3,14 +3,14 @@ import pyupbit
 from pyupbit import Upbit
 
 from src.domain.account.interface import Account
-from src.domain.account.dto import AccountDto
+from src.account.domain.account_info import AccountInfo
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.exception import ExeptionType, InvestAppException
 from src.domain.common.type import Market
 
 
 class UpbitAccount(Account):
-    def __init__(self, account_dto: AccountDto):
+    def __init__(self, account_dto: AccountInfo):
         super().__init__(account_dto=account_dto)
         self.upbit = Upbit(access=self.account_dto.app_key, secret=self.account_dto.secret_key)
 

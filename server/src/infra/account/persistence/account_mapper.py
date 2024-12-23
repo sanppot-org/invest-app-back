@@ -1,14 +1,14 @@
-from src.domain.account.dto import AccountDto
+from src.account.domain.account_info import AccountInfo
 from src.domain.common.exception import ExeptionType, InvestAppException
 from src.domain.common.type import BrokerType
 from src.infra.account.kis.account import KisAccount
-from src.infra.account.persistence.account import AccountEntity
+from src.account.adapter.out.persistence.account_entity import AccountEntity
 from src.infra.common.persistence.mapper import Mapper
 
 
-class AccountMapper(Mapper[AccountEntity, AccountDto]):
-    def to_model(self, entity: AccountEntity) -> AccountDto:
-        return AccountDto(
+class AccountMapper(Mapper[AccountEntity, AccountInfo]):
+    def to_model(self, entity: AccountEntity) -> AccountInfo:
+        return AccountInfo(
             id=entity.id,
             name=entity.name,
             app_key=entity.app_key,
@@ -22,7 +22,7 @@ class AccountMapper(Mapper[AccountEntity, AccountDto]):
             token=entity.token,
         )
 
-    def to_entity(self, dto: AccountDto) -> AccountEntity:
+    def to_entity(self, dto: AccountInfo) -> AccountEntity:
         return AccountEntity(
             id=dto.id,
             name=dto.name,

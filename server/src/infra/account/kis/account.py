@@ -1,18 +1,18 @@
 from venv import logger
 from src.domain.account.interface import Account
-from src.domain.account.dto import AccountDto
+from src.account.domain.account_info import AccountInfo
 from src.domain.account.holdings import HoldingsInfo
 from src.domain.common.type import Market
 from src.infra.account.kis import kis_client
-from src.infra.account.kis.access_token import KisAccessToken
+from src.account.domain.access_token import AccessToken
 from src.infra.account.kis.dto import KisInfo
 
 
 class KisAccount(Account):
-    def __init__(self, account_dto: AccountDto, is_virtual: bool = False):
+    def __init__(self, account_dto: AccountInfo, is_virtual: bool = False):
         super().__init__(account_dto=account_dto)
         self.is_virtual: bool = is_virtual
-        self.access_token: KisAccessToken = self.account_dto.token
+        self.access_token: AccessToken = self.account_dto.token
 
     def get_balance(self, market: Market = Market.KR) -> float:
         return kis_client.get_balance(self._get_kis_info(), market)
@@ -58,10 +58,10 @@ class KisAccount(Account):
 
 
 class KisRealAccount(KisAccount):
-    def __init__(self, account_dto: AccountDto):
+    def __init__(self, account_dto: AccountInfo):
         super().__init__(account_dto=account_dto)
 
 
 class KisVirtualAccount(KisAccount):
-    def __init__(self, account_dto: AccountDto):
+    def __init__(self, account_dto: AccountInfo):
         super().__init__(account_dto=account_dto, is_virtual=True)

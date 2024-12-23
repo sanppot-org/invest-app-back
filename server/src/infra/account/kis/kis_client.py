@@ -1,6 +1,6 @@
 import json
 import requests
-from src.infra.account.kis.access_token import KisAccessToken
+from src.account.domain.access_token import AccessToken
 from src.domain.common.exception import ExeptionType, InvestAppException
 from src.infra.account.kis.dto import BalanceResponse, KisInfo
 import yfinance as yf
@@ -8,7 +8,7 @@ import yfinance as yf
 from src.domain.common.type import Market
 
 
-def get_token(info: KisInfo) -> KisAccessToken:
+def get_token(info: KisInfo) -> AccessToken:
     headers = {"content-type": "application/json"}
     body = {
         "grant_type": "client_credentials",
@@ -22,7 +22,8 @@ def get_token(info: KisInfo) -> KisAccessToken:
     if res.status_code != 200:
         raise InvestAppException(ExeptionType.FAILED_TO_CREATE_TOKEN, res.text)
 
-    return KisAccessToken.of(res.json())
+    res_body = res.json()
+    return AccessToken(token=res_body["access_token"], expiration=res_body["access_token_token_expired"])
 
 
 def get_balance(info: KisInfo, market: Market = Market.KR) -> float:

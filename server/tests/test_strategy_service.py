@@ -9,7 +9,7 @@ from src.domain.strategy.stock_info import StockInfo
 from src.domain.strategy.strategy import Strategy
 from src.domain.strategy.strategy_service import StrategyService
 from src.domain.common.type import Market, TimeUnit
-from src.infra.account.persistence.account import AccountEntity
+from src.account.adapter.out.persistence.account_entity import AccountEntity
 from src.domain.strategy.interval import Interval
 
 

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from src.domain.common.type import BrokerType
-from src.infra.account.kis.access_token import KisAccessToken
+from src.account.domain.access_token import AccessToken
 
 
 @dataclass
-class AccountDto:
+class AccountInfo:
     id: int
     name: str
     app_key: str
@@ -15,4 +15,4 @@ class AccountDto:
     login_id: str
     url_base: str
     is_virtual: bool
-    token: KisAccessToken
+    token: AccessToken

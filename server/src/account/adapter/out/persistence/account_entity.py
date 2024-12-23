@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, TypeDecorator
 from sqlalchemy.dialects import sqlite
 from sqlalchemy.orm import Mapped, mapped_column
-from src.infra.account.kis.access_token import KisAccessToken
+from src.account.domain.access_token import AccessToken
 from src.domain.common.type import BrokerType
 
 from src.infra.common.persistence.base import BaseEntity, EnumType
@@ -10,14 +10,17 @@ from src.infra.common.persistence.base import BaseEntity, EnumType
 class TokenType(TypeDecorator):
     impl = JSON
 
-    def process_bind_param(self, value: KisAccessToken, dialect):
+    def process_bind_param(self, value: AccessToken, dialect):
         if value is not None:
-            return value.to_dict()
+            return {
+                "token": value.token,
+                "expiration": value.expiration,
+            }
         return None
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            return KisAccessToken(**value)
+            return AccessToken(**value)
         return None
 
 
@@ -33,4 +36,4 @@ class AccountEntity(BaseEntity):
     login_id: Mapped[str] = mapped_column(sqlite.VARCHAR(30), nullable=True)
     url_base: Mapped[str] = mapped_column(sqlite.VARCHAR(100), nullable=True)
     is_virtual: Mapped[bool] = mapped_column(sqlite.BOOLEAN, default=False, nullable=False)
-    token: Mapped[KisAccessToken] = mapped_column(TokenType, nullable=True)
+    token: Mapped[AccessToken] = mapped_column(TokenType, nullable=True)

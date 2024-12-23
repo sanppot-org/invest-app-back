@@ -1,7 +1,7 @@
 from src.containers import Container
 from src.domain.common.type import BrokerType
 from src.infra.account.kis import kis_client
-from src.infra.account.kis.access_token import KisAccessToken
+from src.account.domain.access_token import AccessToken
 from src.infra.account.kis.account import KisAccount
 
 container = Container.get_instance()
@@ -13,7 +13,7 @@ def refresh_kis_token():
 
     for account_dto in account_dtos:
         kis_account: KisAccount = KisAccount(account_dto=account_dto)
-        token: KisAccessToken = kis_account.access_token
+        token: AccessToken = kis_account.access_token
         if token is None or token.is_expired():
             account_dto.token = kis_client.get_token(kis_account._get_kis_info())
 
