@@ -29,8 +29,9 @@ class StrategyService:
         self.stock_market_query_port = stock_market_query_port
         self.time_holder = time_holder
 
-    def save(self, dto: Strategy) -> Strategy:
-        return self.strategy_repo.save(dto)
+    def save(self, model: Strategy) -> Strategy:
+        model.validate_portfolio_rate()
+        return self.strategy_repo.save(model)
 
     def find_by_id(self, id: int) -> Strategy:
         strategy = self.strategy_repo.find_by_id(id)
@@ -46,8 +47,8 @@ class StrategyService:
     def delete_by_id(self, id: int) -> int:
         return self.strategy_repo.delete_by_id(id)
 
-    def update(self, id: int, dto: Strategy) -> Strategy:
-        return self.strategy_repo.update(id, dto)
+    def update(self, id: int, model: Strategy) -> Strategy:
+        return self.strategy_repo.update(id, model)
 
     def rebalance(self, strategy_id: int):
         strategy: Strategy = self.find_by_id(strategy_id)

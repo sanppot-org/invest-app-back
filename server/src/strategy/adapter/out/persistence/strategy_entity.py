@@ -14,7 +14,7 @@ class StockInfoDict(TypeDecorator):
 
     def process_bind_param(self, value: Dict[str, StockInfo], dialect):
         if value is not None:
-            return {k: v.to_dict() for k, v in value.items()}
+            return {k: {"target_rate": v.target_rate} for k, v in value.items()}
         return None
 
     def process_result_value(self, value: dict, dialect):

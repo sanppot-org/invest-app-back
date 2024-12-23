@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Optional
 
 from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market
@@ -10,14 +10,21 @@ from src.strategy.domain.stock_info import StockInfo
 
 @dataclass
 class Strategy:
-    id: int
+    id: Optional[int]
     name: str
     invest_rate: float
     market: Market
     stocks: Dict[str, StockInfo]
     interval: Interval
-    last_run: datetime
+    last_run: Optional[datetime]
     account_id: int
+
+    def validate_portfolio_rate(self):
+        if sum([stock.target_rate for stock in self.stocks.values()]) != 1:
+            raise InvestAppException(
+                ExeptionType.INVALID_PORTFOLIO_RATE,
+                {ticker: stock.target_rate for ticker, stock in self.stocks.items()},
+            )
 
     def get_invest_amount(self, balance: float) -> float:
         return balance * self.invest_rate

@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.common.domain.type import Market, TimeUnit
 from src.strategy.domain.interval import Interval
@@ -8,14 +8,10 @@ from src.strategy.domain.strategy import Strategy
 
 
 class StockInfoReq(BaseModel):
-    target_rate: Optional[float] = None
-    rebalance_qty: Optional[int] = None
+    target_rate: float = Field(..., ge=0, le=1)
 
     def toDomain(self) -> StockInfo:
-        return StockInfo(
-            target_rate=self.target_rate,
-            rebalance_qty=self.rebalance_qty,
-        )
+        return StockInfo(target_rate=self.target_rate)
 
 
 class IntervalReq(BaseModel):
@@ -31,18 +27,20 @@ class IntervalReq(BaseModel):
 
 class StrategyCreateReq(BaseModel):
     name: str
-    invest_rate: Optional[float] = None
+    invest_rate: float = Field(..., ge=0, le=1)
     stocks: Dict[str, StockInfoReq]
-    interval: Optional[IntervalReq] = None
+    interval: IntervalReq
     market: Market
     account_id: int
 
     def to_domain(self) -> Strategy:
         return Strategy(
+            id=None,
             name=self.name,
             invest_rate=self.invest_rate,
             stocks={k: v.toDomain() for k, v in self.stocks.items()},
             interval=self.interval.toDomain(),
+            last_run=None,
             account_id=self.account_id,
             market=self.market,
         )
