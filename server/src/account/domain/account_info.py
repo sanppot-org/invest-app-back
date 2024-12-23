@@ -1,18 +1,19 @@
 from dataclasses import dataclass
+from typing import Optional
 from src.common.domain.type import BrokerType
 from src.account.domain.access_token import AccessToken
 
 
 @dataclass
 class AccountInfo:
-    id: int
+    id: Optional[int]
     name: str
     app_key: str
     secret_key: str
     broker_type: BrokerType
-    number: str
-    product_code: str
-    login_id: str
-    url_base: str
+    number: Optional[str]
+    product_code: Optional[str]
+    login_id: Optional[str]
+    url_base: Optional[str]
     is_virtual: bool
-    token: AccessToken
+    token: Optional[AccessToken]

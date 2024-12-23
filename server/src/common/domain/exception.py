@@ -10,6 +10,7 @@ class ExeptionType(Enum):
     NOT_TIME_TO_REBALANCE = ["리밸런싱 조건이 아닙니다. {}", 400]
     MARKET_NOT_OPEN = ["주식 시장이 열리지 않았습니다. {}", 400]
     INVALID_PORTFOLIO_RATE = ["포트폴리오 종목 비중의 합은 1이어야 합니다. {}", 400]
+    INVALID_ACCOUNT_INFO = ["계좌 정보가 올바르지 않습니다. {}", 400]
 
 
 class InvestAppException(Exception):
