@@ -1,11 +1,13 @@
 import datetime
 from typing import Dict
 from src.common.application.port.out.time_holder import TimeHolder
-from src.common.application.port.out.stock_market_client import StockMarketClient
+from src.common.application.port.out.stock_market_port import StockMarketQueryPort
 from src.account.application.service.account_provider import AccountProvider
 from src.account.domain.account import Account
 from src.account.domain.holdings import HoldingsInfo
 from src.common.application.port.out.repository import *
+from src.common.domain.exception import ExeptionType, InvestAppException
+from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.domain.stock_info import StockInfo
 from src.strategy.domain.strategy import Strategy
 from dependency_injector.wiring import inject
@@ -17,21 +19,26 @@ class StrategyService:
     @inject
     def __init__(
         self,
-        strategy_repo: Repository[Strategy],
+        strategy_repo: StrategyRepository,
         account_provider: AccountProvider,
-        stock_market_client: StockMarketClient,
+        stock_market_query_port: StockMarketQueryPort,
         time_holder: TimeHolder,
     ):
         self.strategy_repo = strategy_repo
         self.account_provider = account_provider
-        self.stock_market_client = stock_market_client
+        self.stock_market_query_port = stock_market_query_port
         self.time_holder = time_holder
 
     def save(self, dto: Strategy) -> Strategy:
         return self.strategy_repo.save(dto)
 
     def find_by_id(self, id: int) -> Strategy:
-        return self.strategy_repo.find_by_id(id)
+        strategy = self.strategy_repo.find_by_id(id)
+
+        if strategy is None:
+            raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id)
+
+        return strategy
 
     def find_all(self) -> List[Strategy]:
         return self.strategy_repo.find_all()
@@ -43,13 +50,14 @@ class StrategyService:
         return self.strategy_repo.update(id, dto)
 
     def rebalance(self, strategy_id: int):
-        strategy: Strategy = self.strategy_repo.find_by_id(strategy_id)
+        strategy: Strategy = self.find_by_id(strategy_id)
 
         now: datetime = self.time_holder.get_now()
 
-        # 1. 리밸런싱 조건 확인
-        if not strategy.is_time_to_rebalance(now) or not self.stock_market_client.is_market_open(strategy.get_market()):
-            return
+        # 리밸런싱 조건 확인
+        strategy.is_time_to_rebalance(now)
+        # 주식 시장 열려있는지 확인
+        self.stock_market_query_port.is_market_open(strategy.get_market())
 
         account: Account = self.account_provider.get_account(strategy.get_account_id())
 

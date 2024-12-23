@@ -25,7 +25,7 @@ class IntervalReq(BaseModel):
     def toDomain(self) -> Interval:
         return Interval(
             time_unit=self.time_unit,
-            value=self.value,
+            values=self.value,
         )
 
 

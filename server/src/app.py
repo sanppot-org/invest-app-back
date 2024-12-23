@@ -1,15 +1,17 @@
+from src.common.adapter.in_comming import stock_market_router
 from src.common.domain.config import logger
 from fastapi import FastAPI, Request
 from src.account.adapter.in_comming.web import account_router
-from src.strategy.adapter.in_comming.web import strategy
+from src.strategy.adapter.in_comming.web import strategy_router
 from fastapi.responses import JSONResponse
 from src.common.domain.exception import InvestAppException
 from src import scheduler
 
 app = FastAPI(lifespan=scheduler.lifespan)
 
-app.include_router(strategy.router)
+app.include_router(strategy_router.router)
 app.include_router(account_router.router)
+app.include_router(stock_market_router.router)
 
 
 @app.exception_handler(InvestAppException)

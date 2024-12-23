@@ -32,3 +32,8 @@ def get(id: int):
 @router.delete("/{id}")
 def delete(id: int):
     return strategy_service.delete_by_id(id)
+
+
+@router.post("/{id}/rebalance")
+def rebalance(id: int):
+    return strategy_service.rebalance(id)

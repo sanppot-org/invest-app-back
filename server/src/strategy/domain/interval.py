@@ -7,12 +7,12 @@ from src.common.domain.type import TimeUnit
 @dataclass
 class Interval:
     time_unit: TimeUnit
-    value: List[int]
+    values: List[int]
 
     def to_dict(self):
         return {
             "time_unit": self.time_unit.value,
-            "value": self.value,
+            "values": self.values,
         }
 
     def is_month(self):

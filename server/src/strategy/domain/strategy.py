@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict
 
+from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market
 from src.strategy.domain.interval import Interval
 from src.strategy.domain.stock_info import StockInfo
@@ -28,20 +29,19 @@ class Strategy:
         self.last_run = datetime.now()
 
     # TODO: 고도화 하기.
-    def is_time_to_rebalance(self, now: datetime) -> bool:
+    def is_time_to_rebalance(self, now: datetime):
         if self.last_run is None:
-            return True
+            return
 
         interval: Interval = self.interval
         if interval.is_month():
             this_month = now.month
-            return this_month in interval.value and not self._run_this_month(now)
+            if this_month in interval.values and not now.month == self.last_run.month:
+                return
 
         # TODO: 다른 조건 추가하기
-        return False
 
-    def _run_this_month(self, now: datetime):
-        return now.month == self.last_run.month
+        raise InvestAppException(exception_type=ExeptionType.NOT_TIME_TO_REBALANCE)
 
     def get_market(self) -> Market:
         return self.market

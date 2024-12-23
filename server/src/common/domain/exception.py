@@ -7,9 +7,11 @@ class ExeptionType(Enum):
     FAILED_TO_CREATE_TOKEN = ["토큰 생성 실패. {}", 500]
     FAILED_TO_GET_BALANCE = ["잔고 조회 실패. {}", 500]
     FAILED_TO_GET_CURRENT_PRICE = ["현재가 조회 실패. {}", 500]
+    NOT_TIME_TO_REBALANCE = ["리밸런싱 조건이 아닙니다. {}", 400]
+    MARKET_NOT_OPEN = ["주식 시장이 열리지 않았습니다. {}", 400]
 
 
 class InvestAppException(Exception):
     def __init__(self, exception_type: ExeptionType, *args):
         self.error_code = exception_type[1]
-        self.message = exception_type[0].format(*args)
+        self.message = exception_type[0].format(*args) if args else exception_type[0]

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from src.common.application.port.out.time_holder import TimeHolder
-from src.common.application.port.out.stock_market_client import StockMarketClient
+from src.common.application.port.out.stock_market_port import StockMarketQueryPort
 from src.containers import Container
 from src.account.domain.account import Account
 from src.account.application.service.account_provider import AccountProvider
@@ -18,9 +18,9 @@ from src.account.adapter.out.persistence.account_entity import AccountEntity
 from src.strategy.domain.interval import Interval
 
 
-class FakeStockMarketClient(StockMarketClient):
-    def is_market_open(self, market: Market) -> bool:
-        return True
+class FakeStockMarketClient(StockMarketQueryPort):
+    def is_market_open(self, market: Market):
+        pass
 
 
 class FakeTimeHolder(TimeHolder):
@@ -90,7 +90,7 @@ class FakeStrategyRepository(Repository[Strategy]):
 @pytest.fixture
 def container():
     container = Container()
-    container.stock_market_client.override(FakeStockMarketClient())
+    container.stock_market_query_port.override(FakeStockMarketClient())
     container.time_holder.override(FakeTimeHolder())
     container.account_provider.override(FakeAccountProvider())
     container.strategy_repository.override(FakeStrategyRepository())
@@ -110,7 +110,7 @@ def test_strategy():
         invest_rate=1,
         stocks={"spy": StockInfo(target_rate=1)},
         market=Market.US,
-        interval=Interval(time_unit=TimeUnit.MONTH, value=[1]),
+        interval=Interval(time_unit=TimeUnit.MONTH, values=[1]),
         last_run=None,
         account_id=1,
     )
