@@ -3,8 +3,8 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from src.domain.common.exception import ExeptionType, InvestAppException
-from src.domain.common.port import Repository
-from src.infra.common.persistence.mapper import Mapper
+from src.common.application.port.out.repository import Repository
+from src.common.adapter.out.persistence.entity_mapper import EntityMapper
 
 
 E = TypeVar("E")
@@ -12,7 +12,7 @@ M = TypeVar("M")
 
 
 class SqlalchemyRepository[E, M](Repository[M]):
-    def __init__(self, session: Session, mapper: Mapper[E, M], entity_type: Type[E]):
+    def __init__(self, session: Session, mapper: EntityMapper[E, M], entity_type: Type[E]):
         self.session = session
         self.mapper = mapper
         self.entity_type = entity_type

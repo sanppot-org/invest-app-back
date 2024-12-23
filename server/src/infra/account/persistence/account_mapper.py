@@ -3,10 +3,10 @@ from src.domain.common.exception import ExeptionType, InvestAppException
 from src.domain.common.type import BrokerType
 from src.infra.account.kis.account import KisAccount
 from src.account.adapter.out.persistence.account_entity import AccountEntity
-from src.infra.common.persistence.mapper import Mapper
+from src.common.adapter.out.persistence.entity_mapper import EntityMapper
 
 
-class AccountMapper(Mapper[AccountEntity, AccountInfo]):
+class AccountMapper(EntityMapper[AccountEntity, AccountInfo]):
     def to_model(self, entity: AccountEntity) -> AccountInfo:
         return AccountInfo(
             id=entity.id,

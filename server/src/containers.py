@@ -1,8 +1,8 @@
 from dependency_injector import containers, providers
 from src.domain.account.account_provider import RealAccountProvider
 from src.domain.common.time_holder import TimeHolderImpl
-from src.infra.common.stock_market import StockMarketClientImpl
-from src.infra.common.persistence import engine
+from src.common.adapter.out.stock_market_client import StockMarketClientImpl
+from src.common.adapter.out.persistence import engine
 from src.infra.account.persistence.account_mapper import AccountMapper
 from src.infra.account.persistence.account_repo import SqlAlchemyAccountRepository
 from src.domain.strategy.strategy_service import StrategyService

@@ -1,9 +1,9 @@
 from src.domain.strategy.strategy import Strategy
-from src.infra.common.persistence.mapper import Mapper
+from src.common.adapter.out.persistence.entity_mapper import EntityMapper
 from src.infra.strategy.persistance.strategy import StrategyEntity
 
 
-class StrategyMapper(Mapper[StrategyEntity, Strategy]):
+class StrategyMapper(EntityMapper[StrategyEntity, Strategy]):
     def to_entity(self, model: Strategy) -> StrategyEntity:
         return StrategyEntity(
             id=model.id,

@@ -3,13 +3,13 @@ from pytest import Session
 from sqlalchemy import select
 from src.account.domain.account_info import AccountInfo
 from src.domain.common.type import BrokerType
-from src.infra.common.persistence.mapper import Mapper
-from src.infra.common.persistence.repo import SqlalchemyRepository
+from src.common.adapter.out.persistence.entity_mapper import EntityMapper
+from src.common.adapter.out.persistence.sqlalchemy_repository import SqlalchemyRepository
 from src.account.adapter.out.persistence.account_entity import AccountEntity
 
 
 class SqlAlchemyAccountRepository(SqlalchemyRepository[AccountEntity, AccountInfo]):
-    def __init__(self, session: Session, mapper: Mapper[AccountEntity, AccountInfo]):
+    def __init__(self, session: Session, mapper: EntityMapper[AccountEntity, AccountInfo]):
         super().__init__(session, mapper, AccountEntity)
 
     def find_all(self, broker_type: BrokerType = None) -> List[AccountInfo]:

@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Dict, List
+from src.common.application.port.out.time_holder import TimeHolder
+from src.common.application.port.out.stock_market_client import StockMarketClient
 from src.containers import Container
 from src.domain.account.interface import Account
 from src.domain.account.account_provider import AccountProvider
 from src.domain.account.holdings import HoldingsInfo
-from src.domain.common.port import Repository, StockMarketClient, TimeHolder
+from src.common.application.port.out.repository import Repository
 from src.domain.strategy.stock_info import StockInfo
 from src.domain.strategy.strategy import Strategy
 from src.domain.strategy.strategy_service import StrategyService

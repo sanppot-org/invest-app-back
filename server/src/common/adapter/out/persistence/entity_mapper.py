@@ -5,7 +5,7 @@ M = TypeVar("M")
 E = TypeVar("E")
 
 
-class Mapper[E, M](ABC):
+class EntityMapper[E, M](ABC):
     @abstractmethod
     def to_entity(self, model: M) -> E:
         pass

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from src.account.domain.access_token import AccessToken
 from src.domain.common.type import BrokerType
 
-from src.infra.common.persistence.base import BaseEntity, EnumType
+from src.common.adapter.out.persistence.base_entity import BaseEntity, EnumType
 
 
 class TokenType(TypeDecorator):

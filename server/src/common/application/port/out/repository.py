@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import List, TypeVar
-
-from src.domain.common.type import Market
 
 
 M = TypeVar("M")
@@ -27,16 +24,4 @@ class Repository[M](ABC):
 
     @abstractmethod
     def find_all(self) -> List[M]:
-        pass
-
-
-class StockMarketClient(ABC):
-    @abstractmethod
-    def is_market_open(self, market: Market) -> bool:
-        pass
-
-
-class TimeHolder(ABC):
-    @abstractmethod
-    def get_now(self) -> datetime:
         pass

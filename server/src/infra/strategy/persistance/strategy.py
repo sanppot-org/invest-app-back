@@ -3,7 +3,7 @@ from sqlalchemy import JSON, ForeignKey, TypeDecorator
 from src.domain.common.type import Market
 from src.domain.strategy.interval import Interval
 from src.domain.strategy.stock_info import StockInfo
-from src.infra.common.persistence.base import BaseEntity, EnumType
+from src.common.adapter.out.persistence.base_entity import BaseEntity, EnumType
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects import sqlite
 from typing import Dict
