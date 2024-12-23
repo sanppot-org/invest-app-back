@@ -3,16 +3,16 @@ from typing import Dict, List
 from src.common.application.port.out.time_holder import TimeHolder
 from src.common.application.port.out.stock_market_client import StockMarketClient
 from src.containers import Container
-from src.domain.account.interface import Account
-from src.domain.account.account_provider import AccountProvider
-from src.domain.account.holdings import HoldingsInfo
+from src.account.domain.account import Account
+from src.account.application.service.account_provider import AccountProvider
+from src.account.domain.holdings import HoldingsInfo
 from src.common.application.port.out.repository import Repository
-from src.domain.strategy.stock_info import StockInfo
-from src.domain.strategy.strategy import Strategy
-from src.domain.strategy.strategy_service import StrategyService
-from src.domain.common.type import Market, TimeUnit
+from src.strategy.domain.stock_info import StockInfo
+from src.strategy.domain.strategy import Strategy
+from src.strategy.application.service.strategy_service import StrategyService
+from src.common.domain.type import Market, TimeUnit
 from src.account.adapter.out.persistence.account_entity import AccountEntity
-from src.domain.strategy.interval import Interval
+from src.strategy.domain.interval import Interval
 
 
 # 리밸런스 테스트

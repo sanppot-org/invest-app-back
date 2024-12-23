@@ -1,5 +1,5 @@
-from src.domain.account.interface import HoldingsInfo
-from src.domain.strategy.stock_info import StockInfo
+from src.account.domain.account import HoldingsInfo
+from src.strategy.domain.stock_info import StockInfo
 
 
 # 해당 종목을 보유하지 않은 경우

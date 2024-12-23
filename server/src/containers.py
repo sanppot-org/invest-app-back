@@ -1,13 +1,13 @@
 from dependency_injector import containers, providers
-from src.domain.account.account_provider import RealAccountProvider
-from src.domain.common.time_holder import TimeHolderImpl
+from src.account.application.service.account_provider import RealAccountProvider
+from src.common.domain.time_holder import TimeHolderImpl
 from src.common.adapter.out.stock_market_client import StockMarketClientImpl
 from src.common.adapter.out.persistence import engine
-from src.infra.account.persistence.account_mapper import AccountMapper
-from src.infra.account.persistence.account_repo import SqlAlchemyAccountRepository
-from src.domain.strategy.strategy_service import StrategyService
-from src.infra.strategy.persistance.strategy_mapper import StrategyMapper
-from src.infra.strategy.persistance.strategy_repo import SqlAlchemyStrategyRepository
+from src.account.adapter.out.persistence.account_mapper import AccountMapper
+from src.account.adapter.out.persistence.account_repo import SqlAlchemyAccountRepository
+from src.strategy.application.service.strategy_service import StrategyService
+from src.strategy.adapter.out.persistence.strategy_mapper import StrategyMapper
+from src.strategy.adapter.out.persistence.strategy_repo import SqlAlchemyStrategyRepository
 
 
 class Container(containers.DeclarativeContainer):

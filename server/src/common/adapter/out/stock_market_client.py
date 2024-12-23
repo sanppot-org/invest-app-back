@@ -2,7 +2,7 @@ from datetime import datetime
 import exchange_calendars as market_calendar
 
 from src.common.application.port.out.stock_market_client import StockMarketClient
-from src.domain.common.type import Market
+from src.common.domain.type import Market
 
 
 class StockMarketClientImpl(StockMarketClient):

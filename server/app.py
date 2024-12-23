@@ -1,15 +1,15 @@
-from src.domain.common.config import logger
+from src.common.domain.config import logger
 from fastapi import FastAPI, Request
-from src.infra.account.rest import account
-from src.infra.strategy.rest import strategy
+from src.account.adapter.in_comming.web import account_router
+from src.strategy.adapter.in_comming.web import strategy
 from fastapi.responses import JSONResponse
-from src.domain.common.exception import InvestAppException
-from src.scheduler import scheduler
+from src.common.domain.exception import InvestAppException
+from src import scheduler
 
 app = FastAPI(lifespan=scheduler.lifespan)
 
 app.include_router(strategy.router)
-app.include_router(account.router)
+app.include_router(account_router.router)
 
 
 @app.exception_handler(InvestAppException)

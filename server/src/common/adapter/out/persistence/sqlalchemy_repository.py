@@ -2,7 +2,7 @@ from typing import List, Type, TypeVar
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
-from src.domain.common.exception import ExeptionType, InvestAppException
+from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.application.port.out.repository import Repository
 from src.common.adapter.out.persistence.entity_mapper import EntityMapper
 

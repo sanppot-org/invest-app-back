@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.domain.common.type import BrokerType
+from src.common.domain.type import BrokerType
 from src.account.domain.access_token import AccessToken
 
 

@@ -1,4 +1,4 @@
-from src.domain.common.type import Market
+from src.common.domain.type import Market
 
 
 from abc import ABC, abstractmethod
