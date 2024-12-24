@@ -64,7 +64,7 @@ class FakeStrategyRepository(Repository[Strategy]):
     id_counter: int = 1
     strategies: List[Strategy] = []
 
-    def find_by_id(self, id: int) -> Strategy:
+    def find_by_id(self, id: int) -> Strategy | None:
         return next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None)
 
     def save(self, dto: Strategy) -> Strategy:
@@ -74,7 +74,9 @@ class FakeStrategyRepository(Repository[Strategy]):
         return dto
 
     def delete_by_id(self, id: int) -> None:
-        FakeStrategyRepository.strategies.remove(next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None))
+        entity = next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None)
+        if entity is not None:
+            FakeStrategyRepository.strategies.remove(entity)
 
     def find_all(self) -> List[Strategy]:
         return copy.deepcopy(FakeStrategyRepository.strategies)
@@ -112,7 +114,8 @@ def test_strategy():
         market=Market.US,
         interval=Interval(time_unit=TimeUnit.MONTH, values=[1]),
         last_run=None,
-        account_id=1,
+        account_id=10,
+        is_active=True,
     )
 
 

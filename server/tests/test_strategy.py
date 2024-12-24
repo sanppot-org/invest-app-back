@@ -1,7 +1,7 @@
 from datetime import datetime
 from src.common.domain.exception import InvestAppException
 from src.strategy.domain.strategy import Strategy, Interval
-from src.common.domain.type import TimeUnit
+from src.common.domain.type import Market, TimeUnit
 import pytest
 
 
@@ -22,11 +22,12 @@ def test_is_time_to_rebalance_false():
 def get_strategy(interval: Interval, last_run: datetime):
     return Strategy(
         id=None,
-        name=None,
+        name="name",
         interval=interval,
         last_run=last_run,
-        market=None,
-        invest_rate=None,
+        market=Market.KR,
+        invest_rate=0.1,
         stocks={},
-        account_id=None,
+        account_id=10,
+        is_active=False,
     )
