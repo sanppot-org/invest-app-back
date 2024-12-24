@@ -12,6 +12,13 @@ class KisInfo:
     is_real: bool
 
 
+@dataclass
+class KisInfoForToken:
+    app_key: str
+    secret_key: str
+    url_base: str
+
+
 class BalanceResponse:
     def __init__(self, res: dict):
         self.total_money = float(res["tot_evlu_amt"])
@@ -23,9 +30,7 @@ class BalanceResponse:
 
         # dnca_tot_amt = 예수금총금액
         if float(res["dnca_tot_amt"]) == 0 or self.total_money == self.stock_money:
-            self.total_money = float(
-                res["bfdy_tot_asst_evlu_amt"]
-            )  # 전일 총자산평가금액
+            self.total_money = float(res["bfdy_tot_asst_evlu_amt"])  # 전일 총자산평가금액
 
         # 예수금 총금액 (즉 주문가능현금)
         self.remain_money = max(

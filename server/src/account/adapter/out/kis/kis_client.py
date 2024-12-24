@@ -2,22 +2,27 @@ import json
 import requests
 from src.account.domain.access_token import AccessToken
 from src.common.domain.exception import ExeptionType, InvestAppException
-from src.account.adapter.out.kis.dto import BalanceResponse, KisInfo
+from src.account.adapter.out.kis.dto import BalanceResponse, KisInfo, KisInfoForToken
 import yfinance as yf
 
 from src.common.domain.type import Market
+from src.common.domain.config import logger
 
 
-def get_token(info: KisInfo) -> AccessToken:
+def get_token(info: KisInfoForToken) -> AccessToken | None:
     headers = {"content-type": "application/json"}
     body = {
         "grant_type": "client_credentials",
         "appkey": info.app_key,
         "appsecret": info.secret_key,
     }
-
     URL = f"{info.url_base}/oauth2/tokenP"
-    res = requests.post(URL, headers=headers, data=json.dumps(body))
+
+    try:
+        res = requests.post(URL, headers=headers, data=json.dumps(body))
+    except Exception as e:
+        logger.error(f"Failed to create token: {e}")
+        return None
 
     if res.status_code != 200:
         raise InvestAppException(ExeptionType.FAILED_TO_CREATE_TOKEN, res.text)

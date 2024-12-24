@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from src.account.adapter.out.kis.kis_account_validator import KisAccountValidator
 from src.containers import Container
 from src.account.domain.account import Account
 from src.account.adapter.out.kis import token_refresher
@@ -11,16 +12,21 @@ router = APIRouter(prefix="/accounts", tags=["account"])
 container = Container.get_instance()
 account_repo = container.account_repository()
 account_provider = container.account_provider()
+kis_account_validator = KisAccountValidator()
 
 
 @router.post("/", summary="계좌 생성")
 def save(req: AccountCreateReq):
-    return account_repo.save(req.to_domain())
+    account_info = req.to_domain()
+    kis_account_validator.validate(account_info)
+    return account_repo.save(account_info)
 
 
 @router.put("/{id}", summary="계좌 수정")
 def update(id: int, req: AccountCreateReq):
-    return account_repo.update(id, req.to_domain())
+    account_info = req.to_domain()
+    kis_account_validator.validate(account_info)
+    return account_repo.update(id, account_info)
 
 
 @router.get("/", summary="계좌 목록 조회")

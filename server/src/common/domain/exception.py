@@ -1,4 +1,4 @@
-from sqlalchemy import Enum
+from enum import Enum
 
 
 class ExeptionType(Enum):
@@ -15,5 +15,5 @@ class ExeptionType(Enum):
 
 class InvestAppException(Exception):
     def __init__(self, exception_type: ExeptionType, *args):
-        self.error_code = exception_type[1]
-        self.message = exception_type[0].format(*args) if args else exception_type[0]
+        self.error_code = exception_type.value[1]
+        self.message = exception_type.value[0].format(*args) if args else exception_type.value[0]

@@ -14,7 +14,6 @@ class AccountCreateReq(BaseModel):
     number: Optional[str] = None
     product_code: Optional[str] = None
     url_base: Optional[str] = None
-    token: Optional[str] = None
 
     def to_domain(self) -> AccountInfo:
         return AccountInfo(
@@ -26,7 +25,7 @@ class AccountCreateReq(BaseModel):
             app_key=self.app_key,
             secret_key=self.secret_key,
             url_base=self.url_base,
-            token=self.token,
             broker_type=self.broker_type,
-            is_virtual=self.is_virtual,
+            is_virtual=self.is_virtual or False,
+            token=None,
         )

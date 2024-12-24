@@ -13,8 +13,7 @@ def refresh_kis_token():
 
     for account_dto in account_dtos:
         kis_account: KisAccount = KisAccount(account_dto=account_dto)
-        token: AccessToken = kis_account.access_token
-        if token is None or token.is_expired():
-            account_dto.token = kis_client.get_token(kis_account._get_kis_info())
+        if kis_account.is_token_invalid():
+            account_dto.token = kis_client.get_token(kis_account.get_kis_info_for_token())
 
     account_repo.upsert_all(account_dtos)
