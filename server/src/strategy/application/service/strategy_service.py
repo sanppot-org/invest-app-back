@@ -48,9 +48,7 @@ class StrategyService:
     def update(self, id: int, model: Strategy) -> Strategy:
         return self.strategy_repo.update(id, model)
 
-    def rebalance(self, strategy_id: int):
-        strategy: Strategy = self.find_by_id(strategy_id)
-
+    def rebalance(self, strategy: Strategy):
         now: datetime = self.time_holder.get_now()
 
         # 리밸런싱 조건 확인
@@ -88,4 +86,9 @@ class StrategyService:
 
         strategy.complete_rebalance()
 
-        self.strategy_repo.update(strategy_id, strategy)
+        self.strategy_repo.update(strategy.id, strategy)
+
+    def rebalance_all(self):
+        strategies = self.strategy_repo.find_all_active()
+        for strategy in strategies:
+            self.rebalance(strategy)
