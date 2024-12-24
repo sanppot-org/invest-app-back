@@ -2,7 +2,8 @@ from venv import logger
 from src.account.domain.account import Account
 from src.account.domain.account_info import AccountInfo
 from src.account.domain.holdings import HoldingsInfo
-from src.common.domain.type import Market
+from src.common.domain.exception import ExeptionType, InvestAppException
+from src.common.domain.type import BrokerType, Market
 from src.account.adapter.out.kis import kis_client
 from src.account.domain.access_token import AccessToken
 from src.account.adapter.out.kis.dto import KisInfo, KisInfoForToken
@@ -11,8 +12,12 @@ from src.account.adapter.out.kis.dto import KisInfo, KisInfoForToken
 class KisAccount(Account):
     def __init__(self, account_dto: AccountInfo, is_virtual: bool = False):
         super().__init__(account_dto=account_dto)
+
+        if account_dto.broker_type != BrokerType.KIS:
+            raise InvestAppException(ExeptionType.INVALID_ACCOUNT_TYPE, account_dto.broker_type)
+
         self.is_virtual: bool = is_virtual
-        self.access_token: AccessToken = self.account_dto.token
+        self.access_token: AccessToken | None = self.account_dto.token
 
     def get_balance(self, market: Market = Market.KR) -> float:
         return kis_client.get_balance(self.get_kis_info(), market)
@@ -60,7 +65,7 @@ class KisAccount(Account):
         return KisInfoForToken(
             app_key=self.account_dto.app_key,
             secret_key=self.account_dto.secret_key,
-            url_base=self.account_dto.url_base,
+            url_base=self.account_dto.url_base or "",
         )
 
 

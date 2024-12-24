@@ -38,6 +38,4 @@ class AccountMapper(EntityMapper[AccountEntity, AccountInfo]):
         )
 
     def to_kis_domain(self, entity: AccountEntity) -> KisAccount:
-        if entity.broker_type != BrokerType.KIS:
-            raise InvestAppException(ExeptionType.INVALID_ACCOUNT_TYPE, entity.broker_type)
-        return KisAccount(account_dto=self.to_model(entity))
+        return KisAccount(account_dto=self.to_model(entity), is_virtual=entity.is_virtual)
