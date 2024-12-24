@@ -46,3 +46,4 @@ class StrategyEntity(BaseEntity):
     interval: Mapped[Interval] = mapped_column(IntervalType)
     last_run: Mapped[datetime] = mapped_column(sqlite.DATETIME, nullable=True)
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
+    is_active: Mapped[bool] = mapped_column(sqlite.BOOLEAN, default=False, nullable=False)

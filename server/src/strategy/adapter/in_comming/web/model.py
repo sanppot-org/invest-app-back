@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from src.common.domain.type import Market, TimeUnit
@@ -32,6 +32,7 @@ class StrategyCreateReq(BaseModel):
     interval: IntervalReq
     market: Market
     account_id: int
+    is_active: Optional[bool] = False
 
     def to_domain(self) -> Strategy:
         return Strategy(
@@ -43,4 +44,5 @@ class StrategyCreateReq(BaseModel):
             account_id=self.account_id,
             market=self.market,
             last_run=None,
+            is_active=self.is_active or False,
         )

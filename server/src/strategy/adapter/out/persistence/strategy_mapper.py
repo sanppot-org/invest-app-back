@@ -14,6 +14,7 @@ class StrategyMapper(EntityMapper[StrategyEntity, Strategy]):
             interval=model.interval,
             last_run=model.last_run,
             account_id=model.account_id,
+            is_active=model.is_active,
         )
 
     def to_model(self, entity: StrategyEntity) -> Strategy:
@@ -26,4 +27,5 @@ class StrategyMapper(EntityMapper[StrategyEntity, Strategy]):
             interval=entity.interval,
             last_run=entity.last_run,
             account_id=entity.account_id,
+            is_active=entity.is_active,
         )

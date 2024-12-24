@@ -19,6 +19,7 @@ class Strategy(BaseDomainModel):
     interval: Interval
     last_run: Optional[datetime]
     account_id: int
+    is_active: bool
 
     def validate_portfolio_rate(self):
         if sum([stock.target_rate for stock in self.stocks.values()]) != 1:

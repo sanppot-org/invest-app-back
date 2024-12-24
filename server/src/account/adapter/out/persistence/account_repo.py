@@ -1,5 +1,5 @@
 from typing import List
-from pytest import Session
+from sqlalchemy.orm import Session
 from sqlalchemy import select
 from src.account.domain.account_info import AccountInfo
 from src.common.domain.type import BrokerType
@@ -12,7 +12,7 @@ class SqlAlchemyAccountRepository(SqlalchemyRepository[AccountEntity, AccountInf
     def __init__(self, session: Session, mapper: EntityMapper[AccountEntity, AccountInfo]):
         super().__init__(session, mapper, AccountEntity)
 
-    def find_all(self, broker_type: BrokerType = None) -> List[AccountInfo]:
+    def find_all(self, broker_type: BrokerType | None = None) -> List[AccountInfo]:
         stmt = select(self.entity_type)
         if broker_type is not None:
             stmt = stmt.where(self.entity_type.broker_type == broker_type)
