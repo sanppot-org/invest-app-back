@@ -49,6 +49,17 @@ class Market(Enum):
         return now.hour >= 10 and now.hour <= 16
 
 
+class OrderType(Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+    def is_buy(self):
+        return self == OrderType.BUY
+
+    def is_sell(self):
+        return self == OrderType.SELL
+
+
 class TimeUnit(Enum):
     MINUTE = "MINUTE"
     HOUR = "HOUR"

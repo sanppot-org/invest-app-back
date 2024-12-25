@@ -28,11 +28,11 @@ class UpbitAccount(Account):
 
         return float(total_balance)
 
-    def buy_market_order(self, ticker: str, amount: float) -> None:
-        self.upbit.buy_market_order(ticker, amount)
+    def buy_market_order(self, ticker: str, quantity: int) -> None:
+        self.upbit.buy_market_order(ticker, quantity)
 
-    def sell_market_order(self, ticker: str, amount: float) -> None:
-        self.upbit.sell_market_order(ticker, amount)
+    def sell_market_order(self, ticker: str, quantity: int) -> None:
+        self.upbit.sell_market_order(ticker, quantity)
 
     def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
         return {

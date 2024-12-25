@@ -14,11 +14,11 @@ class Account(ABC):
         pass
 
     @abstractmethod
-    def buy_market_order(self, ticker: str, amount: float) -> None:
+    def buy_market_order(self, ticker: str, quantity: int) -> None:
         pass
 
     @abstractmethod
-    def sell_market_order(self, ticker: str, amount: float) -> None:
+    def sell_market_order(self, ticker: str, quantity: int) -> None:
         pass
 
     @abstractmethod
