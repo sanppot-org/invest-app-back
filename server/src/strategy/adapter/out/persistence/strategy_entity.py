@@ -1,11 +1,10 @@
 from datetime import datetime
-from sqlalchemy import JSON, ForeignKey, TypeDecorator
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, String, TypeDecorator
 from src.common.domain.type import Market
 from src.strategy.domain.interval import Interval
 from src.strategy.domain.stock_info import StockInfo
 from src.common.adapter.out.persistence.base_entity import BaseEntity, EnumType
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects import sqlite
 from typing import Dict
 
 
@@ -39,11 +38,11 @@ class IntervalType(TypeDecorator):
 
 class StrategyEntity(BaseEntity):
     __tablename__ = "strategy"
-    name: Mapped[str] = mapped_column(sqlite.VARCHAR(30), index=True)
-    invest_rate: Mapped[float] = mapped_column(sqlite.FLOAT)
+    name: Mapped[str] = mapped_column(String(30), index=True)
+    invest_rate: Mapped[float] = mapped_column(Float)
     market: Mapped[Market] = mapped_column(EnumType(Market))
     stocks: Mapped[Dict[str, StockInfo]] = mapped_column(StockInfoDict, nullable=True)
     interval: Mapped[Interval] = mapped_column(IntervalType)
-    last_run: Mapped[datetime] = mapped_column(sqlite.DATETIME, nullable=True)
+    last_run: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
-    is_active: Mapped[bool] = mapped_column(sqlite.BOOLEAN, default=False, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

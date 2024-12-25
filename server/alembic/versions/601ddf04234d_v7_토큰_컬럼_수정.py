@@ -10,7 +10,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import sqlite
 
 # revision identifiers, used by Alembic.
 revision: str = "601ddf04234d"
@@ -26,4 +25,4 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_column("account", "token")
-    op.add_column("account", sa.Column("token", sqlite.VARCHAR(100), nullable=True))
+    op.add_column("account", sa.Column("token", sa.VARCHAR(length=100), nullable=True))

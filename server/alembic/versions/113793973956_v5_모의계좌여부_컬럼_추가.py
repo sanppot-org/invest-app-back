@@ -10,7 +10,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import sqlite
 
 # revision identifiers, used by Alembic.
 revision: str = "113793973956"
@@ -22,9 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.add_column(
         "account",
-        sa.Column(
-            "is_virtual", sa.BOOLEAN(), server_default=sa.text("0"), nullable=False
-        ),
+        sa.Column("is_virtual", sa.BOOLEAN(), server_default=sa.text("0"), nullable=False),
     )
 
 

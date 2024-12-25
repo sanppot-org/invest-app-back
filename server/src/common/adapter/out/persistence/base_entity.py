@@ -1,7 +1,6 @@
 from datetime import datetime
-from sqlalchemy import String, TypeDecorator
+from sqlalchemy import DateTime, String, TypeDecorator
 from sqlalchemy import func
-from sqlalchemy.dialects import sqlite
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base
 
 # 스키마의 기본 클래스
@@ -31,12 +30,12 @@ class BaseEntity(Base):
     __abstract__ = True
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime] = mapped_column(
-        sqlite.DATETIME,
+        DateTime,
         server_default=func.now(),  # INSERT 시 서버에서 시간 생성
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
-        sqlite.DATETIME,
+        DateTime,
         server_default=func.now(),  # INSERT 시 서버에서 시간 생성
         onupdate=func.now(),  # UPDATE 시 자동 업데이트
         nullable=False,
