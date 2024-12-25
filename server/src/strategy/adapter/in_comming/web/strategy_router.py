@@ -36,4 +36,5 @@ def delete(id: int):
 
 @router.post("/{id}/rebalance")
 def rebalance(id: int):
-    return strategy_service.rebalance(id)
+    strategy = strategy_service.find_by_id(id)
+    return strategy_service.rebalance(strategy)

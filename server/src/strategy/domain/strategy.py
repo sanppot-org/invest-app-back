@@ -57,6 +57,3 @@ class Strategy(BaseDomainModel):
 
     def get_account_id(self) -> int:
         return self.account_id
-
-    def get_update_fields(self) -> dict:
-        return {key: value for key, value in self.__dict__.items() if not key.startswith("_") and key not in ["id", "last_run"]}

@@ -23,7 +23,7 @@ class KisAccount(Account):
         return kis_client.get_balance(self.get_kis_info(), market)
 
     def buy_market_order(self, ticker: str, amount: float) -> None:
-        pass
+        kis_client.buy_market_order_us(self.get_kis_info(), ticker, amount)
 
     def sell_market_order(self, ticker: str, amount: float) -> None:
         pass

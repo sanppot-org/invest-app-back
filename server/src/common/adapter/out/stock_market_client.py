@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 import exchange_calendars as market_calendar
 
 from src.common.application.port.out.stock_market_port import StockMarketQueryPort
@@ -23,5 +23,7 @@ class StockMarketClient(StockMarketQueryPort):
 
     def _is_market_open(self, market: Market, now: datetime):
         if market.is_kr():
-            return market_calendar.get_calendar("XKRX").is_session(now)
-        return market_calendar.get_calendar("XNYS").is_session(now)
+            return market_calendar.get_calendar("XKRX").is_session(now.strftime("%Y-%m-%d"))
+        nys_calendar = market_calendar.get_calendar("XNYS")
+        us_time = now.astimezone(nys_calendar.tz)
+        return nys_calendar.is_session(us_time.date().strftime("%Y-%m-%d"))

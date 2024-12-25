@@ -271,4 +271,55 @@ def _get_current_price_kr(info: KisInfo, ticker: str) -> float:
 def _get_current_price_us(ticker: str) -> float:
     stock = yf.Ticker(ticker)
 
-    return stock.info["currentPrice"]
+    latest_data = stock.history(period="1d", interval="1m")
+
+    return latest_data.iloc[-1]["Close"]
+
+
+def buy_market_order_us(info: KisInfo, ticker: str, amount: float):
+    price = get_current_price(info, ticker) * 1.1
+    return buy_limit_order_us(info, ticker, amount, price)
+
+
+def buy_limit_order_us(info: KisInfo, ticker: str, amount: float, price: float):
+    # 가상 계좌는 해외 주식 거래 불가
+    URL = f"{info.url_base}/uapi/overseas-stock/v1/trading/order"
+
+    headers = {
+        "Content-Type": "application/json",
+        "authorization": f"Bearer {info.token}",
+        "appKey": info.app_key,
+        "appSecret": info.secret_key,
+        "tr_id": "JTTT1002U" if info.is_real else "VTTT1002U",
+        "custtype": "P",
+    }
+
+    data = {
+        "CANO": info.account_number,
+        "ACNT_PRDT_CD": info.product_code,
+        "OVRS_EXCG_CD": "NYSE",
+        "PDNO": ticker,
+        "ORD_DVSN": "00",
+        "ORD_QTY": str(int(amount)),
+        "OVRS_ORD_UNPR": str(price),
+        "ORD_SVR_DVSN_CD": "0",
+    }
+
+    res = requests.post(URL, headers=headers, data=json.dumps(data))
+
+    print(res.json())
+
+    if res.status_code == 200 and res.json()["rt_cd"] == "0":
+        order = res.json()["output"]
+
+        OrderInfo = dict()
+
+        OrderInfo["OrderNum"] = order["KRX_FWDG_ORD_ORGNO"]
+        OrderInfo["OrderNum2"] = order["ODNO"]
+        OrderInfo["OrderTime"] = order["ORD_TMD"]
+
+        return OrderInfo
+
+
+def sell_market_order(info: KisInfo, ticker: str, amount: float):
+    pass

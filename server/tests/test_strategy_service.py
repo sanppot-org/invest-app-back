@@ -120,7 +120,9 @@ def test_strategy():
 
 
 class TestStrategyService:
-    def test_rebalance_should_calculate_correct_quantities_and_update_balance(self, container, strategy_service, test_strategy):
+    def test_rebalance_should_calculate_correct_quantities_and_update_balance(
+        self, container: Container, strategy_service: StrategyService, test_strategy: Strategy
+    ):
         """리밸런싱이 올바른 수량을 계산하고 잔고를 업데이트하는지 테스트"""
         # Given
         strategy_repo = container.strategy_repository()
@@ -128,7 +130,7 @@ class TestStrategyService:
         initial_balance = FakeAccount.balance
 
         # When
-        strategy_service.rebalance(saved_strategy.id)
+        strategy_service.rebalance(saved_strategy)
 
         # Then
         found_strategy = strategy_repo.find_by_id(1)
