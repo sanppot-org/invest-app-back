@@ -38,4 +38,4 @@ class AccountMapper(EntityMapper[AccountEntity, AccountInfo]):
         )
 
     def to_kis_domain(self, entity: AccountEntity) -> KisAccount:
-        return KisAccount(account_dto=self.to_model(entity), is_virtual=entity.is_virtual)
+        return KisAccount(account_info=self.to_model(entity), is_virtual=entity.is_virtual)

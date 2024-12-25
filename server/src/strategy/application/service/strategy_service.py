@@ -68,10 +68,11 @@ class StrategyService:
 
         # 4. 종목별 비중 계산
         for ticker, stock in stocks.items():
+            current_price = self.stock_market_query_port.get_current_price(ticker)
             stock.calculate_rebalance_amt(
                 portfolio_target_amt=invest_amount,
                 holdings=holddings_dict.get(ticker),
-                current_price=account.get_current_price(ticker),
+                current_price=current_price,
             )
 
         # 5. 리밸런싱 수량 만큼 매도

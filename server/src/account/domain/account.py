@@ -6,8 +6,8 @@ from src.common.domain.type import Market
 
 
 class Account(ABC):
-    def __init__(self, account_dto: AccountInfo):
-        self.account_dto: AccountInfo = account_dto
+    def __init__(self, account_info: AccountInfo):
+        self.account_info: AccountInfo = account_info
 
     @abstractmethod
     def get_balance(self, market: Market = Market.KR) -> float:
@@ -22,9 +22,5 @@ class Account(ABC):
         pass
 
     @abstractmethod
-    def get_holdings(self) -> dict[str, HoldingsInfo]:
-        pass
-
-    @abstractmethod
-    def get_current_price(self, ticker: str) -> float:
+    def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
         pass

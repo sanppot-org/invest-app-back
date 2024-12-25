@@ -22,6 +22,9 @@ class FakeStockMarketClient(StockMarketQueryPort):
     def is_market_open(self, market: Market):
         pass
 
+    def get_current_price(self, ticker: str) -> float:
+        return 100
+
 
 class FakeTimeHolder(TimeHolder):
     def get_now(self) -> datetime:
@@ -51,13 +54,10 @@ class FakeAccount(Account):
         return FakeAccount.holdings
 
     def buy_market_order(self, ticker: str, amount: float) -> None:
-        FakeAccount.balance -= self.get_current_price(ticker) * amount
+        FakeAccount.balance -= 100 * amount
 
     def sell_market_order(self, ticker: str, amount: float) -> None:
-        FakeAccount.balance += self.get_current_price(ticker) * amount
-
-    def get_current_price(self, ticker: str) -> float:
-        return 100
+        FakeAccount.balance += 100 * amount
 
 
 class FakeStrategyRepository(Repository[Strategy]):

@@ -1,5 +1,6 @@
-from datetime import date, datetime
 import exchange_calendars as market_calendar
+import pyupbit
+import yfinance as yf
 
 from src.common.application.port.out.stock_market_port import StockMarketQueryPort
 from src.common.domain.exception import ExeptionType, InvestAppException
@@ -8,22 +9,21 @@ from src.common.domain.type import Market
 
 class StockMarketClient(StockMarketQueryPort):
     def is_market_open(self, market: Market):
-        now = datetime.now()
-        if self._is_open_time(market, now) and self._is_market_open(market, now):
+        if market.is_market_open_time() and self._is_market_open(market):
             return
 
-        raise InvestAppException(ExeptionType.MARKET_NOT_OPEN, now)
+        raise InvestAppException(ExeptionType.MARKET_NOT_OPEN, market.get_now().replace(microsecond=0))
 
-    def _is_open_time(self, market: Market, now: datetime):
-        if market.is_kr():
-            # 한국 주식 시간 - 9:00 ~ 15:25
-            return now.hour >= 9 and now.hour <= 15 and now.minute <= 25
-        # 미국 주식 시간 - 23:30 ~ 4:55
-        return (now.hour >= 23 and now.minute >= 30) or (now.hour <= 4 and now.minute <= 55)
+    def _is_market_open(self, market: Market):
+        calendar = market_calendar.get_calendar("XNYS")
 
-    def _is_market_open(self, market: Market, now: datetime):
         if market.is_kr():
-            return market_calendar.get_calendar("XKRX").is_session(now.strftime("%Y-%m-%d"))
-        nys_calendar = market_calendar.get_calendar("XNYS")
-        us_time = now.astimezone(nys_calendar.tz)
-        return nys_calendar.is_session(us_time.date().strftime("%Y-%m-%d"))
+            calendar = market_calendar.get_calendar("XKRX")
+
+        return calendar.is_session(market.get_now().strftime("%Y-%m-%d"))
+
+    def get_current_price(self, ticker: str) -> float:
+        if ticker.upper().startswith("KRW-"):
+            return float(pyupbit.get_current_price(ticker))
+
+        return float(yf.Ticker(ticker).fast_info.last_price)

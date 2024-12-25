@@ -21,15 +21,18 @@ class RealAccountProvider(AccountProvider):
         self.account_repository = account_repository
 
     def get_account(self, account_id: int) -> Account:
-        account_dto: AccountInfo = self.account_repository.find_by_id(account_id)
+        account_info: AccountInfo | None = self.account_repository.find_by_id(account_id)
 
-        if account_dto.broker_type == BrokerType.KIS and not account_dto.is_virtual:
-            return KisRealAccount(account_dto)
+        if account_info is None:
+            raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, account_id)
 
-        if account_dto.broker_type == BrokerType.KIS and account_dto.is_virtual:
-            return KisVirtualAccount(account_dto)
+        if account_info.broker_type == BrokerType.KIS and not account_info.is_virtual:
+            return KisRealAccount(account_info)
 
-        if account_dto.broker_type == BrokerType.UPBIT:
-            return UpbitAccount(account_dto)
+        if account_info.broker_type == BrokerType.KIS and account_info.is_virtual:
+            return KisVirtualAccount(account_info)
 
-        raise InvestAppException(ExeptionType.INVALID_ACCOUNT_TYPE, account_dto.broker_type)
+        if account_info.broker_type == BrokerType.UPBIT:
+            return UpbitAccount(account_info)
+
+        raise InvestAppException(ExeptionType.INVALID_ACCOUNT_TYPE, account_info.broker_type)

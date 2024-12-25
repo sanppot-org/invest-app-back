@@ -10,9 +10,9 @@ from src.common.domain.type import Market
 
 
 class UpbitAccount(Account):
-    def __init__(self, account_dto: AccountInfo):
-        super().__init__(account_dto=account_dto)
-        self.upbit = Upbit(access=self.account_dto.app_key, secret=self.account_dto.secret_key)
+    def __init__(self, account_info: AccountInfo):
+        super().__init__(account_info=account_info)
+        self.upbit = Upbit(access=self.account_info.app_key, secret=self.account_info.secret_key)
 
     def get_balance(self, market: Market = Market.KR) -> float:
         stocks: list[dict] = self._get_balances()
@@ -34,7 +34,7 @@ class UpbitAccount(Account):
     def sell_market_order(self, ticker: str, amount: float) -> None:
         self.upbit.sell_market_order(ticker, amount)
 
-    def get_holdings(self) -> dict[str, HoldingsInfo]:
+    def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
         return {
             stock["currency"]: HoldingsInfo(
                 name=stock["currency"],
@@ -44,9 +44,6 @@ class UpbitAccount(Account):
             )
             for stock in self._get_balances()
         }
-
-    def get_current_price(self, ticker: str) -> float:
-        return pyupbit.get_current_price(ticker)
 
     def _get_balances(self) -> list[dict]:
         balances: dict | list = self.upbit.get_balances()

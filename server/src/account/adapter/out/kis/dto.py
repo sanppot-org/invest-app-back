@@ -1,24 +1,3 @@
-from dataclasses import dataclass
-
-
-@dataclass
-class KisInfo:
-    token: str
-    app_key: str
-    secret_key: str
-    url_base: str
-    account_number: str
-    product_code: str
-    is_real: bool
-
-
-@dataclass
-class KisInfoForToken:
-    app_key: str
-    secret_key: str
-    url_base: str
-
-
 class BalanceResponse:
     def __init__(self, res: dict):
         self.total_money = float(res["tot_evlu_amt"])
