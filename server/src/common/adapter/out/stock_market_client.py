@@ -9,12 +9,12 @@ from src.common.domain.type import Market
 
 class StockMarketClient(StockMarketQueryPort):
     def is_market_open(self, market: Market):
-        if market.is_market_open_time() and self._is_market_open(market):
+        if market.is_market_open_time() and self._is_market_open_date(market):
             return
 
-        raise InvestAppException(ExeptionType.MARKET_NOT_OPEN, market.get_now().replace(microsecond=0))
+        raise InvestAppException(ExeptionType.MARKET_NOT_OPEN, market.name, market.get_now().replace(microsecond=0))
 
-    def _is_market_open(self, market: Market):
+    def _is_market_open_date(self, market: Market):
         calendar = market_calendar.get_calendar("XNYS")
 
         if market.is_kr():
