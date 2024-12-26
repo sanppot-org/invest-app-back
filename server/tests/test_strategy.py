@@ -5,18 +5,24 @@ from src.common.domain.type import Market, TimeUnit
 import pytest
 
 
-# 1,2,3월에 실행해야하는 경우, 현재는 2월이고 마지막 실행이 1월이라면 아무 예외가 발생하지 않는다.
-def test_is_time_to_rebalance():
+def test_check_is_time_to_rebalance_pass():
+    """1,2,3월에 실행해야하는 경우, 현재는 2월이고 마지막 실행이 1월이라면 아무 예외가 발생하지 않는다."""
     strategy = get_strategy(Interval(time_unit=TimeUnit.MONTH, values=[1, 2, 3]), datetime(2024, 1, 1))
-    strategy.is_time_to_rebalance(datetime(2024, 2, 1))
+    strategy.check_is_time_to_rebalance(datetime(2024, 2, 1))
 
 
-# 1,2,3월에 실행해야하는 경우, 현재는 2월이고 마지막 실행이 2월이라면 예외가 발생한다.
-def test_is_time_to_rebalance_false():
+def test_check_is_time_to_rebalance_fail():
+    """1,2,3월에 실행해야하는 경우, 현재는 2월이고 마지막 실행이 2월이라면 예외가 발생한다."""
     strategy = get_strategy(Interval(time_unit=TimeUnit.MONTH, values=[1, 2, 3]), datetime(2024, 2, 1))
     with pytest.raises(InvestAppException) as e:
-        strategy.is_time_to_rebalance(datetime(2024, 2, 1))
+        strategy.check_is_time_to_rebalance(datetime(2024, 2, 1))
     assert e.value.message == "리밸런싱 조건이 아닙니다. {}"
+
+
+def test_check_is_time_to_rebalance_last_run_is_none():
+    """현재가 리밸런스 월이고 last_run이 None이라면 예외가 발생하지 않는다."""
+    strategy = get_strategy(Interval(time_unit=TimeUnit.MONTH, values=[1, 2, 3]), last_run=None)
+    strategy.check_is_time_to_rebalance(datetime(2024, 2, 1))
 
 
 def get_strategy(interval: Interval, last_run: datetime):

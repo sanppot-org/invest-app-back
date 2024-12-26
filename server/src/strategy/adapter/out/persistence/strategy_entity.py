@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, String, TypeDecorator
-from src.common.domain.type import Market
+from src.common.domain.type import Market, TimeUnit
 from src.strategy.domain.interval import Interval
 from src.strategy.domain.stock_info import StockInfo
 from src.common.adapter.out.persistence.base_entity import BaseEntity, EnumType
@@ -32,7 +32,7 @@ class IntervalType(TypeDecorator):
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            return Interval(**value)
+            return Interval(time_unit=TimeUnit(value["time_unit"]), values=value["values"])
         return None
 
 

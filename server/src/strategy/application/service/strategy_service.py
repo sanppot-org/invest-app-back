@@ -52,7 +52,8 @@ class StrategyService:
         now: datetime = self.time_holder.get_now()
 
         # 리밸런싱 조건 확인
-        strategy.is_time_to_rebalance(now)
+        strategy.check_is_time_to_rebalance(now)
+
         # 주식 시장 열려있는지 확인
         self.stock_market_query_port.is_market_open(strategy.get_market())
 
