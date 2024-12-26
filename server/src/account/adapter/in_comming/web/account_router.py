@@ -52,9 +52,9 @@ def get_balance(id: int, market: Market = Market.KR):
 
 
 @router.post("/{id}/buy", summary="시장가 매수")
-def buy(id: int, ticker: str, amount: float):
+def buy(id: int, ticker: str, quantity: int):
     account: Account = account_provider.get_account(id)
-    account.buy_market_order(ticker, amount)
+    return account.buy_market_order(ticker, quantity)
 
 
 @router.get("/{id}/holdings", summary="보유 종목 조회")

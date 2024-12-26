@@ -33,17 +33,21 @@ class KisAccount(Account):
 
     def sell_market_order(self, ticker: str, quantity: int) -> None:
         if self._is_kr(ticker):
-            return self._make_order_kr(ticker, quantity, OrderType.SELL)
+            ticker = ticker.split(".")[0]
+            self._make_order_kr(ticker, quantity, OrderType.SELL)
+            return
 
         target_price = self._get_current_price(ticker) * 1.1
         return self._make_order_us(ticker, quantity, target_price, OrderType.SELL)
 
     def buy_market_order(self, ticker: str, quantity: int) -> None:
         if self._is_kr(ticker):
-            return self._make_order_kr(ticker, quantity, OrderType.BUY)
+            ticker = ticker.split(".")[0]
+            self._make_order_kr(ticker, quantity, OrderType.BUY)
+            return
 
         target_price = self._get_current_price(ticker) * 1.1
-        return self._make_order_us(ticker, quantity, target_price, OrderType.BUY)
+        self._make_order_us(ticker, quantity, target_price, OrderType.BUY)
 
     def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
         if market.is_kr():
@@ -319,6 +323,8 @@ class KisAccount(Account):
         if res.status_code == 200 and res.json()["rt_cd"] == "0":
             return res.json()
 
+        raise InvestAppException(ExeptionType.FAILED_TO_MAKE_ORDER, res.text)
+
     def _make_order_us(self, ticker: str, quantity: int, price: float, order_type: OrderType) -> None:
         tr_id = "VTTT1001U" if self.is_virtual else "TTTT1006U"
 
@@ -348,6 +354,8 @@ class KisAccount(Account):
 
         if res.status_code == 200 and res.json()["rt_cd"] == "0":
             return res.json()
+
+        raise InvestAppException(ExeptionType.FAILED_TO_MAKE_ORDER, res.text)
 
     def _is_kr(self, ticker: str) -> bool:
         return "." in ticker
