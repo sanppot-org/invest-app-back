@@ -68,6 +68,9 @@ class TimeUnit(Enum):
     MONTH = "MONTH"
     YEAR = "YEAR"
 
+    def is_month(self):
+        return self == TimeUnit.MONTH
+
 
 class BrokerType(Enum):
     KIS = "KIS"

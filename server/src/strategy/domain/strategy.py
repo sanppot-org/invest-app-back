@@ -37,17 +37,8 @@ class Strategy(BaseDomainModel):
     def complete_rebalance(self):
         self.last_run = datetime.now()
 
-    # TODO: 고도화 하기.
     def check_is_time_to_rebalance(self, now: datetime):
-        interval: Interval = self.interval
-
-        if interval.is_month():
-            this_month = now.month
-
-            if this_month not in interval.values or (self.last_run is not None and this_month == self.last_run.month):
-                raise InvestAppException(exception_type=ExeptionType.NOT_TIME_TO_REBALANCE)
-
-        # TODO: 다른 조건 추가하기
+        self.interval.check_is_time_to_rebalance(now, self.last_run)
 
     def get_market(self) -> Market:
         return self.market
