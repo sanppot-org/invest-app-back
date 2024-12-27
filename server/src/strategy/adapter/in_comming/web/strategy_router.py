@@ -1,40 +1,42 @@
 from fastapi import APIRouter
 from src.containers import Container
+from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.application.service.strategy_service import StrategyService
-from src.strategy.adapter.in_comming.web.model import StrategyCreateReq
+from src.strategy.adapter.in_comming.web.model import StrategyUpsertReq
 
 router = APIRouter(prefix="/strategies", tags=["strategy"])
 
 container = Container.get_instance()
 strategy_service: StrategyService = container.strategy_service()
+strategy_repository: StrategyRepository = container.strategy_repository()
+
+
+@router.post("/")
+def save(req: StrategyUpsertReq):
+    return strategy_repository.save(req.to_command())
+
+
+@router.put("/{id}")
+def update(id: int, req: StrategyUpsertReq):
+    return strategy_repository.update(id, req.to_command())
 
 
 @router.get("/")
 def find_all():
-    return strategy_service.find_all()
-
-
-@router.post("/")
-def save(req: StrategyCreateReq):
-    return strategy_service.save(req.to_domain())
-
-
-@router.put("/{id}")
-def update(id: int, req: StrategyCreateReq):
-    return strategy_service.update(id, req.to_domain())
+    return strategy_repository.find_all()
 
 
 @router.get("/{id}")
 def get(id: int):
-    return strategy_service.find_by_id(id)
+    return strategy_repository.find_by_id(id)
 
 
 @router.delete("/{id}")
 def delete(id: int):
-    return strategy_service.delete_by_id(id)
+    return strategy_repository.delete_by_id(id)
 
 
 @router.post("/{id}/rebalance")
 def rebalance(id: int):
-    strategy = strategy_service.find_by_id(id)
+    strategy = strategy_repository.find_by_id(id)
     return strategy_service.rebalance(strategy)

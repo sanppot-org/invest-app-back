@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 
 from src.account.domain.account import Account
+from src.account.domain.account_create_command import AccountCreateCommand
 from src.account.domain.account_info import AccountInfo
 from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.application.port.out.repository import Repository
@@ -17,7 +18,7 @@ class AccountProvider(ABC):
 
 
 class RealAccountProvider(AccountProvider):
-    def __init__(self, account_repository: Repository[AccountInfo]):
+    def __init__(self, account_repository: Repository[AccountCreateCommand, AccountInfo]):
         self.account_repository = account_repository
 
     def get_account(self, account_id: int) -> Account:

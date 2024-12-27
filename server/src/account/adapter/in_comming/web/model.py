@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
-from src.account.domain.account_info import AccountInfo
+from src.account.domain.account_create_command import AccountCreateCommand
 from src.common.domain.type import BrokerType
 
 
@@ -15,9 +15,8 @@ class AccountCreateReq(BaseModel):
     product_code: Optional[str] = None
     url_base: Optional[str] = None
 
-    def to_domain(self) -> AccountInfo:
-        return AccountInfo(
-            id=None,
+    def to_domain(self) -> AccountCreateCommand:
+        return AccountCreateCommand(
             name=self.name,
             login_id=self.login_id,
             number=self.number,
@@ -27,5 +26,4 @@ class AccountCreateReq(BaseModel):
             url_base=self.url_base,
             broker_type=self.broker_type,
             is_virtual=self.is_virtual or False,
-            token=None,
         )

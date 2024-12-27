@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
-from src.common.domain.type import BrokerType
+
 from src.account.domain.access_token import AccessToken
+from src.common.domain.type import BrokerType
 
 
 @dataclass
-class AccountInfo:
-    id: int
+class AccountCreateCommand:
     name: str
     app_key: str
     secret_key: str
@@ -16,4 +16,3 @@ class AccountInfo:
     login_id: Optional[str]
     url_base: Optional[str]
     is_virtual: bool
-    token: Optional[AccessToken]

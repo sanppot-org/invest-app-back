@@ -1,12 +1,23 @@
-from src.account.domain.account_info import AccountInfo
-from src.common.domain.exception import ExeptionType, InvestAppException
-from src.common.domain.type import BrokerType
+from src.account.domain.account_create_command import AccountCreateCommand
 from src.account.adapter.out.kis.kis_account import KisAccount
 from src.account.adapter.out.persistence.account_entity import AccountEntity
-from src.common.adapter.out.persistence.entity_mapper import EntityMapper
+from src.account.domain.account_info import AccountInfo
 
 
-class AccountMapper(EntityMapper[AccountEntity, AccountInfo]):
+class AccountMapper:
+    def to_entity(self, dto: AccountCreateCommand) -> AccountEntity:
+        return AccountEntity(
+            name=dto.name,
+            app_key=dto.app_key,
+            secret_key=dto.secret_key,
+            broker_type=dto.broker_type,
+            number=dto.number,
+            product_code=dto.product_code,
+            login_id=dto.login_id,
+            url_base=dto.url_base,
+            is_virtual=dto.is_virtual,
+        )
+
     def to_model(self, entity: AccountEntity) -> AccountInfo:
         return AccountInfo(
             id=entity.id,
@@ -22,20 +33,5 @@ class AccountMapper(EntityMapper[AccountEntity, AccountInfo]):
             token=entity.token,
         )
 
-    def to_entity(self, dto: AccountInfo) -> AccountEntity:
-        return AccountEntity(
-            id=dto.id,
-            name=dto.name,
-            app_key=dto.app_key,
-            secret_key=dto.secret_key,
-            broker_type=dto.broker_type,
-            number=dto.number,
-            product_code=dto.product_code,
-            login_id=dto.login_id,
-            url_base=dto.url_base,
-            is_virtual=dto.is_virtual,
-            token=dto.token,
-        )
-
     def to_kis_domain(self, entity: AccountEntity) -> KisAccount:
-        return KisAccount(account_info=self.to_model(entity), is_virtual=entity.is_virtual)
+        return KisAccount(account_info=entity, is_virtual=entity.is_virtual)

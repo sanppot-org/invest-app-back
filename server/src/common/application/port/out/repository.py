@@ -1,19 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Generic, List, TypeVar
+from typing import Generic, List
 
-from src.common.domain.base_domain_model import BaseDomainModel
-
-
-M = TypeVar("M", bound=BaseDomainModel)
+from src.common.adapter.out.persistence.type import Command, Model
 
 
-class Repository(ABC, Generic[M]):
+class Repository(ABC, Generic[Command, Model]):
     @abstractmethod
-    def save(self, model: M) -> M:
-        pass
-
-    @abstractmethod
-    def update(self, id: int, model: M) -> M:
+    def save(self, command: Command) -> Model:
         pass
 
     @abstractmethod
@@ -21,9 +14,9 @@ class Repository(ABC, Generic[M]):
         pass
 
     @abstractmethod
-    def find_by_id(self, id: int) -> M | None:
+    def find_by_id(self, id: int) -> Model:
         pass
 
     @abstractmethod
-    def find_all(self) -> List[M]:
+    def find_all(self) -> List[Model]:
         pass

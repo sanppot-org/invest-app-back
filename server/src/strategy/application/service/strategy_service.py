@@ -1,15 +1,15 @@
 from datetime import datetime
 from typing import Dict
+from src.common.adapter.out.persistence.transactional import transactional
 from src.common.application.port.out.time_holder import TimeHolder
 from src.common.application.port.out.stock_market_port import StockMarketQueryPort
 from src.account.application.service.account_provider import AccountProvider
 from src.account.domain.account import Account
 from src.account.domain.holdings import HoldingsInfo
 from src.common.application.port.out.repository import *
-from src.common.domain.exception import ExeptionType, InvestAppException
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy import StrategyDomainModel
 from dependency_injector.wiring import inject
 
 
@@ -27,28 +27,8 @@ class StrategyService:
         self.stock_market_query_port = stock_market_query_port
         self.time_holder = time_holder
 
-    def save(self, model: Strategy) -> Strategy:
-        model.validate_portfolio_rate()
-        return self.strategy_repo.save(model)
-
-    def find_by_id(self, id: int) -> Strategy:
-        strategy = self.strategy_repo.find_by_id(id)
-
-        if strategy is None:
-            raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id)
-
-        return strategy
-
-    def find_all(self) -> List[Strategy]:
-        return self.strategy_repo.find_all()
-
-    def delete_by_id(self, id: int) -> int:
-        return self.strategy_repo.delete_by_id(id)
-
-    def update(self, id: int, model: Strategy) -> Strategy:
-        return self.strategy_repo.update(id, model)
-
-    def rebalance(self, strategy: Strategy):
+    @transactional
+    def rebalance(self, strategy: StrategyDomainModel):
         now: datetime = self.time_holder.get_now()
 
         # 리밸런싱 조건 확인
@@ -87,8 +67,6 @@ class StrategyService:
                 account.buy_market_order(ticker, stock.rebalance_qty)
 
         strategy.complete_rebalance()
-
-        self.strategy_repo.update(strategy.id, strategy)
 
     def rebalance_all(self):
         strategies = self.strategy_repo.find_all_active()
