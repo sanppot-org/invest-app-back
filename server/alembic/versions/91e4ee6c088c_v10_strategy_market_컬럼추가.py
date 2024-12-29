@@ -24,7 +24,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     with op.batch_alter_table("strategy") as batch_op:
-        batch_op.add_column(sa.Column("market", EnumType(Market), nullable=False, server_default="KR"))
+        batch_op.add_column(sa.Column("market", sa.CHAR(length=2), nullable=False, server_default="KR"))
 
 
 def downgrade() -> None:
