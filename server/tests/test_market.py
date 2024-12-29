@@ -1,5 +1,4 @@
 from datetime import datetime
-from src.common.adapter.out.stock_market_client import StockMarketClient
 from src.common.domain.type import Market
 
 
