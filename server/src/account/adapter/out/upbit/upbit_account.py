@@ -31,9 +31,11 @@ class UpbitAccount(Account):
         return float(total_balance)
 
     def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+        ticker.validate_crypto_ticker()
         self.upbit.buy_market_order(ticker.value, quantity)
 
     def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+        ticker.validate_crypto_ticker()
         self.upbit.sell_market_order(ticker.value, quantity)
 
     def get_holdings(self, market: Market = Market.KR) -> Dict[Ticker, HoldingsInfo]:

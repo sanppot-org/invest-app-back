@@ -12,6 +12,7 @@ class ExeptionType(Enum):
     INVALID_PORTFOLIO_RATE = ["포트폴리오 종목 비중의 합은 1이어야 합니다. {}", 400]
     INVALID_ACCOUNT_INFO = ["계좌 정보가 올바르지 않습니다. {}", 400]
     FAILED_TO_MAKE_ORDER = ["주문 실패. {}", 500]
+    INVALID_TICKER = ["올바르지 않은 종목 코드입니다. {}", 400]
 
 
 class InvestAppException(Exception):
