@@ -27,27 +27,6 @@ class StrategyService:
         self.stock_market_query_port = stock_market_query_port
         self.time_holder = time_holder
 
-    def save(self, model: Strategy) -> Strategy:
-        model.validate_portfolio_rate()
-        return self.strategy_repo.save(model)
-
-    def find_by_id(self, id: int) -> Strategy:
-        strategy = self.strategy_repo.find_by_id(id)
-
-        if strategy is None:
-            raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id)
-
-        return strategy
-
-    def find_all(self) -> List[Strategy]:
-        return self.strategy_repo.find_all()
-
-    def delete_by_id(self, id: int) -> int:
-        return self.strategy_repo.delete_by_id(id)
-
-    def update(self, id: int, model: Strategy) -> Strategy:
-        return self.strategy_repo.update(id, model)
-
     def rebalance(self, strategy: Strategy):
         now: datetime = self.time_holder.get_now()
 

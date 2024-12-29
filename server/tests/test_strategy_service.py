@@ -143,20 +143,6 @@ class TestStrategyService:
 
         assert FakeAccount.balance == 0, f"모든 잔고({initial_balance})가 투자되어 0이 되어야 합니다"
 
-    def test_save_and_get_strategy(self, strategy_service: StrategyService, test_strategy: Strategy):
-        """전략을 저장하고 조회하는 테스트"""
-        # Given
-        saved_strategy = strategy_service.save(test_strategy)
-
-        # When
-        found_strategy = strategy_service.find_by_id(saved_strategy.id)
-        found_strategies = strategy_service.find_all()
-
-        # Then
-        assert found_strategy == saved_strategy, "저장된 전략과 조회된 전략이 동일해야 합니다"
-        assert len(found_strategies) == 1, "전체 조회 시 전략이 1개 있어야 한다"
-        assert found_strategies[0] == saved_strategy, "전체 조회 시 저장된 전략이 포함되어야 한다"
-
     @pytest.fixture(autouse=True)
     def reset_fake_strategy_repo(self):
         FakeStrategyRepository.strategies = []
