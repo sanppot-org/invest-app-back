@@ -1,7 +1,7 @@
-from src.common.domain.type import Market
-
-
 from abc import ABC, abstractmethod
+
+from src.common.domain.type import Market
+from src.common.domain.ticker import Ticker
 
 
 class StockMarketQueryPort(ABC):
@@ -10,5 +10,5 @@ class StockMarketQueryPort(ABC):
         pass
 
     @abstractmethod
-    def get_current_price(self, ticker: str) -> float:
+    def get_current_price(self, ticker: Ticker) -> float:
         pass

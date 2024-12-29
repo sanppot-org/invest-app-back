@@ -1,4 +1,5 @@
 from time import sleep
+from typing import Dict
 import pyupbit
 from pyupbit import Upbit
 
@@ -7,6 +8,7 @@ from src.account.domain.account_info import AccountInfo
 from src.account.domain.holdings import HoldingsInfo
 from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market
+from src.common.domain.ticker import Ticker
 
 
 class UpbitAccount(Account):
@@ -28,15 +30,15 @@ class UpbitAccount(Account):
 
         return float(total_balance)
 
-    def buy_market_order(self, ticker: str, quantity: int) -> None:
-        self.upbit.buy_market_order(ticker, quantity)
+    def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+        self.upbit.buy_market_order(ticker.value, quantity)
 
-    def sell_market_order(self, ticker: str, quantity: int) -> None:
-        self.upbit.sell_market_order(ticker, quantity)
+    def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+        self.upbit.sell_market_order(ticker.value, quantity)
 
-    def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
+    def get_holdings(self, market: Market = Market.KR) -> Dict[Ticker, HoldingsInfo]:
         return {
-            stock["currency"]: HoldingsInfo(
+            Ticker(stock["currency"]): HoldingsInfo(
                 name=stock["currency"],
                 quantity=float(stock["balance"]),
                 avg_price=float(stock["avg_buy_price"]),

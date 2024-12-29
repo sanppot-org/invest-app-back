@@ -5,6 +5,7 @@ import yfinance as yf
 from src.common.application.port.out.stock_market_port import StockMarketQueryPort
 from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market
+from src.common.domain.ticker import Ticker
 
 
 class StockMarketClient(StockMarketQueryPort):
@@ -22,8 +23,8 @@ class StockMarketClient(StockMarketQueryPort):
 
         return calendar.is_session(market.get_now().strftime("%Y-%m-%d"))
 
-    def get_current_price(self, ticker: str) -> float:
-        if ticker.upper().startswith("KRW-"):
-            return float(pyupbit.get_current_price(ticker))
+    def get_current_price(self, ticker: Ticker) -> float:
+        if ticker.is_crypto():
+            return float(pyupbit.get_current_price(ticker.value))
 
-        return float(yf.Ticker(ticker).fast_info.last_price)
+        return float(yf.Ticker(ticker.value).fast_info.last_price)

@@ -6,7 +6,7 @@ from src.account.application.service.account_provider import AccountProvider
 from src.account.domain.account import Account
 from src.account.domain.holdings import HoldingsInfo
 from src.common.application.port.out.repository import *
-from src.common.domain.exception import ExeptionType, InvestAppException
+from src.common.domain.ticker import Ticker
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.domain.stock_info import StockInfo
 from src.strategy.domain.strategy import Strategy
@@ -48,7 +48,7 @@ class StrategyService:
 
         # 4. 종목별 비중 계산
         for ticker, stock in stocks.items():
-            current_price = self.stock_market_query_port.get_current_price(ticker)
+            current_price = self.stock_market_query_port.get_current_price(Ticker(ticker))
             stock.calculate_rebalance_amt(
                 portfolio_target_amt=invest_amount,
                 holdings=holddings_dict.get(ticker),
@@ -58,12 +58,12 @@ class StrategyService:
         # 5. 리밸런싱 수량 만큼 매도
         for ticker, stock in stocks.items():
             if stock.rebalance_qty < 0:
-                account.sell_market_order(ticker, stock.rebalance_qty)
+                account.sell_market_order(Ticker(ticker), stock.rebalance_qty)
 
         # 6. 리밸런싱 수량 만큼 매수
         for ticker, stock in stocks.items():
             if stock.rebalance_qty > 0:
-                account.buy_market_order(ticker, stock.rebalance_qty)
+                account.buy_market_order(Ticker(ticker), stock.rebalance_qty)
 
         strategy.complete_rebalance()
 

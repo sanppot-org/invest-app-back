@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import Dict
 
 from src.account.domain.account_info import AccountInfo
 from src.account.domain.holdings import HoldingsInfo
+from src.common.domain.ticker import Ticker
 from src.common.domain.type import Market
 
 
@@ -14,13 +16,13 @@ class Account(ABC):
         pass
 
     @abstractmethod
-    def buy_market_order(self, ticker: str, quantity: int) -> None:
+    def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
         pass
 
     @abstractmethod
-    def sell_market_order(self, ticker: str, quantity: int) -> None:
+    def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
         pass
 
     @abstractmethod
-    def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
+    def get_holdings(self, market: Market = Market.KR) -> Dict[str, HoldingsInfo]:
         pass

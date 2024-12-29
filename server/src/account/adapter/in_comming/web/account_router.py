@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from src.account.adapter.out.kis.kis_account_validator import KisAccountValidator
+from src.common.domain.ticker import Ticker
 from src.common.domain.type import Market
 from src.containers import Container
 from src.account.domain.account import Account
@@ -52,7 +53,7 @@ def get_balance(id: int, market: Market = Market.KR):
 
 
 @router.post("/{id}/buy", summary="시장가 매수")
-def buy(id: int, ticker: str, quantity: int):
+def buy(id: int, ticker: Ticker, quantity: int):
     account: Account = account_provider.get_account(id)
     return account.buy_market_order(ticker, quantity)
 

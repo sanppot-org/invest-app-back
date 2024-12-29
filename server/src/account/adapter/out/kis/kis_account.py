@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 from venv import logger
 
 import requests
@@ -10,6 +11,7 @@ from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import BrokerType, Market, OrderType
 from src.account.domain.access_token import AccessToken
 from src.account.adapter.out.kis.dto import BalanceResponse
+from src.common.domain.ticker import Ticker
 
 stock_market_client = StockMarketClient()
 
@@ -31,25 +33,23 @@ class KisAccount(Account):
         # TODO: 제대로 구현하기
         return self._get_balance_us()
 
-    def sell_market_order(self, ticker: str, quantity: int) -> None:
-        if self._is_kr(ticker):
-            ticker = ticker.split(".")[0]
-            self._make_order_kr(ticker, quantity, OrderType.SELL)
+    def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+        if ticker.is_kr():
+            self._make_order_kr(ticker.get_kr_ticker(), quantity, OrderType.SELL)
             return
 
-        target_price = self._get_current_price(ticker) * 1.1
-        return self._make_order_us(ticker, quantity, target_price, OrderType.SELL)
+        target_price = self._get_current_price(ticker.value) * 1.1
+        return self._make_order_us(ticker.value, quantity, target_price, OrderType.SELL)
 
-    def buy_market_order(self, ticker: str, quantity: int) -> None:
-        if self._is_kr(ticker):
-            ticker = ticker.split(".")[0]
-            self._make_order_kr(ticker, quantity, OrderType.BUY)
+    def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+        if ticker.is_kr():
+            self._make_order_kr(ticker.get_kr_ticker(), quantity, OrderType.BUY)
             return
 
-        target_price = self._get_current_price(ticker) * 1.1
-        self._make_order_us(ticker, quantity, target_price, OrderType.BUY)
+        target_price = self._get_current_price(ticker.value) * 1.1
+        self._make_order_us(ticker.value, quantity, target_price, OrderType.BUY)
 
-    def get_holdings(self, market: Market = Market.KR) -> dict[str, HoldingsInfo]:
+    def get_holdings(self, market: Market = Market.KR) -> Dict[str, HoldingsInfo]:
         if market.is_kr():
             return {
                 stock["pdno"]: HoldingsInfo(
@@ -356,9 +356,6 @@ class KisAccount(Account):
             return res.json()
 
         raise InvestAppException(ExeptionType.FAILED_TO_MAKE_ORDER, res.text)
-
-    def _is_kr(self, ticker: str) -> bool:
-        return "." in ticker
 
 
 class KisRealAccount(KisAccount):
