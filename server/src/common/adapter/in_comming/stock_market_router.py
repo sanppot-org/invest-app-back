@@ -8,11 +8,11 @@ router = APIRouter(prefix="/stock-market", tags=["stock-market"])
 stock_market_client = StockMarketClient()
 
 
-@router.get("/is-market-open")
+@router.get("/is-market-open", summary="시장 열려있는지 확인")
 def is_market_open(market: Market = Query(default=Market.KR)):
     return stock_market_client.is_market_open(market)
 
 
-@router.get("/current-price")
+@router.get("/current-price", summary="주식 현재가 조회")
 def get_current_price(ticker: str):
     return stock_market_client.get_current_price(ticker)

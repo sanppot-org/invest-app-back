@@ -9,7 +9,7 @@ from src.containers import Container
 from src.account.domain.account import Account
 from src.account.application.service.account_provider import AccountProvider
 from src.account.domain.holdings import HoldingsInfo
-from src.common.application.port.out.repository import Repository
+from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.application.service.strategy_service import StrategyService
 from src.strategy.domain.stock_info import StockInfo
 from src.strategy.domain.strategy import Strategy
@@ -32,7 +32,7 @@ class FakeTimeHolder(TimeHolder):
 
 
 class FakeAccountProvider(AccountProvider):
-    account: Account = None
+    account: Account | None = None
 
     def get_account(self, account_id: int) -> Account:
         if FakeAccountProvider.account is None:
@@ -44,7 +44,7 @@ class FakeAccount(Account):
     balance: float = 10_000
     holdings: Dict[str, HoldingsInfo] = {}
 
-    def __init__(self, entity: AccountEntity):
+    def __init__(self, entity: AccountEntity | None):
         self.entity = entity
 
     def get_balance(self) -> float:
@@ -60,18 +60,18 @@ class FakeAccount(Account):
         FakeAccount.balance += 100 * amount
 
 
-class FakeStrategyRepository(Repository[Strategy]):
+class FakeStrategyRepository(StrategyRepository):
     id_counter: int = 1
     strategies: List[Strategy] = []
 
-    def find_by_id(self, id: int) -> Strategy | None:
-        return next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None)
+    def find_by_id(self, id: int) -> Strategy:
+        return next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id))
 
-    def save(self, dto: Strategy) -> Strategy:
-        dto.id = FakeStrategyRepository.id_counter
+    def save(self, model: Strategy) -> Strategy:
+        model.id = FakeStrategyRepository.id_counter
         FakeStrategyRepository.id_counter += 1
-        FakeStrategyRepository.strategies.append(dto)
-        return dto
+        FakeStrategyRepository.strategies.append(model)
+        return model
 
     def delete_by_id(self, id: int) -> None:
         entity = next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None)
@@ -87,6 +87,9 @@ class FakeStrategyRepository(Repository[Strategy]):
             FakeStrategyRepository.strategies.remove(found_strategy)
             FakeStrategyRepository.strategies.append(dto)
         return dto
+
+    def find_all_active(self) -> List[Strategy]:
+        return [s for s in FakeStrategyRepository.strategies if s.is_active]
 
 
 @pytest.fixture
@@ -133,7 +136,7 @@ class TestStrategyService:
         strategy_service.rebalance(saved_strategy)
 
         # Then
-        found_strategy = strategy_repo.find_by_id(1)
+        found_strategy = strategy_repo.find_by_id(saved_strategy.id)
         assert found_strategy.stocks["spy"].rebalance_qty == 100, "리밸런싱 후 SPY의 목표 수량이 100이어야 합니다"
 
         assert found_strategy.last_run.date() == datetime.now().date(), "마지막 실행 시간이 현재 날짜로 업데이트되어야 합니다"

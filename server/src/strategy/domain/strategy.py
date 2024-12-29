@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Optional
 
-from src.common.domain.base_domain_model import BaseDomainModel
 from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market
 from src.strategy.domain.interval import Interval
@@ -10,7 +9,7 @@ from src.strategy.domain.stock_info import StockInfo
 
 
 @dataclass
-class Strategy(BaseDomainModel):
+class Strategy:
     id: Optional[int]
     name: str
     invest_rate: float

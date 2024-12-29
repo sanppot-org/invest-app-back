@@ -88,7 +88,7 @@ class StrategyService:
 
         strategy.complete_rebalance()
 
-        self.strategy_repo.update(strategy.id, strategy)
+        self.strategy_repo.save(strategy)
 
     def rebalance_all(self):
         strategies = self.strategy_repo.find_all_active()

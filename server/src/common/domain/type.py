@@ -78,3 +78,6 @@ class BrokerType(Enum):
 
     def is_kis(self):
         return self == BrokerType.KIS
+
+    def is_upbit(self):
+        return self == BrokerType.UPBIT
