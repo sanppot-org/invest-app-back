@@ -7,10 +7,11 @@ from src.account.adapter.out.kis import token_refresher
 
 scheduler = BackgroundScheduler()
 
+container = Container.get_instance()
+strategy_service = container.strategy_service()
+
 
 def rebalance_all():
-    container = Container()
-    strategy_service = container.strategy_service()
     strategy_service.rebalance_all()
 
 

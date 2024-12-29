@@ -94,7 +94,7 @@ class FakeStrategyRepository(StrategyRepository):
 
 @pytest.fixture
 def container():
-    container = Container()
+    container = Container.get_instance()
     container.stock_market_query_port.override(FakeStockMarketClient())
     container.time_holder.override(FakeTimeHolder())
     container.account_provider.override(FakeAccountProvider())
