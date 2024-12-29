@@ -25,7 +25,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(length=30), nullable=False),
         sa.Column("app_key", sa.String(length=50), nullable=False),
-        sa.Column("secret_key", sa.String(length=100), nullable=False),
+        sa.Column("secret_key", sa.String(length=200), nullable=False),
         sa.Column("broker_type", sa.CHAR(length=10), nullable=False),
         sa.Column("number", sa.String(length=10), nullable=True),
         sa.Column("product_code", sa.CHAR(length=2), nullable=True),
