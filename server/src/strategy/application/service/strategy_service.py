@@ -6,18 +6,19 @@ from src.common.application.port.out.stock_market_port import StockMarketQueryPo
 from src.account.application.service.account_provider import AccountProvider
 from src.account.domain.account import Account
 from src.account.domain.holdings import HoldingsInfo
-from src.common.application.port.out.repository import *
-from src.strategy.application.port.out.strategy_repository import StrategyRepository
+from src.common.domain.exception import ExeptionType, InvestAppException
+from src.strategy.adapter.out.persistence.strategy_repo import SqlAlchemyStrategyRepository
 from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import StrategyDomainModel
 from dependency_injector.wiring import inject
+
+from src.strategy.domain.strategy_entity import StrategyEntity
 
 
 class StrategyService:
     @inject
     def __init__(
         self,
-        strategy_repo: StrategyRepository,
+        strategy_repo: SqlAlchemyStrategyRepository,
         account_provider: AccountProvider,
         stock_market_query_port: StockMarketQueryPort,
         time_holder: TimeHolder,
@@ -28,7 +29,15 @@ class StrategyService:
         self.time_holder = time_holder
 
     @transactional
-    def rebalance(self, strategy: StrategyDomainModel):
+    def update(self, id: int, strategy: StrategyEntity) -> StrategyEntity:
+        entity = self.strategy_repo.find_by_id(id)
+        if entity is None:
+            raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id)
+        entity.update(strategy)
+        return entity
+
+    @transactional
+    def rebalance(self, strategy: StrategyEntity):
         now: datetime = self.time_holder.get_now()
 
         # 리밸런싱 조건 확인

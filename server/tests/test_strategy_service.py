@@ -9,15 +9,9 @@ from src.containers import Container
 from src.account.domain.account import Account
 from src.account.application.service.account_provider import AccountProvider
 from src.account.domain.holdings import HoldingsInfo
-from src.common.application.port.out.repository import Repository
-from src.strategy.adapter.out.persistence.strategy_mapper import StrategyMapper
 from src.strategy.application.service.strategy_service import StrategyService
-from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import StrategyDomainModel
-from src.common.domain.type import Market, TimeUnit
+from src.common.domain.type import Market
 from src.account.adapter.out.persistence.account_entity import AccountEntity
-from src.strategy.domain.interval import Interval
-from src.strategy.domain.strategy_upsert_command import StrategyCreateCommand
 
 
 class FakeStockMarketClient(StockMarketQueryPort):
@@ -71,11 +65,12 @@ class FakeStrategyRepository(Repository[StrategyCreateCommand, StrategyDomainMod
         return next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None)
 
     def save(self, command: StrategyCreateCommand) -> StrategyDomainModel:
-        entity = self.mapper.to_entity(command)
-        entity.id = FakeStrategyRepository.id_counter
+        entity = self.mapper.command_to_entity(command)
+        domail_model = self.mapper.entity_to_model(entity)
+        domail_model.id = FakeStrategyRepository.id_counter
         FakeStrategyRepository.id_counter += 1
-        FakeStrategyRepository.strategies.append(entity)
-        return entity
+        FakeStrategyRepository.strategies.append(domail_model)
+        return domail_model
 
     def delete_by_id(self, id: int) -> int:
         entity = next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id), None)
@@ -86,9 +81,9 @@ class FakeStrategyRepository(Repository[StrategyCreateCommand, StrategyDomainMod
     def find_all(self) -> List[StrategyDomainModel]:
         return copy.deepcopy(FakeStrategyRepository.strategies)
 
-    def update(self, id: int, command: StrategyCreateCommand) -> StrategyDomainModel:
-        found_strategy = next((s for s in FakeStrategyRepository.strategies if s.id == id), None)
-        entity = self.mapper.to_entity(command)
+    def update(self, model: StrategyDomainModel) -> StrategyDomainModel:
+        found_strategy = next((s for s in FakeStrategyRepository.strategies if s.id == model.id), None)
+        entity = self.mapper.model_to_entity(model)
         if found_strategy is not None:
             FakeStrategyRepository.strategies.remove(found_strategy)
             FakeStrategyRepository.strategies.append(entity)
@@ -111,43 +106,37 @@ def strategy_service(container):
 
 
 @pytest.fixture
-def test_strategy() -> StrategyCreateCommand:
-    return StrategyCreateCommand(
-        name="정적 자산 배분",
-        invest_rate=1,
-        stocks={"spy": StockInfo(target_rate=1)},
-        market=Market.US,
-        interval=Interval(time_unit=TimeUnit.MONTH, values=[1]),
-        account_id=10,
-        is_active=True,
-    )
+def strategy_repo() -> FakeStrategyRepository:
+    return FakeStrategyRepository()
 
 
 class TestStrategyService:
     def test_rebalance_should_calculate_correct_quantities_and_update_balance(
-        self, container: Container, strategy_service: StrategyService, test_strategy: StrategyCreateCommand
+        self,
+        container: Container,
+        strategy_service: StrategyService,
     ):
         """리밸런싱이 올바른 수량을 계산하고 잔고를 업데이트하는지 테스트"""
         # Given
         strategy_repo = container.strategy_repository()
-        saved_strategy = strategy_repo.save(test_strategy)
+        saved_strategy = strategy_repo.save(strategy_create_command)
         initial_balance = FakeAccount.balance
 
         # When
         strategy_service.rebalance(saved_strategy)
 
         # Then
-        found_strategy = strategy_repo.find_by_id(1)
+        found_strategy = strategy_repo.find_by_id(saved_strategy.id)
         assert found_strategy.stocks["spy"].rebalance_qty == 100, "리밸런싱 후 SPY의 목표 수량이 100이어야 합니다"
 
         assert found_strategy.last_run.date() == datetime.now().date(), "마지막 실행 시간이 현재 날짜로 업데이트되어야 합니다"
 
         assert FakeAccount.balance == 0, f"모든 잔고({initial_balance})가 투자되어 0이 되어야 합니다"
 
-    def test_save_and_get_strategy(self, strategy_repo: FakeStrategyRepository, test_strategy: StrategyCreateCommand):
+    def test_save_and_get_strategy(self, strategy_repo: FakeStrategyRepository, strategy_create_command: StrategyCreateCommand):
         """전략을 저장하고 조회하는 테스트"""
         # Given
-        saved_strategy = strategy_repo.save(test_strategy)
+        saved_strategy = strategy_repo.save(strategy_create_command)
 
         # When
         found_strategy = strategy_repo.find_by_id(saved_strategy.id)

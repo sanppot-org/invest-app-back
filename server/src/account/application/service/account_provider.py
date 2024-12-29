@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
 
+from src.account.adapter.out.persistence.account_repo import SqlAlchemyAccountRepository
 from src.account.domain.account import Account
 from src.account.domain.account_create_command import AccountCreateCommand
 from src.account.domain.account_info import AccountInfo
 from src.common.domain.exception import ExeptionType, InvestAppException
-from src.common.application.port.out.repository import Repository
 from src.common.domain.type import BrokerType
 from src.account.adapter.out.kis.kis_account import KisRealAccount, KisVirtualAccount
 from src.account.adapter.out.upbit.upbit_account import UpbitAccount
@@ -18,7 +18,7 @@ class AccountProvider(ABC):
 
 
 class RealAccountProvider(AccountProvider):
-    def __init__(self, account_repository: Repository[AccountCreateCommand, AccountInfo]):
+    def __init__(self, account_repository: SqlAlchemyAccountRepository):
         self.account_repository = account_repository
 
     def get_account(self, account_id: int) -> Account:

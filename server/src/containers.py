@@ -1,14 +1,13 @@
 from dependency_injector import containers, providers
 from src.account.adapter.out.persistence.account_entity import AccountEntity
 from src.account.application.service.account_provider import RealAccountProvider
+from src.common.adapter.out.persistence.sqlalchemy_repository import SqlalchemyRepository
 from src.common.domain.time_holder import TimeHolderImpl
 from src.common.adapter.out.stock_market_client import StockMarketClient
 from src.common.adapter.out.persistence import engine
-from src.account.adapter.out.persistence.account_mapper import AccountMapper
 from src.account.adapter.out.persistence.account_repo import SqlAlchemyAccountRepository
-from src.strategy.adapter.out.persistence.strategy_entity import StrategyEntity
+from src.strategy.domain.strategy_entity import StrategyEntity
 from src.strategy.application.service.strategy_service import StrategyService
-from src.strategy.adapter.out.persistence.strategy_mapper import StrategyMapper
 from src.strategy.adapter.out.persistence.strategy_repo import SqlAlchemyStrategyRepository
 
 
@@ -28,21 +27,17 @@ class Container(containers.DeclarativeContainer):
 
     session = providers.Singleton(engine.get_session)
 
-    sa_strategy_repository = providers.Singleton(SqlAlchemyStrategyRepository, session=session, entity_type=StrategyEntity)
-    strategy_mapper = providers.Singleton(StrategyMapper)
+    sa_strategy_repository = providers.Singleton(SqlalchemyRepository[StrategyEntity], session=session, entity_type=StrategyEntity)
     strategy_repository = providers.Singleton(
         SqlAlchemyStrategyRepository,
         session=session,
-        mapper=strategy_mapper,
         sa_repository=sa_strategy_repository,
     )
 
-    sa_account_repository = providers.Singleton(SqlAlchemyAccountRepository, session=session, entity_type=AccountEntity)
-    account_mapper = providers.Singleton(AccountMapper)
+    sa_account_repository = providers.Singleton(SqlalchemyRepository[AccountEntity], session=session, entity_type=AccountEntity)
     account_repository = providers.Singleton(
         SqlAlchemyAccountRepository,
         session=session,
-        mapper=account_mapper,
         sa_repository=sa_account_repository,
     )
 

@@ -20,6 +20,12 @@ def transactional(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with transactional_context() as session:
-            return func(*args, session=session, **kwargs)
+            # session을 현재 스레드에 바인딩
+            Session.object_session = session
+            try:
+                result = func(*args, **kwargs)  # session 파라미터 제거
+                return result
+            finally:
+                Session.object_session = None
 
     return wrapper

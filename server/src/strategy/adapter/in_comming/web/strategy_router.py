@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from src.containers import Container
-from src.strategy.application.port.out.strategy_repository import StrategyRepository
+from src.strategy.adapter.out.persistence.strategy_repo import SqlAlchemyStrategyRepository
 from src.strategy.application.service.strategy_service import StrategyService
 from src.strategy.adapter.in_comming.web.model import StrategyUpsertReq
 
@@ -8,17 +8,17 @@ router = APIRouter(prefix="/strategies", tags=["strategy"])
 
 container = Container.get_instance()
 strategy_service: StrategyService = container.strategy_service()
-strategy_repository: StrategyRepository = container.strategy_repository()
+strategy_repository: SqlAlchemyStrategyRepository = container.strategy_repository()
 
 
 @router.post("/")
 def save(req: StrategyUpsertReq):
-    return strategy_repository.save(req.to_command())
+    return strategy_repository.save(req.to_entity())
 
 
 @router.put("/{id}")
 def update(id: int, req: StrategyUpsertReq):
-    return strategy_repository.update(id, req.to_command())
+    return strategy_repository.save(req.to_entity())
 
 
 @router.get("/")

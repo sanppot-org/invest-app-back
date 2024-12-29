@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, String, TypeDecorator
+from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market, TimeUnit
 from src.strategy.domain.interval import Interval
 from src.strategy.domain.stock_info import StockInfo
@@ -46,3 +47,37 @@ class StrategyEntity(BaseEntity):
     last_run: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
     is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    def validate_portfolio_rate(self):
+        if sum([stock.target_rate for stock in self.stocks.values()]) != 1:
+            raise InvestAppException(
+                ExeptionType.INVALID_PORTFOLIO_RATE,
+                {ticker: stock.target_rate for ticker, stock in self.stocks.items()},
+            )
+
+    def get_invest_amount(self, balance: float) -> float:
+        return balance * self.invest_rate
+
+    def get_stocks(self) -> Dict[str, StockInfo]:
+        return self.stocks
+
+    def complete_rebalance(self):
+        self.last_run = datetime.now()
+
+    def check_is_time_to_rebalance(self, now: datetime):
+        self.interval.check_is_time_to_rebalance(now, self.last_run)
+
+    def get_market(self) -> Market:
+        return self.market
+
+    def get_account_id(self) -> int:
+        return self.account_id
+
+    def update(self, entity: "StrategyEntity"):
+        self.name = entity.name
+        self.invest_rate = entity.invest_rate
+        self.stocks = entity.stocks
+        self.interval = entity.interval
+        self.account_id = entity.account_id
+        self.market = entity.market
+        self.is_active = entity.is_active
