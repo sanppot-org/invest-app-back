@@ -17,12 +17,13 @@ class SqlAlchemyAccountRepository(AccountRepository):
 
     def save(self, account_info: AccountInfo) -> AccountInfo:
         entity = self.mapper.to_entity(account_info)
-        return self.mapper.to_model(self.repository.save(entity))
+        saved_entity = self.repository.save(entity)
+        return self.mapper.to_model(saved_entity)
 
     def update(self, id: int, account_info: AccountInfo) -> AccountInfo:
-        entity = self.mapper.to_entity(account_info)
-        entity.id = id
-        return self.mapper.to_model(self.repository.save(entity))
+        found_account = self.find_by_id(id)
+        found_account.update(account_info)
+        return self.save(found_account)
 
     def delete_by_id(self, id: int) -> int:
         return self.repository.delete_by_id(id)

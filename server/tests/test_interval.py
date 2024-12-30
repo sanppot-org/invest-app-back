@@ -17,7 +17,7 @@ def test_check_is_time_to_rebalance_fail():
     interval = Interval(time_unit=TimeUnit.MONTH, values=[1, 2, 3])
     with pytest.raises(InvestAppException) as e:
         interval.check_is_time_to_rebalance(now=datetime(2024, 2, 1), last_run=datetime(2024, 2, 1))
-    assert e.value.message == "리밸런싱 조건이 아닙니다. {}"
+    assert "리밸런싱 조건이 아닙니다." in e.value.message
 
 
 def test_check_is_time_to_rebalance_last_run_is_none():

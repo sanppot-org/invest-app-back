@@ -20,10 +20,9 @@ class SqlAlchemyStrategyRepository(StrategyRepository):
         return self.mapper.to_model(saved_entity)
 
     def update(self, id: int, strategy: Strategy) -> Strategy:
-        entity = self.mapper.to_entity(strategy)
-        entity.id = id
-        saved_entity = self.repository.save(entity)
-        return self.mapper.to_model(saved_entity)
+        found_strategy = self.find_by_id(id)
+        found_strategy.update(strategy)
+        return self.save(found_strategy)
 
     def find_by_id(self, id: int) -> Strategy:
         entity = self.repository.find_by_id(id)

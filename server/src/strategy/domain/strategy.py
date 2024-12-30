@@ -44,3 +44,12 @@ class Strategy:
 
     def get_account_id(self) -> int:
         return self.account_id
+
+    def update(self, strategy: "Strategy"):
+        self.name = strategy.name
+        self.invest_rate = strategy.invest_rate
+        self.market = strategy.market
+        self.stocks = strategy.stocks
+        self.interval = strategy.interval
+        self.account_id = strategy.account_id
+        self.is_active = strategy.is_active

@@ -8,7 +8,7 @@ from src.config import DB_URL
 
 pymysql.install_as_MySQLdb()
 engine = create_engine(DB_URL, echo=True)
-SessionFactory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionFactory = sessionmaker(bind=engine)
 
 
 def get_session() -> Session:
