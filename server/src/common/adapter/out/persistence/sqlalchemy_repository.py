@@ -36,7 +36,7 @@ class SqlalchemyRepository(Generic[Entity]):
         return [entity for entity in self.session.scalars(stmt).all()]
 
     def find_by_id(self, id: int) -> Entity:
-        stmt = select(self.entity_type).where(self.entity_type.id == id)
+        stmt = select(self.entity_type).where(self.entity_type.id == id).execution_options(populate_existing=True)
         entity = self.session.scalars(stmt).one_or_none()
         if not entity:
             raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id)
