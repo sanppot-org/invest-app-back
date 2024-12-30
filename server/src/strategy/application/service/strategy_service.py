@@ -28,14 +28,15 @@ class StrategyService:
         self.stock_market_query_port = stock_market_query_port
         self.time_holder = time_holder
 
-    def rebalance(self, strategy: Strategy):
-        # now: datetime = self.time_holder.get_now()
+    def rebalance(self, strategy: Strategy, is_force: bool = False):
+        if not is_force:
+            now: datetime = self.time_holder.get_now()
 
-        # # 리밸런싱 조건 확인
-        # strategy.check_is_time_to_rebalance(now)
+            # 리밸런싱 조건 확인
+            strategy.check_is_time_to_rebalance(now)
 
-        # # 주식 시장 열려있는지 확인
-        # self.stock_market_query_port.is_market_open(strategy.get_market())
+        # 주식 시장 열려있는지 확인
+        self.stock_market_query_port.is_market_open(strategy.get_market())
 
         account: Account = self.account_provider.get_account(strategy.get_account_id())
 

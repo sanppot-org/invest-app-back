@@ -41,6 +41,6 @@ def delete(id: int):
 
 
 @router.post("/{id}/rebalance", summary="리밸런스")
-def rebalance(id: int):
+def rebalance(id: int, is_force: bool = False):
     strategy = strategy_repo.find_by_id(id)
-    return strategy_service.rebalance(strategy)
+    return strategy_service.rebalance(strategy, is_force)
