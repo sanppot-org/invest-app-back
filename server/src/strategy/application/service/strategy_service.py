@@ -11,6 +11,7 @@ from src.strategy.application.port.out.strategy_repository import StrategyReposi
 from src.strategy.domain.stock_info import StockInfo
 from src.strategy.domain.strategy import Strategy
 from dependency_injector.wiring import inject
+from src.common.domain.config import logger
 
 
 class StrategyService:
@@ -28,18 +29,19 @@ class StrategyService:
         self.time_holder = time_holder
 
     def rebalance(self, strategy: Strategy):
-        now: datetime = self.time_holder.get_now()
+        # now: datetime = self.time_holder.get_now()
 
-        # 리밸런싱 조건 확인
-        strategy.check_is_time_to_rebalance(now)
+        # # 리밸런싱 조건 확인
+        # strategy.check_is_time_to_rebalance(now)
 
-        # 주식 시장 열려있는지 확인
-        self.stock_market_query_port.is_market_open(strategy.get_market())
+        # # 주식 시장 열려있는지 확인
+        # self.stock_market_query_port.is_market_open(strategy.get_market())
 
         account: Account = self.account_provider.get_account(strategy.get_account_id())
 
         # 2. 포트폴리오 할당 금액 계산 (포트 폴리오 비중 * 잔고)
         invest_amount: float = strategy.get_invest_amount(account.get_balance())
+        logger.info(f"invest_amount: {invest_amount}")
 
         # 3. 보유 종목 리스트 조회
         holddings_dict: Dict[str, HoldingsInfo] = account.get_holdings()
@@ -48,10 +50,11 @@ class StrategyService:
 
         # 4. 종목별 비중 계산
         for ticker, stock in stocks.items():
-            current_price = self.stock_market_query_port.get_current_price(Ticker(ticker))
+            ticker = Ticker(ticker)
+            current_price = self.stock_market_query_port.get_current_price(ticker)
             stock.calculate_rebalance_amt(
                 portfolio_target_amt=invest_amount,
-                holdings=holddings_dict.get(ticker),
+                holdings=holddings_dict.get(ticker.get_kr_ticker()),
                 current_price=current_price,
             )
 

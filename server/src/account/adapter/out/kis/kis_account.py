@@ -1,6 +1,5 @@
 import json
 from typing import Dict
-from venv import logger
 
 import requests
 from src.account.domain.account import Account
@@ -12,6 +11,7 @@ from src.common.domain.type import BrokerType, Market, OrderType
 from src.account.domain.access_token import AccessToken
 from src.account.adapter.out.kis.dto import BalanceResponse
 from src.common.domain.ticker import Ticker
+from src.common.domain.config import logger
 
 stock_market_client = StockMarketClient()
 
@@ -34,6 +34,7 @@ class KisAccount(Account):
         return self._get_balance_us()
 
     def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+        logger.info(f"sell_market_order: {ticker}, {quantity}")
         if ticker.is_kr():
             self._make_order_kr(ticker.get_kr_ticker(), quantity, OrderType.SELL)
             return
@@ -42,6 +43,7 @@ class KisAccount(Account):
         return self._make_order_us(ticker.value, quantity, target_price, OrderType.SELL)
 
     def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+        logger.info(f"buy_market_order: {ticker}, {quantity}")
         if ticker.is_kr():
             self._make_order_kr(ticker.get_kr_ticker(), quantity, OrderType.BUY)
             return
@@ -315,7 +317,7 @@ class KisAccount(Account):
             "ACNT_PRDT_CD": self.account_info.product_code,
             "PDNO": ticker,
             "ORD_DVSN": "01",  # 시장가
-            "ORD_QTY": str(quantity),
+            "ORD_QTY": str(abs(quantity)),
             "ORD_UNPR": "0",
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))

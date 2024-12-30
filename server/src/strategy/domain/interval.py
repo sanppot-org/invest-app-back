@@ -25,4 +25,7 @@ class Interval:
             this_month = now.month
 
             if this_month not in self.values or (last_run is not None and this_month == last_run.month):
-                raise InvestAppException(exception_type=ExeptionType.NOT_TIME_TO_REBALANCE)
+                raise InvestAppException(
+                    ExeptionType.NOT_TIME_TO_REBALANCE,
+                    f"values={self.values}, last_run={last_run}",
+                )

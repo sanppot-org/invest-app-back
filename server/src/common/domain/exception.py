@@ -19,3 +19,6 @@ class InvestAppException(Exception):
     def __init__(self, exception_type: ExeptionType, *args):
         self.error_code = exception_type.value[1]
         self.message = exception_type.value[0].format(*args) if args else exception_type.value[0]
+
+    def __str__(self):
+        return f"Error Code: {self.error_code}, Message: {self.message}"
