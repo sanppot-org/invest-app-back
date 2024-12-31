@@ -1,5 +1,6 @@
+from contextlib import contextmanager
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 
 import pymysql
 
@@ -11,5 +12,14 @@ engine = create_engine(DB_URL, echo=True)
 SessionFactory = sessionmaker(bind=engine)
 
 
-def get_session() -> Session:
-    return SessionFactory()
+@contextmanager
+def session_scope():
+    session = SessionFactory()
+    try:
+        yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()

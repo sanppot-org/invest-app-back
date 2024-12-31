@@ -22,17 +22,9 @@ class Container(containers.DeclarativeContainer):
 
     config = providers.Configuration()
 
-    session = providers.Singleton(engine.get_session)
+    strategy_repository = providers.Singleton(SqlAlchemyStrategyRepository)
 
-    strategy_repository = providers.Singleton(
-        SqlAlchemyStrategyRepository,
-        session=session,
-    )
-
-    account_repository = providers.Singleton(
-        SqlAlchemyAccountRepository,
-        session=session,
-    )
+    account_repository = providers.Singleton(SqlAlchemyAccountRepository)
 
     account_provider = providers.Singleton(RealAccountProvider, account_repository=account_repository)
 
