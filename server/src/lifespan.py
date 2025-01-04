@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 from src.containers import Container
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -11,15 +13,10 @@ container = Container.get_instance()
 strategy_service = container.strategy_service()
 
 
-def rebalance_all():
-    strategy_service.rebalance_all()
-
-
 @asynccontextmanager
-async def lifespan(app):
+async def lifespan(app: FastAPI):
     token_refresher.refresh_kis_token()
     scheduler.add_job(token_refresher.refresh_kis_token, "interval", hours=12)
-    scheduler.add_job(rebalance_all, "interval", hours=1)
 
     scheduler.start()
     yield

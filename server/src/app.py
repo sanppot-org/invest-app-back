@@ -5,11 +5,11 @@ from src.account.adapter.in_comming.web import account_router
 from src.strategy.adapter.in_comming.web import strategy_router
 from fastapi.responses import JSONResponse
 from src.common.domain.exception import InvestAppException
-from src import lifespan
+from src.lifespan import lifespan
 
 
 def create_app():
-    app = FastAPI(lifespan=lifespan.lifespan)
+    app = FastAPI(lifespan=lifespan)
 
     app.include_router(strategy_router.router)
     app.include_router(account_router.router)
