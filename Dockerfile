@@ -14,7 +14,7 @@ RUN poetry config virtualenvs.create false
 COPY pyproject.toml poetry.lock ./
 
 # 의존성 설치
-RUN poetry install --n --no-ansi
+RUN poetry install -n --no-ansi
 
 # 소스코드 복사
 COPY . .
