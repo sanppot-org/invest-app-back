@@ -1,0 +1,12 @@
+name: Deploy to Docker Swarm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    uses: sandropark/central-workflows/.github/workflows/docker-build-push.yml@6a960d7
+    with:
+      image_name: invest-app:${{ github.run_number }}
+      dockerfile_path: Dockerfile
