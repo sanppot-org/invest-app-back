@@ -6,7 +6,22 @@ on:
 
 jobs:
   deploy:
-    uses: sandropark/central-workflows/.github/workflows/docker-build-push.yml@b9b3f4548ecd9197d8d8f96ef7a163b4a9cd7241
-    with:
-      image_name: invest-app:${{ github.run_number }}
-      dockerfile_path: Dockerfile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PW }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }}
