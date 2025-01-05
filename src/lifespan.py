@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from src.containers import Container
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from src.account.adapter.out.kis import token_refresher
@@ -9,9 +8,6 @@ from src.report.report import publish_report
 
 
 scheduler = BackgroundScheduler()
-
-container = Container.get_instance()
-strategy_service = container.strategy_service()
 
 
 @asynccontextmanager
