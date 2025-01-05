@@ -18,7 +18,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PW }}
 
+      - name: Check existing image
+        id: check-image
+        run: |
+          EXISTS=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} > /dev/null 2>&1 && echo "true" || echo "false")
+          echo "exists=${EXISTS}" >> $GITHUB_OUTPUT
+
       - name: Build Docker image
+        if: steps.check-image.outputs.exists == 'false'
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -34,4 +41,4 @@ jobs:
           key: ${{ secrets.OCI_APP_KEY }}
           port: 22
           script: |
-            if [ "$(docker service ls  -q -f name=invest-app-back 2>&1)" == "" ]; then docker service create --name invest-app-back -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} ; else docker service update --image ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} invest-app-back ; fi
+            sudo if [ "$(docker service ls  -q -f name=invest-app-back 2>&1)" == "" ]; then docker service create --name invest-app-back -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} ; else docker service update --image ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} invest-app-back ; fi
