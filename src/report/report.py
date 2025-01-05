@@ -14,7 +14,7 @@ def generate_report() -> str:
 
 
 # url 가져오기
-with open("config/noti-url.yml", encoding="UTF-8") as ymlfile:
+with open("config-module/noti-url.yml", encoding="UTF-8") as ymlfile:
     _cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 
