@@ -1,6 +1,9 @@
 # Python 3.12 slim 이미지 사용
 FROM python:3.12-slim
 
+# 타임존 설정
+ENV TZ=Asia/Seoul
+
 # 작업 디렉토리 설정
 WORKDIR /app
 
