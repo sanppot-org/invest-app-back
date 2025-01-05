@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.REPO_PAT }}
 
       - name: Docker login
         uses: docker/login-action@v2
@@ -41,4 +44,4 @@ jobs:
           key: ${{ secrets.OCI_APP_KEY }}
           port: 22
           script: |
-            sudo if [ "$(docker service ls  -q -f name=invest-app-back 2>&1)" == "" ]; then docker service create --name invest-app-back -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} ; else docker service update --image ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} invest-app-back ; fi
+            if [ "$(sudo docker service ls -q -f name=invest-app-back 2>&1)" == "" ]; then sudo docker service create --name invest-app-back -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} ; else sudo docker service update --image ${{ secrets.DOCKER_USERNAME }}/invest-app-back:${{ github.run_number }} invest-app-back ; fi
