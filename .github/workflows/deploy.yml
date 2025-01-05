@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    uses: sandropark/central-workflows/.github/workflows/docker-build-push.yml@b5e63a380d9d9f08a2fbc14e2b522f010a59d4be
+    uses: sandropark/central-workflows/.github/workflows/docker-build-push.yml@b9b3f4548ecd9197d8d8f96ef7a163b4a9cd7241
     with:
       image_name: invest-app:${{ github.run_number }}
       dockerfile_path: Dockerfile
