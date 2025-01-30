@@ -22,3 +22,7 @@ with open("config-module/noti-url.yml", encoding="UTF-8") as ymlfile:
 def publish_report():
     report = generate_report()
     send_noti(_cfg["finance-report"], report)
+
+
+def send_exception(msg: str):
+    send_noti(_cfg["exception"], msg)
