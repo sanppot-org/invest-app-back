@@ -4,7 +4,6 @@ from src.account.application.port.out.account_repository import AccountRepositor
 from src.account.domain.account import Account
 from src.account.domain.account_info import AccountInfo
 from src.common.domain.exception import ExeptionType, InvestAppException
-from src.common.application.port.out.repository import Repository
 from src.account.adapter.out.kis.kis_account import KisRealAccount, KisVirtualAccount
 from src.account.adapter.out.upbit.upbit_account import UpbitAccount
 
