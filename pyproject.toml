@@ -21,15 +21,18 @@ yfinance = "^0.2.49"
 schedule = "^1.2.2"
 apscheduler = "^3.10.4"
 sqlalchemy = "^2.0.36"
-alembic = "^1.14.0"
 pyupbit = "^0.2.34"
 ipykernel = "^6.29.5"
-pytest = "^8.3.4"
 black = "^24.10.0"
 exchange-calendars = "^4.6"
 dependency-injector = "^4.44.0"
 pymysql = "^1.1.1"
+groq = "^0.14.0"
+alembic = "^1.14.0"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]
