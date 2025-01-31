@@ -16,8 +16,9 @@ class SqlAlchemyAccountRepository(AccountRepository):
 
     def save(self, account_info: AccountInfo) -> AccountInfo:
         entity = self.mapper.to_entity(account_info)
-        saved_entity = self.repository.save(entity)
-        return self.mapper.to_model(saved_entity)
+        with session_scope() as session:
+            saved_entity = self.repository.save(entity, session)
+            return self.mapper.to_model(saved_entity)
 
     def update(self, id: int, account_info: AccountInfo) -> AccountInfo:
         found_account = self.find_by_id(id)
@@ -28,8 +29,9 @@ class SqlAlchemyAccountRepository(AccountRepository):
         return self.repository.delete_by_id(id)
 
     def find_by_id(self, id: int) -> AccountInfo:
-        entity = self.repository.find_by_id(id)
-        return self.mapper.to_model(entity)
+        with session_scope() as session:
+            entity = self.repository.find_by_id(id, session)
+            return self.mapper.to_model(entity)
 
     def find_all(self, broker_type: BrokerType | None = None) -> List[AccountInfo]:
         stmt = select(AccountEntity)

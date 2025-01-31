@@ -26,3 +26,14 @@ class Account(ABC):
     @abstractmethod
     def get_holdings(self, market: Market = Market.KR) -> Dict[str, HoldingsInfo]:
         pass
+
+    @abstractmethod
+    def get_total_principal(self) -> float:
+        pass
+
+    @abstractmethod
+    def get_revenue(self) -> float:
+        """
+        계좌의 총 수익률 조회
+        """
+        pass

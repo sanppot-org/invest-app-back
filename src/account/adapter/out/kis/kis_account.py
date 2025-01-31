@@ -81,6 +81,12 @@ class KisAccount(Account):
     def is_token_invalid(self) -> bool:
         return self.access_token is None or self.access_token.is_expired()
 
+    def get_total_principal(self) -> float:
+        raise NotImplementedError
+
+    def get_revenue(self) -> float:
+        raise NotImplementedError
+
     def _get_current_price(self, ticker: str) -> float:
         return stock_market_client.get_current_price(ticker)
 
