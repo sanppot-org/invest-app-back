@@ -18,6 +18,7 @@ import pyupbit as pu
 class CoinStrategy(Strategy):
     timezone: str
     coin_count: int
+    coin_list: list[str]
 
     @override
     def trade(self, account: Account):
@@ -32,6 +33,14 @@ class CoinStrategy(Strategy):
         slack_noti_client.send_debug_noti(
             f"last_run: {self.last_run},\n" f"current_time: {current_time}",
         )
+
+        # FIXME: 유연하게 수정
+        # 오후인 경우 전량 매도
+        if time_util.is_afternoon():
+            for ticker in self.coin_list:
+                time.sleep(0.05)
+                account.sell_all(ticker)
+            return
 
         # 날이 바뀌지 않았으면 종료
         if self.last_run is not None and current_time.date() == self.last_run.date():
@@ -70,6 +79,7 @@ class CoinStrategy(Strategy):
             symbol.add_sub_strategy(am_pm_strategy)
             symbol.add_sub_strategy(volatility_breakout_strategy)
             symbols[ticker] = symbol
+            self.coin_list.append(ticker)
 
         for symbol in symbols.values():
             symbol.trade(account)
@@ -80,6 +90,7 @@ class CoinStrategy(Strategy):
         super().update(strategy)
         self.timezone = strategy.timezone
         self.coin_count = strategy.coin_count
+        self.coin_list = strategy.coin_list
 
     def get_top_trade_volume_coin_list(self) -> list[str]:
         """
