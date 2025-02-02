@@ -19,12 +19,12 @@ class EnumType(TypeDecorator):
     def process_bind_param(self, value, dialect):
         if value is None:
             return None
-        return value.value  # Enum의 값을 문자열로 저장
+        return value.name  # Enum의 값을 문자열로 저장
 
     def process_result_value(self, value, dialect):
         if value is None:
             return None
-        return self.enum_class(value)  # 문자열을 다시 Enum으로 변환
+        return self.enum_class[value]  # 문자열을 다시 Enum으로 변환
 
 
 class BaseEntity(Base):

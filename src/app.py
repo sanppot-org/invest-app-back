@@ -1,6 +1,6 @@
 import traceback
 from src.common.adapter.in_comming import stock_market_router
-from src.common.domain.config import logger
+from src.common.domain.logging_config import logger
 from fastapi import FastAPI, Request
 from src.account.adapter.in_comming.web import account_router
 from src.report.report import send_exception

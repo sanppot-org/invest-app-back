@@ -16,11 +16,15 @@ class Account(ABC):
         pass
 
     @abstractmethod
-    def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+    def sell_all(self, ticker: str) -> None:
         pass
 
     @abstractmethod
-    def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+    def buy_market_order(self, ticker: Ticker, quantity: float) -> None:
+        pass
+
+    @abstractmethod
+    def sell_market_order(self, ticker: Ticker, quantity: float) -> None:
         pass
 
     @abstractmethod
@@ -35,5 +39,12 @@ class Account(ABC):
     def get_revenue(self) -> float:
         """
         계좌의 총 수익률 조회
+        """
+        pass
+
+    @abstractmethod
+    def sell_all_holdings(self) -> None:
+        """
+        보유 종목 전체 매도
         """
         pass

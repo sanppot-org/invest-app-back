@@ -7,3 +7,4 @@ with open(config_path, "r") as f:
 
 DB_URL = config.get("db-url")
 GROQ_API_KEY = config.get("groq-api-key")
+LOGGING_LEVEL = config.get("logging-level")

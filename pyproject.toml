@@ -29,6 +29,7 @@ dependency-injector = "^4.44.0"
 pymysql = "^1.1.1"
 groq = "^0.14.0"
 alembic = "^1.14.0"
+ccxt = "^4.4.52"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -3,6 +3,7 @@ from src.containers import Container
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.application.service.strategy_service import StrategyService
 from src.strategy.adapter.in_comming.web.model import StrategyCreateReq
+from src.strategy.domain.strategy import Strategy
 
 router = APIRouter(prefix="/strategies", tags=["strategy"])
 
@@ -18,15 +19,15 @@ def find_all():
 
 @router.post("/", summary="전략 생성")
 def save(req: StrategyCreateReq):
-    model = req.to_domain()
-    model.validate_portfolio_rate()
+    model: Strategy = req.to_domain()
+    model.validate()
     return strategy_repo.save(model)
 
 
 @router.put("/{id}", summary="전략 수정")
 def update(id: int, req: StrategyCreateReq):
     model = req.to_domain()
-    model.validate_portfolio_rate()
+    model.validate()
     return strategy_repo.update(id, model)
 
 
@@ -40,7 +41,6 @@ def delete(id: int):
     return strategy_repo.delete_by_id(id)
 
 
-@router.post("/{id}/rebalance", summary="리밸런스")
-def rebalance(id: int, is_force: bool = False):
-    strategy = strategy_repo.find_by_id(id)
-    return strategy_service.rebalance(strategy, is_force)
+@router.post("/{id}/trade", summary="전략 실행")
+def trade(id: int):
+    strategy_service.trade(id)

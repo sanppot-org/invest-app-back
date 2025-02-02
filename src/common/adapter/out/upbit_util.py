@@ -1,7 +1,18 @@
 import pandas as pd
 import pyupbit as pu
-from src.common.domain.config import logger
+from src.common.domain.logging_config import logger
 import time
+from datetime import timedelta
+
+
+def get_ohlcv(ticker: str = "KRW-BTC", interval: str = "minute60", count: int = 24 * 21, timezone: str = "Etc/GMT+11"):
+    """
+    원하는 타임존의 최근 N일 ohlcv 조회
+    """
+    df = pu.get_ohlcv(ticker=ticker, interval=interval, count=count)
+    df.index = df.index - timedelta(hours=9)
+    df.index = df.index.tz_localize("UTC").tz_convert(timezone)
+    return df
 
 
 def get_rsi(df: pd.DataFrame, period: int = 14, st: int = -1) -> float:

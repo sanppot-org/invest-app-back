@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Dict, override
 
 import requests
 from src.account.domain.account import Account
@@ -11,7 +11,7 @@ from src.common.domain.type import BrokerType, Market, OrderType
 from src.account.domain.access_token import AccessToken
 from src.account.adapter.out.kis.dto import BalanceResponse
 from src.common.domain.ticker import Ticker
-from src.common.domain.config import logger
+from src.common.domain.logging_config import logger
 
 stock_market_client = StockMarketClient()
 
@@ -26,6 +26,7 @@ class KisAccount(Account):
         self.is_virtual: bool = is_virtual
         self.access_token: AccessToken | None = self.account_info.token
 
+    @override
     def get_balance(self, market: Market = Market.KR) -> float:
         if market.is_kr():
             return BalanceResponse.of(self._get_balance_kr()["output2"][0]).total_money
@@ -33,7 +34,12 @@ class KisAccount(Account):
         # TODO: 제대로 구현하기
         return self._get_balance_us()
 
-    def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+    @override
+    def sell_all(self, ticker: str) -> None:
+        pass
+
+    @override
+    def sell_market_order(self, ticker: Ticker, quantity: float) -> None:
         logger.info(f"sell_market_order: {ticker}, {quantity}")
         if ticker.is_kr():
             self._make_order_kr(ticker.get_kr_ticker(), quantity, OrderType.SELL)
@@ -42,7 +48,8 @@ class KisAccount(Account):
         target_price = self._get_current_price(ticker.value) * 1.1
         return self._make_order_us(ticker.value, quantity, target_price, OrderType.SELL)
 
-    def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+    @override
+    def buy_market_order(self, ticker: Ticker, quantity: float) -> None:
         logger.info(f"buy_market_order: {ticker}, {quantity}")
         if ticker.is_kr():
             self._make_order_kr(ticker.get_kr_ticker(), quantity, OrderType.BUY)
@@ -51,6 +58,7 @@ class KisAccount(Account):
         target_price = self._get_current_price(ticker.value) * 1.1
         self._make_order_us(ticker.value, quantity, target_price, OrderType.BUY)
 
+    @override
     def get_holdings(self, market: Market = Market.KR) -> Dict[str, HoldingsInfo]:
         if market.is_kr():
             return {
@@ -81,11 +89,17 @@ class KisAccount(Account):
     def is_token_invalid(self) -> bool:
         return self.access_token is None or self.access_token.is_expired()
 
+    @override
     def get_total_principal(self) -> float:
         raise NotImplementedError
 
+    @override
     def get_revenue(self) -> float:
         raise NotImplementedError
+
+    @override
+    def sell_all_holdings(self) -> None:
+        pass
 
     def _get_current_price(self, ticker: str) -> float:
         return stock_market_client.get_current_price(ticker)
@@ -304,7 +318,7 @@ class KisAccount(Account):
         res_body = res.json()
         return AccessToken(token=res_body["access_token"], expiration=res_body["access_token_token_expired"])
 
-    def _make_order_kr(self, ticker: str, quantity: int, order_type: OrderType) -> None:
+    def _make_order_kr(self, ticker: str, quantity: float, order_type: OrderType) -> None:
         tr_id = "VTTC0801U" if self.is_virtual else "TTTC0801U"
 
         if order_type.is_buy():
@@ -333,7 +347,7 @@ class KisAccount(Account):
 
         raise InvestAppException(ExeptionType.FAILED_TO_MAKE_ORDER, res.text)
 
-    def _make_order_us(self, ticker: str, quantity: int, price: float, order_type: OrderType) -> None:
+    def _make_order_us(self, ticker: str, quantity: float, price: float, order_type: OrderType) -> None:
         tr_id = "VTTT1001U" if self.is_virtual else "TTTT1006U"
 
         if order_type.is_buy():

@@ -11,7 +11,7 @@ from src.strategy.application.port.out.strategy_repository import StrategyReposi
 from src.strategy.domain.stock_info import StockInfo
 from src.strategy.domain.strategy import Strategy
 from dependency_injector.wiring import inject
-from src.common.domain.config import logger
+from src.common.domain.logging_config import logger
 
 
 class StrategyService:
@@ -69,7 +69,7 @@ class StrategyService:
             if stock.rebalance_qty > 0:
                 account.buy_market_order(Ticker(ticker), stock.rebalance_qty)
 
-        strategy.complete_rebalance()
+        strategy.complete()
 
         self.strategy_repo.save(strategy)
 
@@ -77,3 +77,9 @@ class StrategyService:
         strategies = self.strategy_repo.find_all_active()
         for strategy in strategies:
             self.rebalance(strategy)
+
+    def trade(self, strategy_id: int):
+        strategy = self.strategy_repo.find_by_id(strategy_id)
+        account = self.account_provider.get_account(strategy.account_id)
+        strategy.trade(account)
+        self.strategy_repo.update(strategy_id, strategy)

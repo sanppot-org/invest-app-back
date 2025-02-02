@@ -1,5 +1,6 @@
 from time import sleep
-from typing import Dict
+import time
+from typing import Dict, override
 import pyupbit
 from pyupbit import Upbit
 
@@ -16,6 +17,7 @@ class UpbitAccount(Account):
         super().__init__(account_info=account_info)
         self.upbit = Upbit(access=self.account_info.app_key, secret=self.account_info.secret_key)
 
+    @override
     def get_balance(self, market: Market = Market.KR) -> float:
         total_balance = 0.0
         stocks: list[dict] = self._get_balances()
@@ -30,25 +32,40 @@ class UpbitAccount(Account):
 
         return float(total_balance)
 
-    def buy_market_order(self, ticker: Ticker, quantity: int) -> None:
+    @override
+    def sell_all(self, ticker: str) -> None:
+        holdings: Dict[str, HoldingsInfo] = self.get_holdings()
+
+        if ticker not in holdings:
+            return
+
+        sold_quantity = holdings[ticker].quantity
+        self.sell_market_order(Ticker(ticker), sold_quantity)
+
+    @override
+    def buy_market_order(self, ticker: Ticker, quantity: float) -> None:
         ticker.validate_crypto_ticker()
         self.upbit.buy_market_order(ticker.value, quantity)
 
-    def sell_market_order(self, ticker: Ticker, quantity: int) -> None:
+    @override
+    def sell_market_order(self, ticker: Ticker, quantity: float) -> None:
         ticker.validate_crypto_ticker()
         self.upbit.sell_market_order(ticker.value, quantity)
 
+    @override
     def get_holdings(self, market: Market = Market.KR) -> Dict[str, HoldingsInfo]:
         return {
-            stock["currency"]: HoldingsInfo(
+            f"{stock['unit_currency']}-{stock['currency']}": HoldingsInfo(
                 name=stock["currency"],
                 quantity=float(stock["balance"]),
                 avg_price=float(stock["avg_buy_price"]),
                 eval_amt=round(float(stock["balance"]) * float(stock["avg_buy_price"]), 4),
             )
             for stock in self._get_balances()
+            if stock["currency"] != "KRW"  # KRW는 제외
         }
 
+    @override
     def get_total_principal(self) -> float:
         total_principal = 0.0
         balances = self._get_balances()
@@ -59,6 +76,7 @@ class UpbitAccount(Account):
                 total_principal += float(balance["balance"]) * float(balance["avg_buy_price"])
         return total_principal
 
+    @override
     def get_revenue(self) -> float:
         balance = self.get_balance()
         total_principal = self.get_total_principal()
@@ -71,3 +89,10 @@ class UpbitAccount(Account):
             raise InvestAppException(ExeptionType.FAILED_TO_GET_BALANCE, balances.get("error"))
 
         return balances
+
+    @override
+    def sell_all_holdings(self) -> None:
+        holdings: Dict[str, HoldingsInfo] = self.get_holdings()
+        for ticker, holdings_info in holdings.items():
+            time.sleep(0.03)
+            self.sell_market_order(Ticker(ticker), holdings_info.quantity)
