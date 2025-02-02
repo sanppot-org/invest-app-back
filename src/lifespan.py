@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
     token_refresher.refresh_kis_token()
 
     # 한투 토큰 갱신. 12시간마다 실행
-    scheduler.add_job(token_refresher.refresh_kis_token, "interval", hours=12)
+    scheduler.add_job(token_refresher.refresh_kis_token, "cron", hour=9)
     # 경제 리포트 발행. 매일 오전 07:45마다 실행
     scheduler.add_job(publish_report, "cron", hour=7, minute=45)
     # 코인 자동 매매. 매시 10분마다 실행
