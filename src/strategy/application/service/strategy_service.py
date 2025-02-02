@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Dict
+from src.common.adapter.out import slack_noti_client
 from src.common.application.port.out.time_holder import TimeHolder
 from src.common.application.port.out.stock_market_port import StockMarketQueryPort
 from src.account.application.service.account_provider import AccountProvider
@@ -79,7 +80,11 @@ class StrategyService:
             self.rebalance(strategy)
 
     def trade(self, strategy_id: int):
-        strategy = self.strategy_repo.find_by_id(strategy_id)
-        account = self.account_provider.get_account(strategy.account_id)
-        strategy.trade(account)
-        self.strategy_repo.update(strategy_id, strategy)
+        try:
+            strategy = self.strategy_repo.find_by_id(strategy_id)
+            account = self.account_provider.get_account(strategy.account_id)
+            strategy.trade(account)
+            self.strategy_repo.update(strategy_id, strategy)
+        except Exception as e:
+            slack_noti_client.send_exception(f"전략 실행 오류: {e}")
+            raise e

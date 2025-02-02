@@ -19,6 +19,9 @@ class AmPmStrategy(SubStrategy):
 
         buy_weight = self._calculate_buy_weight(upbit_df_holder)
         invest_amount = amount * buy_weight
+
+        logger.debug(f"{ticker} : {invest_amount}만큼 매수")
+
         time.sleep(0.05)
         account.buy_market_order(Ticker(ticker), price=invest_amount)
 
