@@ -9,12 +9,8 @@ from src.strategy.domain.coin.coin_strategy import SubStrategy
 
 class VolatilityBreakoutStrategy(SubStrategy):
     def trade(self, account: Account, ticker: str, amount: float, upbit_df_holder: UpbitDfHolder):
-        logger.debug(f"=============== {ticker} 변동성 돌파 전략 시작 =================")
-        logger.debug(f"할당 금액: {amount}")
-
         self._buy(account, ticker, amount, upbit_df_holder)
         self._sell(account, ticker)
-        logger.debug(f"=============== {ticker} 변동성 돌파 전략 완료 =================")
 
     def _buy(self, account: Account, ticker: str, amount: float, upbit_df_holder: UpbitDfHolder):
         # 현재가 조회
@@ -28,7 +24,7 @@ class VolatilityBreakoutStrategy(SubStrategy):
         buy_weight = self._calculate_buy_weight(upbit_df_holder)
         invest_amount = amount * buy_weight
         time.sleep(0.03)
-        account.buy_market_order(Ticker(ticker), invest_amount)
+        account.buy_market_order(Ticker(ticker), price=invest_amount)
 
     def _sell(self, account: Account, ticker: str):
         if not self._should_sell():

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import time
 from typing import Dict, override
 from src.account.domain.account import Account
+from src.common.adapter.out import slack_noti_client
 from src.common.adapter.out.upbit_df_holder import UpbitDfHolder
 from src.common.domain.time_util import TimeUtil
 from src.strategy.domain.coin.am_pm import AmPmStrategy
@@ -20,35 +21,40 @@ class CoinStrategy(Strategy):
 
     @override
     def trade(self, account: Account):
-        time_util = TimeUtil(self.timezone)
+        slack_noti_client.send_debug_noti(f"=== {self.name} 전략 실행 ===")
+        self.do_trade(account)
+        slack_noti_client.send_debug_noti(f"=== {self.name} 전략 종료 ===")
 
-        logger.debug(f"========== {self.name} 전략 실행 ==========")
-        logger.debug(f"last_run: {self.last_run}")
+    def do_trade(self, account: Account):
+        time_util = TimeUtil(self.timezone)
+        current_time = time_util.get_current_time()
+
+        slack_noti_client.send_debug_noti(
+            f"last_run: {self.last_run},\n" f"current_time: {current_time}",
+        )
 
         # 날이 바뀌지 않았으면 종료
-        current_time = time_util.get_current_time()
-        logger.debug(f"current_time: {current_time}")
         if self.last_run is not None and current_time.date() == self.last_run.date():
-            logger.debug(f"========== {self.name} 전략 종료 ==========")
             return
 
         # 전략 할당 금액
         allocated_balance = account.get_balance()
         invest_amount = allocated_balance * self.invest_rate
-
         # 코인 별 할당 금액
         invest_amount_per_coin = invest_amount / self.coin_count
 
-        logger.debug(f"allocated_balance: {allocated_balance}")
-        logger.debug(f"invest_rate: {self.invest_rate}")
-        logger.debug(f"invest_amount: {invest_amount}")
-        logger.debug(f"coin_count: {self.coin_count}")
-        logger.debug(f"invest_amount_per_coin: {invest_amount_per_coin}")
+        slack_noti_client.send_debug_noti(
+            f"allocated_balance: {allocated_balance},\n"
+            f"invest_rate: {self.invest_rate},\n"
+            f"invest_amount: {invest_amount},\n"
+            f"coin_count: {self.coin_count},\n"
+            f"invest_amount_per_coin: {invest_amount_per_coin}",
+        )
 
         # 매수할 코인 목록 조회
-        ticker_list = get_top_trade_volume_coin_list(self.coin_count)
+        ticker_list = self.get_top_trade_volume_coin_list()
 
-        logger.debug(f"거래할 코인 목록: {ticker_list}")
+        slack_noti_client.send_debug_noti(f"거래할 코인 목록: {ticker_list}")
 
         # 오전/오후 전략 생성
         am_pm_strategy = AmPmStrategy(time_util=time_util)
@@ -75,23 +81,21 @@ class CoinStrategy(Strategy):
         self.timezone = strategy.timezone
         self.coin_count = strategy.coin_count
 
+    def get_top_trade_volume_coin_list(self) -> list[str]:
+        """
+        최근 거래대금 상위 N개의 코인 리스트를 반환한다.
+        """
 
-def get_top_trade_volume_coin_list(top_n: int = 5) -> list[str]:
-    """
-    최근 거래대금 상위 N개의 코인 리스트를 반환한다.
-    """
-    tickers: list[str] = list(pu.get_tickers("KRW"))
+        tickers: list[str] = list(pu.get_tickers("KRW"))
 
-    trade_volumes: dict[str, float] = {}
+        trade_volumes: dict[str, float] = {}
 
-    logger.debug(f"최근 거래대금 상위 {top_n}개 코인 조회 중")
+        for ticker in tickers:
+            time.sleep(0.03)
+            ohlcv = pu.get_ohlcv(ticker, count=3)
+            trade_volumes[ticker] = (ohlcv["close"] * ohlcv["volume"]).sum()
 
-    for ticker in tickers:
-        time.sleep(0.03)
-        ohlcv = pu.get_ohlcv(ticker, count=3)
-        trade_volumes[ticker] = (ohlcv["close"] * ohlcv["volume"]).sum()
-
-    return [ticker for ticker, _ in sorted(trade_volumes.items(), key=lambda x: x[1], reverse=True)[:top_n]]
+        return [ticker for ticker, _ in sorted(trade_volumes.items(), key=lambda x: x[1], reverse=True)[: self.coin_count]]
 
 
 class Symbol:

@@ -1,7 +1,7 @@
-import yaml
 import yfinance as yf
 
 from src.common.adapter.out.slack_noti_client import send_noti
+from src.config import EXCEPTION_URL, FINANCE_REPORT_URL
 
 
 def generate_report() -> str:
@@ -13,16 +13,7 @@ def generate_report() -> str:
     """
 
 
-# url 가져오기
-with open("config-module/noti-url.yml", encoding="UTF-8") as ymlfile:
-    _cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
-
-
 # 리포트 발행
 def publish_report():
     report = generate_report()
-    send_noti(_cfg["finance-report"], report)
-
-
-def send_exception(msg: str):
-    send_noti(_cfg["exception"], msg)
+    send_noti(FINANCE_REPORT_URL, report)

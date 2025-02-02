@@ -1,4 +1,5 @@
 import time
+from typing import override
 from src.account.domain.account import Account
 from src.common.adapter.out.upbit_df_holder import UpbitDfHolder
 from src.common.domain.ticker import Ticker
@@ -7,20 +8,14 @@ from src.strategy.domain.coin.sub_strategy import SubStrategy
 
 
 class AmPmStrategy(SubStrategy):
+    @override
     def trade(self, account: Account, ticker: str, amount: float, upbit_df_holder: UpbitDfHolder):
-        logger.debug(f"=============== {ticker} 오전,오후 전략 시작 =================")
-        logger.debug(f"할당 금액 : {amount}")
-
         self._buy(account, ticker, amount, upbit_df_holder)
         self._sell(account, ticker)
-
-        logger.debug(f"=============== {ticker} 오전,오후 전략 완료 =================")
 
     def _buy(self, account: Account, ticker: str, amount: float, upbit_df_holder: UpbitDfHolder):
         if not self._should_buy(upbit_df_holder):
             return
-
-        logger.debug(f"{ticker} 매수")
 
         buy_weight = self._calculate_buy_weight(upbit_df_holder)
         invest_amount = amount * buy_weight
