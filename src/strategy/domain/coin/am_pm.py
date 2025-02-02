@@ -19,14 +19,14 @@ class AmPmStrategy(SubStrategy):
 
         buy_weight = self._calculate_buy_weight(upbit_df_holder)
         invest_amount = amount * buy_weight
-        time.sleep(0.03)
+        time.sleep(0.05)
         account.buy_market_order(Ticker(ticker), invest_amount)
 
     def _sell(self, account: Account, ticker: str):
         if not self._should_sell():
             return
 
-        time.sleep(0.03)
+        time.sleep(0.05)
         account.sell_all(ticker)
 
     def _should_buy(self, upbit_df_holder: UpbitDfHolder) -> bool:

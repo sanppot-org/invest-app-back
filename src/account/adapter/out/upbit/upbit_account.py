@@ -108,5 +108,5 @@ class UpbitAccount(Account):
     def sell_all_holdings(self) -> None:
         holdings: Dict[str, HoldingsInfo] = self.get_holdings()
         for ticker, holdings_info in holdings.items():
-            time.sleep(0.03)
+            time.sleep(0.05)
             self.sell_market_order(Ticker(ticker), holdings_info.quantity)

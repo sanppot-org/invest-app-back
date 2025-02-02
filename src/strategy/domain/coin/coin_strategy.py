@@ -65,7 +65,7 @@ class CoinStrategy(Strategy):
 
         # 종목 생성
         for ticker in ticker_list:
-            time.sleep(0.03)
+            time.sleep(0.05)
             symbol = Symbol(ticker, invest_amount_per_coin, self.timezone)
             symbol.add_sub_strategy(am_pm_strategy)
             symbol.add_sub_strategy(volatility_breakout_strategy)
@@ -91,7 +91,7 @@ class CoinStrategy(Strategy):
         trade_volumes: dict[str, float] = {}
 
         for ticker in tickers:
-            time.sleep(0.03)
+            time.sleep(0.05)
             ohlcv = pu.get_ohlcv(ticker, count=3)
             trade_volumes[ticker] = (ohlcv["close"] * ohlcv["volume"]).sum()
 
