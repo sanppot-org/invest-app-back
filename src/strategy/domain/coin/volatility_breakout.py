@@ -24,7 +24,7 @@ class VolatilityBreakoutStrategy(SubStrategy):
         buy_weight = self._calculate_buy_weight(upbit_df_holder)
         invest_amount = amount * buy_weight
         time.sleep(0.05)
-        account.buy_market_order(Ticker(ticker), price=current_price, quantity=invest_amount / current_price)
+        account.buy_limit_order(Ticker(ticker), price=current_price, quantity=invest_amount / current_price)
 
     def _sell(self, account: Account, ticker: str):
         if not self._should_sell():

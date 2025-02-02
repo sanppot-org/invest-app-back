@@ -54,7 +54,7 @@ class UpbitAccount(Account):
     @override
     def buy_market_order(self, ticker: Ticker, quantity: float | None = None, price: float | None = None):
         ticker.validate_crypto_ticker()
-        result = self.upbit.buy_market_order(ticker.value, price)
+        result = self.upbit.buy_market_order(ticker=ticker.value, price=price)
 
         if isinstance(result, dict) and "error" in result.keys():
             raise InvestAppException(ExeptionType.FAILED_TO_ORDER, result.get("error"))

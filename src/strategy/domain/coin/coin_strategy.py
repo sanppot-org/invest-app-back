@@ -41,7 +41,7 @@ class CoinStrategy(Strategy):
         allocated_balance = account.get_balance()
         invest_amount = allocated_balance * self.invest_rate
         # 코인 별 할당 금액
-        invest_amount_per_coin = invest_amount / self.coin_count
+        invest_amount_per_coin = invest_amount / self.coin_count - 500
 
         slack_noti_client.send_debug_noti(
             f"allocated_balance: {allocated_balance},\n"
@@ -91,7 +91,7 @@ class CoinStrategy(Strategy):
         trade_volumes: dict[str, float] = {}
 
         for ticker in tickers:
-            time.sleep(0.05)
+            time.sleep(0.1)
             ohlcv = pu.get_ohlcv(ticker, count=3)
             trade_volumes[ticker] = (ohlcv["close"] * ohlcv["volume"]).sum()
 
@@ -112,6 +112,6 @@ class Symbol:
         self.sub_strategies.append(strategy)
 
     def trade(self, account: Account):
-        amount = self.amount / len(self.sub_strategies)
+        amount = self.amount / len(self.sub_strategies) - 500
         for sub_strategy in self.sub_strategies:
             sub_strategy.trade(account, self.ticker, amount, self.upbit_df_holder)
