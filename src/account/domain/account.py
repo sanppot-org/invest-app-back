@@ -26,6 +26,13 @@ class Account(ABC):
         pass
 
     @abstractmethod
+    def buy_limit_order(self, ticker: Ticker, price: float, quantity: float):
+        """
+        지정가 매수
+        """
+        pass
+
+    @abstractmethod
     def buy_market_order(self, ticker: Ticker, quantity: float | None = None, price: float | None = None):
         """
         시장가 매수

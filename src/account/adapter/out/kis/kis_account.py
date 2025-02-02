@@ -36,7 +36,11 @@ class KisAccount(Account):
 
     @override
     def sell_all(self, ticker: str) -> None:
-        pass
+        raise NotImplementedError
+
+    @override
+    def buy_limit_order(self, ticker: Ticker, price: float, quantity: float):
+        raise NotImplementedError
 
     @override
     def sell_market_order(self, ticker: Ticker, quantity: float) -> None:
@@ -99,7 +103,7 @@ class KisAccount(Account):
 
     @override
     def sell_all_holdings(self) -> None:
-        pass
+        raise NotImplementedError
 
     def _get_current_price(self, ticker: str) -> float:
         return stock_market_client.get_current_price(ticker)
@@ -345,7 +349,7 @@ class KisAccount(Account):
         if res.status_code == 200 and res.json()["rt_cd"] == "0":
             return res.json()
 
-        raise InvestAppException(ExeptionType.FAILED_TO_MAKE_ORDER, res.text)
+        raise InvestAppException(ExeptionType.FAILED_TO_ORDER, res.text)
 
     def _make_order_us(self, ticker: str, quantity: float, price: float, order_type: OrderType) -> None:
         tr_id = "VTTT1001U" if self.is_virtual else "TTTT1006U"
@@ -377,7 +381,7 @@ class KisAccount(Account):
         if res.status_code == 200 and res.json()["rt_cd"] == "0":
             return res.json()
 
-        raise InvestAppException(ExeptionType.FAILED_TO_MAKE_ORDER, res.text)
+        raise InvestAppException(ExeptionType.FAILED_TO_ORDER, res.text)
 
 
 class KisRealAccount(KisAccount):

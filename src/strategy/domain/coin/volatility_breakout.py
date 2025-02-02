@@ -14,7 +14,7 @@ class VolatilityBreakoutStrategy(SubStrategy):
 
     def _buy(self, account: Account, ticker: str, amount: float, upbit_df_holder: UpbitDfHolder):
         # 현재가 조회
-        current_price = pu.get_current_price(ticker)
+        current_price = float(pu.get_current_price(ticker))
 
         if not self._should_buy(current_price, upbit_df_holder):
             return
@@ -24,7 +24,7 @@ class VolatilityBreakoutStrategy(SubStrategy):
         buy_weight = self._calculate_buy_weight(upbit_df_holder)
         invest_amount = amount * buy_weight
         time.sleep(0.03)
-        account.buy_market_order(Ticker(ticker), price=invest_amount)
+        account.buy_market_order(Ticker(ticker), price=current_price, quantity=invest_amount / current_price)
 
     def _sell(self, account: Account, ticker: str):
         if not self._should_sell():
