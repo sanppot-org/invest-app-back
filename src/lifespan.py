@@ -13,7 +13,7 @@ strategy_service = container.strategy_service()
 
 
 def trade_coin():
-    strategy_id = 3
+    strategy_id = 8  # TODO : 유연하게 설정하기
     strategy_service.trade(strategy_id)
 
 
