@@ -12,7 +12,7 @@ class StrategyMapper:
         if isinstance(model, StaticAssetStrategy):
             additional_data = {"market": model.market, "stocks": model.stocks, "interval": model.interval}
         elif isinstance(model, CoinStrategy):
-            additional_data = {"timezone": model.timezone, "coin_count": model.coin_count}
+            additional_data = {"timezone": model.timezone, "coin_count": model.coin_count, "coin_list": model.coin_list}
 
         return StrategyEntity(
             id=model.id,
@@ -50,6 +50,7 @@ class StrategyMapper:
                 strategy_type=entity.strategy_type,
                 last_run=entity.last_run,
                 is_active=entity.is_active,
+                coin_list=entity.additional_data["coin_list"],
                 timezone=entity.additional_data["timezone"],
                 coin_count=entity.additional_data["coin_count"],
             )
