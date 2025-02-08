@@ -21,15 +21,19 @@ class VolatilityBreakoutStrategy(SubStrategy):
         # 현재가 조회
         current_price = float(pu.get_current_price(ticker))
 
-        if not self._should_buy(current_price, upbit_df_holder):
+        if not self._should_buy():
             return
+
+        target_price = self._get_breakout_price(upbit_df_holder)
 
         invest_amount = amount * buy_weight
 
         logger.debug(f"{ticker} {invest_amount} 만큼 매수")
 
         time.sleep(0.05)
-        account.buy_limit_order(Ticker(ticker), price=current_price, quantity=invest_amount / current_price)
+
+        # 매수 - 변동성 돌파 전략은 타겟 가격을 넘으면 매수해야하기 때문에 매수 가격을 타겟 가격으로 설정
+        account.buy_limit_order(Ticker(ticker), price=target_price, quantity=invest_amount / current_price)
 
     def _sell(self, account: Account, ticker: str):
         if not self._should_sell():
@@ -38,21 +42,11 @@ class VolatilityBreakoutStrategy(SubStrategy):
         time.sleep(0.05)
         account.sell_all(ticker)
 
-    def _should_buy(self, current_price: float, upbit_df_holder: UpbitDfHolder) -> bool:
+    def _should_buy(self) -> bool:
         """
-        매수 조건 : 현재가 > 돌파 기준 가격
-
-        current_price : 현재 가격
+        매수 조건 : 오전인지 확인
         """
-
-        is_price_above_breakout = current_price > self._get_breakout_price(upbit_df_holder)
-
-        logger.debug("======================= should_buy=========================")
-        logger.debug(f"current_price (현재 가격): {current_price}")
-        logger.debug(f"is_price_above_breakout (현재 가격이 돌파 기준 가격보다 높은지): {is_price_above_breakout}")
-        logger.debug("======================= should_buy =========================")
-
-        return self.time_util.is_morning() and is_price_above_breakout
+        return self.time_util.is_morning()
 
     def _should_sell(self) -> bool:
         return self.time_util.is_afternoon()
