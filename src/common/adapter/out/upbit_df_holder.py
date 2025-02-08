@@ -78,7 +78,7 @@ class UpbitDfHolder:
 
     def get_yesterday_morning_range(self) -> float:
         """
-        전일 오전 레인지
+        전일 오전 레인지 : 어제 오전 최고가 - 어제 오전 최저가
         """
 
         return float(self.df_yesterday_morning["high"].values[0] - self.df_yesterday_morning["low"].values[0])
@@ -92,7 +92,7 @@ class UpbitDfHolder:
 
     def get_yesterday_morning_volatility(self) -> float:
         """
-        전일 오전 변동성
+        전일 오전 변동성 : 전일 오전 레인지 / 전일 오전 시가
         """
 
         yesterday_range = self.get_yesterday_morning_range()

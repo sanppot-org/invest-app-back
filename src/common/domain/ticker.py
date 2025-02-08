@@ -6,6 +6,7 @@ from src.common.domain.exception import ExeptionType, InvestAppException
 @dataclass
 class Ticker:
     value: str
+    allocation: float
 
     def validate_crypto_ticker(self):
         if not self.is_crypto():
