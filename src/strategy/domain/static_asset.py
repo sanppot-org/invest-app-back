@@ -6,11 +6,11 @@ from src.common.domain.exception import ExeptionType, InvestAppException
 from src.common.domain.type import Market
 from src.strategy.domain.interval import Interval
 from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy_info import StrategyInfo
 
 
 @dataclass
-class StaticAssetStrategy(Strategy):
+class StaticAssetStrategy(StrategyInfo):
     market: Market
     stocks: Dict[str, StockInfo]
     interval: Interval
@@ -37,7 +37,7 @@ class StaticAssetStrategy(Strategy):
         return self.stocks
 
     def check_is_time_to_rebalance(self, now: datetime):
-        self.interval.check_is_time_to_rebalance(now, self.last_run)
+        self.interval.is_time_to_rebalance(now, self.last_run)
 
     def get_market(self) -> Market:
         return self.market

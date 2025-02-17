@@ -6,7 +6,7 @@ from src.strategy.domain.coin.coin_strategy import CoinStrategy
 from src.strategy.domain.interval import Interval
 from src.strategy.domain.static_asset import StaticAssetStrategy
 from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy_info import StrategyInfo
 from src.strategy.domain.strategy_type import StrategyType
 
 
@@ -40,8 +40,8 @@ class StrategyCreateReq(BaseModel):
             raise ValueError("Invalid data type for COIN strategy")
         return v
 
-    def to_domain(self) -> Strategy:
-        strategy_factories: Dict[StrategyType, Callable[[], Strategy]] = {
+    def to_domain(self) -> StrategyInfo:
+        strategy_factories: Dict[StrategyType, Callable[[], StrategyInfo]] = {
             StrategyType.STATIC_ASSET: self._create_static_asset_strategy,
             StrategyType.COIN: self._create_coin_strategy,
         }

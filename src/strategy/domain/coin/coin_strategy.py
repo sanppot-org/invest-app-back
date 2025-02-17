@@ -7,7 +7,7 @@ from src.common.adapter.out.upbit_df_holder import UpbitDfHolder
 from src.common.domain.time_util import TimeUtil
 from src.strategy.domain.coin.am_pm import AmPmStrategy
 from src.strategy.domain.coin.sub_strategy import SubStrategy
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy_info import StrategyInfo
 from src.strategy.domain.coin.volatility_breakout import VolatilityBreakoutStrategy
 from src.common.domain.logging_config import logger
 
@@ -15,7 +15,7 @@ import pyupbit as pu
 
 
 @dataclass
-class CoinStrategy(Strategy):
+class CoinStrategy(StrategyInfo):
     timezone: str
     coin_count: int
     coin_list: list[str]

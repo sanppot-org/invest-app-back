@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from src.account.adapter.out.kis.kis_account_validator import KisAccountValidator
 from src.common.domain.ticker import Ticker
 from src.common.domain.type import Market
 from src.containers import Container
@@ -14,20 +13,17 @@ router = APIRouter(prefix="/accounts", tags=["account"])
 container = Container.get_instance()
 account_repo = container.account_repository()
 account_provider = container.account_provider()
-kis_account_validator = KisAccountValidator()
 
 
 @router.post("/", summary="계좌 생성")
 def save(req: AccountCreateReq):
     account_info = req.to_domain()
-    kis_account_validator.validate(account_info)
     return account_repo.save(account_info)
 
 
 @router.put("/{id}", summary="계좌 수정")
 def update(id: int, req: AccountCreateReq):
     account_info = req.to_domain()
-    kis_account_validator.validate(account_info)
     return account_repo.update(id, account_info)
 
 

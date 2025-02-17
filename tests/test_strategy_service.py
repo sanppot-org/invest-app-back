@@ -12,7 +12,7 @@ from src.account.domain.holdings import HoldingsInfo
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.application.service.strategy_service import StrategyService
 from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy_info import StrategyInfo
 from src.common.domain.type import Market, TimeUnit
 from src.account.adapter.out.persistence.account_entity import AccountEntity
 from src.strategy.domain.interval import Interval
@@ -62,12 +62,12 @@ class FakeAccount(Account):
 
 class FakeStrategyRepository(StrategyRepository):
     id_counter: int = 1
-    strategies: List[Strategy] = []
+    strategies: List[StrategyInfo] = []
 
-    def find_by_id(self, id: int) -> Strategy:
+    def find_by_id(self, id: int) -> StrategyInfo:
         return next((strategy for strategy in FakeStrategyRepository.strategies if strategy.id == id))
 
-    def save(self, model: Strategy) -> Strategy:
+    def save(self, model: StrategyInfo) -> StrategyInfo:
         model.id = FakeStrategyRepository.id_counter
         FakeStrategyRepository.id_counter += 1
         FakeStrategyRepository.strategies.append(model)
@@ -78,17 +78,17 @@ class FakeStrategyRepository(StrategyRepository):
         if entity is not None:
             FakeStrategyRepository.strategies.remove(entity)
 
-    def find_all(self) -> List[Strategy]:
+    def find_all(self) -> List[StrategyInfo]:
         return copy.deepcopy(FakeStrategyRepository.strategies)
 
-    def update(self, id: int, dto: Strategy) -> Strategy:
+    def update(self, id: int, dto: StrategyInfo) -> StrategyInfo:
         found_strategy = next((s for s in FakeStrategyRepository.strategies if s.id == id), None)
         if found_strategy is not None:
             FakeStrategyRepository.strategies.remove(found_strategy)
             FakeStrategyRepository.strategies.append(dto)
         return dto
 
-    def find_all_active(self) -> List[Strategy]:
+    def find_all_active(self) -> List[StrategyInfo]:
         return [s for s in FakeStrategyRepository.strategies if s.is_active]
 
 
@@ -109,7 +109,7 @@ def strategy_service(container):
 
 @pytest.fixture
 def test_strategy():
-    return Strategy(
+    return StrategyInfo(
         id=None,
         name="정적 자산 배분",
         invest_rate=1,
@@ -124,7 +124,7 @@ def test_strategy():
 
 class TestStrategyService:
     def test_rebalance_should_calculate_correct_quantities_and_update_balance(
-        self, container: Container, strategy_service: StrategyService, test_strategy: Strategy
+        self, container: Container, strategy_service: StrategyService, test_strategy: StrategyInfo
     ):
         """리밸런싱이 올바른 수량을 계산하고 잔고를 업데이트하는지 테스트"""
         # Given

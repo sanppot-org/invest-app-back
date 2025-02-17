@@ -3,7 +3,7 @@ from src.containers import Container
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.application.service.strategy_service import StrategyService
 from src.strategy.adapter.in_comming.web.model import StrategyCreateReq
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy_info import StrategyInfo
 
 router = APIRouter(prefix="/strategies", tags=["strategy"])
 
@@ -19,7 +19,7 @@ def find_all():
 
 @router.post("/", summary="전략 생성")
 def save(req: StrategyCreateReq):
-    model: Strategy = req.to_domain()
+    model: StrategyInfo = req.to_domain()
     model.validate()
     return strategy_repo.save(model)
 

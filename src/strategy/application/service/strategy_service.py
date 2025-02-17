@@ -10,7 +10,7 @@ from src.common.application.port.out.repository import *
 from src.common.domain.ticker import Ticker
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.domain.stock_info import StockInfo
-from src.strategy.domain.strategy import Strategy
+from src.strategy.domain.strategy_info import StrategyInfo
 from dependency_injector.wiring import inject
 from src.common.domain.logging_config import logger
 
@@ -29,7 +29,7 @@ class StrategyService:
         self.stock_market_query_port = stock_market_query_port
         self.time_holder = time_holder
 
-    def rebalance(self, strategy: Strategy, is_force: bool = False):
+    def rebalance(self, strategy: StrategyInfo, is_force: bool = False):
         if not is_force:
             now: datetime = self.time_holder.get_now()
 

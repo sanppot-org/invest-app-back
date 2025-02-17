@@ -20,12 +20,13 @@ class Interval:
     def is_month(self):
         return self.time_unit == TimeUnit.MONTH
 
-    def check_is_time_to_rebalance(self, now: datetime, last_run: datetime | None):
+    def is_time_to_rebalance(self, now: datetime, last_run: datetime) -> bool:
         if self.time_unit.is_month():
             this_month = now.month
 
-            if this_month not in self.values or (last_run is not None and this_month == last_run.month):
-                raise InvestAppException(
-                    ExeptionType.NOT_TIME_TO_REBALANCE,
-                    f"values={self.values}, last_run={last_run}",
-                )
+            return this_month in self.values and this_month != last_run.month
+
+        raise InvestAppException(
+            ExeptionType.NOT_TIME_TO_REBALANCE,
+            f"time_unit={self.time_unit}, values={self.values}, last_run={last_run}",
+        )

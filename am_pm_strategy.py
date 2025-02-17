@@ -22,7 +22,7 @@ class AMPMStrategy(Strategy):
 
     def should_trade(self) -> bool:
         # 첫 실행 or 오늘 실행하지 않은 경우 or 오후에 실행하지 않은 경우
-        return self.last_update is None or self.last_update.date() != datetime.now(self.timezone).date() or self.last_update.hour < 12
+        return self.last_run is None or self.last_run.date() != datetime.now(self.timezone).date() or self.last_run.hour < 12
 
     def buy(self, symbol: Symbol):
         """매수"""
@@ -40,10 +40,10 @@ class AMPMStrategy(Strategy):
         """매도 조건 확인"""
         pass
 
-    def calculate_buy_weight(self, symbol: Symbol) -> float:
+    def get_buy_weight(self, symbol: Symbol) -> float:
         """매수 비중 계산"""
         pass
 
-    def calculate_sell_weight(self, symbol: Symbol) -> float:
+    def get_sell_weight(self, symbol: Symbol) -> float:
         """매도 비중 계산"""
         pass

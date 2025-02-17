@@ -79,10 +79,4 @@ class VolatilityBreakoutStrategy(SubStrategy):
         yesterday_morning_volatility = upbit_df_holder.get_yesterday_morning_volatility()
         calculated_ratio = min(1, self.target_volatility / yesterday_morning_volatility)
 
-        logger.debug("======================= calculate_buy_weight =========================")
-        logger.debug(f"target_volatility (타겟 변동성): {self.target_volatility}")
-        logger.debug(f"yesterday_morning_volatility (전일 오전 변동성): {yesterday_morning_volatility}")
-        logger.debug(f"calculate_buy_weight (매수 비중): {calculated_ratio}")
-        logger.debug("======================= calculate_buy_weight =========================")
-
         return calculated_ratio * upbit_df_holder.calculate_ma_score(upbit_df_holder.get_yesterday_close())
