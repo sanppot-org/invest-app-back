@@ -68,7 +68,7 @@ class CoinStrategy(Strategy):
         # 오전/오후 전략 생성
         am_pm_strategy = AmPmStrategy(time_util=time_util)
         # 변동성 돌파 전략 생성
-        volatility_breakout_strategy = VolatilityBreakoutStrategy(time_util=time_util)
+        # volatility_breakout_strategy = VolatilityBreakoutStrategy(time_util=time_util)
 
         symbols: Dict[str, Symbol] = {}
 
@@ -77,7 +77,7 @@ class CoinStrategy(Strategy):
             time.sleep(0.05)
             symbol = Symbol(ticker, invest_amount_per_coin, self.timezone)
             symbol.add_sub_strategy(am_pm_strategy)
-            symbol.add_sub_strategy(volatility_breakout_strategy)
+            # symbol.add_sub_strategy(volatility_breakout_strategy)
             symbols[ticker] = symbol
             self.coin_list.append(ticker)
 
