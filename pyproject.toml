@@ -30,6 +30,8 @@ pymysql = "^1.1.1"
 groq = "^0.14.0"
 alembic = "^1.14.0"
 ccxt = "^4.4.52"
+gspread = "^6.2.0"
+gspread-dataframe = "^4.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

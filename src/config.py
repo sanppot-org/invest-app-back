@@ -13,3 +13,5 @@ NOTI_URLS = config.get("noti-urls")
 FINANCE_REPORT_URL = NOTI_URLS.get("finance-report")
 EXCEPTION_URL = NOTI_URLS.get("exception")
 INVEST_APP_DEBUG_URL = NOTI_URLS.get("invest-app-debug")
+
+SPREADSHEET_URL = config.get("google_sheet_url")

@@ -8,17 +8,6 @@ from src.strategy.application.service.strategy_service import StrategyService
 
 
 class Container(containers.DeclarativeContainer):
-    _instance = None
-
-    def __init__(self):
-        self.init_resources()
-
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-
     config = providers.Configuration()
 
     strategy_repository = providers.Singleton(SqlAlchemyStrategyRepository)

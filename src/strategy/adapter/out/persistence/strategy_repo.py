@@ -40,3 +40,6 @@ class SqlAlchemyStrategyRepository(StrategyRepository):
         with session_scope() as session:
             stmt = select(StrategyEntity).where(StrategyEntity.is_active == True)
             return list(map(self.mapper.to_model, session.scalars(stmt).all()))
+
+    def upsert_all(self, strategies: List[Strategy]) -> List[Strategy]:
+        return []
