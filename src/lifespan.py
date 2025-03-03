@@ -2,39 +2,45 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 from dependency_injector.wiring import inject, Provide
-from src.account.adapter.out.kis import token_refresher
+from src.account.adapter.out.kis.kis_account import KisAccount
+from src.account.application.port.out.account_repository import AccountRepository
 from src.common.adapter.out.google_sheet_client import update_upbit_balance
+from src.common.domain.type import BrokerType
 from src.containers import Container
 from src.report.report import publish_report
 from src.strategy.application.service.strategy_service import StrategyService
 
 
 scheduler = BackgroundScheduler()
-container = Container()
 
 
 @inject
-def trade_coin(strategy_service: StrategyService = Provide[Container.strategy_service]):
+def trade_coin(strategy_service: StrategyService = Provide["strategy_service"]):
     strategy_id = 8  # TODO : 유연하게 설정하기
     strategy_service.trade(strategy_id)
 
 
+@inject
+def refresh_kis_token(account_repo: AccountRepository = Provide["account_repository"]):
+    account_infos = account_repo.find_all(broker_type=BrokerType.KIS)
+
+    for account_info in account_infos:
+        kis_account: KisAccount = KisAccount(account_info=account_info)
+        if kis_account.is_token_invalid():
+            kis_account.refresh_token()
+
+    account_repo.upsert_all(account_infos)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    container.wire(
-        modules=[
-            "src.strategy.application.service.strategy_service",
-            "src.account.adapter.out.kis.token_refresher",
-            "src.common.adapter.out.google_sheet_client",
-            "src.strategy.adapter.in_comming.web.strategy_router",
-            "src.account.adapter.in_comming.web.account_router",
-        ]
-    )
+    container = Container()
+    container.wire(packages=["src"])
 
-    token_refresher.refresh_kis_token()
+    refresh_kis_token()
 
     # 한투 토큰 갱신. 12시간마다 실행
-    scheduler.add_job(token_refresher.refresh_kis_token, "cron", hour=9)
+    scheduler.add_job(refresh_kis_token, "cron", hour=9)
     # 경제 리포트 발행. 매일 오전 07:45마다 실행
     scheduler.add_job(publish_report, "cron", hour=7, minute=45)
     # 코인 자동 매매. 매시 10분마다 실행

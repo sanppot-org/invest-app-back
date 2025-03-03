@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from sqlalchemy import select
 from src.account.adapter.out.persistence.account_mapper import AccountMapper
 from src.account.application.port.out.account_repository import AccountRepository
@@ -33,7 +33,7 @@ class SqlAlchemyAccountRepository(AccountRepository):
             entity = self.repository.find_by_id(id, session)
             return self.mapper.to_model(entity)
 
-    def find_all(self, broker_type: BrokerType | None = None) -> List[AccountInfo]:
+    def find_all(self, broker_type: Optional[BrokerType] = None) -> List[AccountInfo]:
         stmt = select(AccountEntity)
         if broker_type is not None:
             stmt = stmt.where(AccountEntity.broker_type == broker_type)

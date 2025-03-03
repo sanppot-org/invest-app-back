@@ -5,11 +5,11 @@ from src.account.application.service.account_provider import AccountProvider
 from src.common.domain.ticker import Ticker
 from src.common.domain.type import Market
 from src.account.domain.account import Account
-from src.account.adapter.out.kis import token_refresher
 from src.account.adapter.in_comming.web.model import AccountCreateReq
 from dependency_injector.wiring import inject, Provide
 
 from src.containers import Container
+from src.lifespan import refresh_kis_token
 
 
 router = APIRouter(prefix="/accounts", tags=["account"])
@@ -74,4 +74,4 @@ async def get_holdings(id: int, market: Market = Market.KR, account_provider: Ac
 @router.post("/refresh-kis-token", summary="한투 토큰 갱신 (전체)")
 @inject
 async def refresh_kis_token_all(account_repo: AccountRepository = Depends(Provide[Container.account_repository])):
-    return token_refresher.refresh_kis_token(account_repo)
+    return refresh_kis_token(account_repo)

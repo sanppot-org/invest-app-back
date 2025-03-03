@@ -11,7 +11,7 @@ from src.common.domain.ticker import Ticker
 from src.strategy.application.port.out.strategy_repository import StrategyRepository
 from src.strategy.domain.stock_info import StockInfo
 from src.strategy.domain.strategy import Strategy
-from dependency_injector.wiring import inject
+from dependency_injector.wiring import inject, Provide
 from src.common.domain.logging_config import logger
 
 
@@ -19,10 +19,10 @@ class StrategyService:
     @inject
     def __init__(
         self,
-        strategy_repo: StrategyRepository,
-        account_provider: AccountProvider,
-        stock_market_query_port: StockMarketQueryPort,
-        time_holder: TimeHolder,
+        strategy_repo: StrategyRepository = Provide["strategy_repository"],
+        account_provider: AccountProvider = Provide["account_provider"],
+        stock_market_query_port: StockMarketQueryPort = Provide["stock_market_query_port"],
+        time_holder: TimeHolder = Provide["time_holder"],
     ):
         self.strategy_repo = strategy_repo
         self.account_provider = account_provider

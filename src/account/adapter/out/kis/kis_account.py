@@ -28,11 +28,7 @@ class KisAccount(Account):
 
     @override
     def get_balance(self, market: Market = Market.KR) -> float:
-        if market.is_kr():
-            return BalanceResponse.of(self._get_balance_kr()["output2"][0]).total_money
-
-        # TODO: 제대로 구현하기
-        return self._get_balance_us()
+        return float(self._get_balance_us()["output3"]["tot_frcr_cblc_smtl"])
 
     @override
     def sell_all(self, ticker: str) -> None:
