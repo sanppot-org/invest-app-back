@@ -43,10 +43,11 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(refresh_kis_token, "cron", hour=9)
     # 경제 리포트 발행. 매일 오전 07:45마다 실행
     scheduler.add_job(publish_report, "cron", hour=7, minute=45)
+
     # 코인 자동 매매. 매시 10분마다 실행
-    scheduler.add_job(trade_coin, "cron", minute=10)
+    # scheduler.add_job(trade_coin, "cron", minute=10)
     # 업비트 잔고 업데이트. 매일 오후 11시 50분에 실행
-    scheduler.add_job(update_upbit_balance, "cron", hour=23, minute=50)
+    # scheduler.add_job(update_upbit_balance, "cron", hour=23, minute=50)
 
     scheduler.start()
     yield
