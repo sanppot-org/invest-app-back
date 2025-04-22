@@ -1,7 +1,6 @@
-from re import S
 from typing import Optional
-from account.access_token import AccessToken
-from common.type import BrokerType
+from src.account.access_token import AccessToken
+from src.common.type import BrokerType
 
 
 class Account:

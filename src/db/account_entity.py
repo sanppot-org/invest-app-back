@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, Boolean, String, TypeDecorator
 from sqlalchemy.orm import Mapped, mapped_column
-from account.access_token import AccessToken
-from common.type import BrokerType
+from src.account.access_token import AccessToken
+from src.common.type import BrokerType
 from src.db.base_entity import BaseEntity, EnumType
 
 

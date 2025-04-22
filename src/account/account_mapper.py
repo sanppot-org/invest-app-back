@@ -1,5 +1,5 @@
-from account.account import Account
-from db.account_entity import AccountEntity
+from src.account.account import Account
+from src.db.account_entity import AccountEntity
 
 
 class AccountMapper:

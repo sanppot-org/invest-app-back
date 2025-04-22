@@ -15,3 +15,7 @@ EXCEPTION_URL = NOTI_URLS.get("exception")
 INVEST_APP_DEBUG_URL = NOTI_URLS.get("invest-app-debug")
 
 SPREADSHEET_URL = config.get("google_sheet_url")
+
+upbit = config.get("upbit")
+UPBIT_ACCESS_KEY = upbit.get("access-key")
+UPBIT_SECRET_KEY = upbit.get("secret-key")

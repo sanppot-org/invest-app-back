@@ -1,8 +1,8 @@
 from typing import Generic, List, Type, TypeVar, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from common.exception import ExeptionType, InvestAppException
-from db.base_entity import BaseEntity
+from src.common.exception import ExeptionType, InvestAppException
+from src.db.base_entity import BaseEntity
 
 
 Entity = TypeVar("Entity", bound=BaseEntity)
