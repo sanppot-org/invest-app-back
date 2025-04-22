@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from src.infrastructure.exchange_client_factory import ExchangeClientFactory
 from src.account.account_mapper import AccountMapper
 from src.account.account_service import AccountService
-from src.config import DB_URL
+from .config import DB_URL
 from src.db.database_session_manager import DBSessionManager
 from src.db.account_entity import AccountEntity
 from src.db.sqlalchemy_repository import SqlalchemyRepository

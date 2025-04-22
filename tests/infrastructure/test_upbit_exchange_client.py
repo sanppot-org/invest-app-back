@@ -1,6 +1,6 @@
 import pytest
-from config import UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY
-from infrastructure.upbit_exchange_client import UpbitExchangeClient
+from src.config.config import UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY
+from src.infrastructure.upbit_exchange_client import UpbitExchangeClient
 
 
 @pytest.fixture

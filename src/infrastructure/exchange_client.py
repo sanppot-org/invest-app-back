@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from src.holdings import Holdings
+from src.account.holdings import Holdings
 
 
 class ExchangeClient(ABC):

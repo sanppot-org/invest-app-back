@@ -4,7 +4,7 @@ import pyupbit
 from pyupbit import Upbit
 
 from src.common.exception import ExeptionType, InvestAppException
-from src.holdings import Holdings
+from src.account.holdings import Holdings
 from src.infrastructure.exchange_client import ExchangeClient
 
 

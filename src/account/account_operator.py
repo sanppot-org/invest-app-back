@@ -1,6 +1,6 @@
 from typing import Dict
+from src.account.holdings import Holdings
 from src.account.account import Account
-from src.holdings import Holdings
 from src.infrastructure.exchange_client import ExchangeClient
 
 

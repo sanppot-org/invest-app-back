@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import create_engine
-from containers import Container
-from db.base_entity import BaseEntity
+from src.config.containers import Container
+from src.db.base_entity import BaseEntity
 
 TEST_DB_URL = "mysql+pymysql://root:1234@localhost:3306/invest"
 
