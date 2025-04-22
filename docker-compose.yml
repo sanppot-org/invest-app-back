@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  local-mysql:
+    image: mysql:8.0
+    container_name: local-mysql
+    restart: always
+    platform: linux/x86_64
+    environment:
+      MYSQL_DATABASE: invest
+      MYSQL_ROOT_PASSWORD: 1234
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci

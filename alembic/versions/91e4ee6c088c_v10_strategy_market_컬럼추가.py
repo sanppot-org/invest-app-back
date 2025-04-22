@@ -11,8 +11,8 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from src.common.domain.type import Market
-from src.common.adapter.out.persistence.base_entity import EnumType
+from type import Market
+from base_entity import EnumType
 
 
 # revision identifiers, used by Alembic.
