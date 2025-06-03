@@ -1,22 +1,22 @@
-from src.infrastructure.exchange.exchange_client_factory import ExchangeClientFactory
-from src.account.account_operator import AccountOperator
 from src.account.account import Account
-from src.account.infra.account_mapper import AccountMapper
-from src.db.generic_repository import GenericRepository
-from src.db.sqlalchemy_repository import SqlalchemyRepository
-from src.db.database_session_manager import DBSessionManager
+from src.account.account_operator import AccountOperator
 from src.account.infra.account_entity import AccountEntity
+from src.account.infra.account_mapper import AccountMapper
+from src.common.infra.database_session_manager import DBSessionManager
+from src.common.infra.generic_repository import GenericRepository
+from src.common.infra.sqlalchemy_repository import SqlalchemyRepository
+from src.infrastructure.exchange.exchange_client_factory import ExchangeClientFactory
 
 
 class AccountRepository(GenericRepository[Account, AccountEntity]):
     def __init__(
-        self,
-        account_mapper: AccountMapper,
-        account_repository: SqlalchemyRepository[AccountEntity],
-        session_manager: DBSessionManager,
-        exchange_client_factory: ExchangeClientFactory,
+            self,
+            mapper: AccountMapper,
+            repository: SqlalchemyRepository[AccountEntity],
+            session_manager: DBSessionManager,
+            exchange_client_factory: ExchangeClientFactory,
     ):
-        super().__init__(account_mapper, account_repository, session_manager)
+        super().__init__(mapper, repository, session_manager)
         self.exchange_client_factory = exchange_client_factory
 
     def get_operator(self, account_id: int) -> AccountOperator:

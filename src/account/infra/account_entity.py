@@ -1,8 +1,9 @@
 from sqlalchemy import JSON, Boolean, String, TypeDecorator
 from sqlalchemy.orm import Mapped, mapped_column
+
 from src.account.access_token import AccessToken
+from src.common.infra.base_entity import BaseEntity, EnumType
 from src.common.type import BrokerType
-from src.db.base_entity import BaseEntity, EnumType
 
 
 class TokenType(TypeDecorator):
@@ -36,15 +37,3 @@ class AccountEntity(BaseEntity):
     url_base: Mapped[str] = mapped_column(String(100), nullable=True)
     is_virtual: Mapped[bool] = mapped_column(Boolean, nullable=False)
     token: Mapped[AccessToken] = mapped_column(TokenType, nullable=True)
-
-    def update(self, entity: "AccountEntity"):
-        self.name = entity.name
-        self.app_key = entity.app_key
-        self.secret_key = entity.secret_key
-        self.broker_type = entity.broker_type
-        self.number = entity.number
-        self.product_code = entity.product_code
-        self.login_id = entity.login_id
-        self.url_base = entity.url_base
-        self.is_virtual = entity.is_virtual
-        self.token = entity.token

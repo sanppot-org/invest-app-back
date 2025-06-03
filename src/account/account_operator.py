@@ -25,10 +25,10 @@ class AccountOperator:
         self.exchange_client.sell_all()
 
     def buy_market_order(
-        self,
-        ticker: str,
-        amount: Optional[float] = None,
-        weight: Optional[float] = None,
+            self,
+            ticker: str,
+            amount: Optional[float] = None,
+            weight: Optional[float] = None,
     ):
         """
         시장가 매수

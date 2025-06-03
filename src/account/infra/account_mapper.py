@@ -1,6 +1,6 @@
-from src.db.entity_mapper import EntityMapper
 from src.account.account import Account
 from src.account.infra.account_entity import AccountEntity
+from src.common.infra.entity_mapper import EntityMapper
 
 
 class AccountMapper(EntityMapper[Account, AccountEntity]):
