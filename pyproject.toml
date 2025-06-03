@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "invest"
 version = "0.1.0"
-description = ""
+description = "Invest App"
 authors = ["sandropark <birdob@gmail.com>"]
 readme = "README.md"
-package-mode = false
+package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -32,6 +32,7 @@ alembic = "^1.14.0"
 ccxt = "^4.4.52"
 gspread = "^6.2.0"
 gspread-dataframe = "^4.0.0"
+pandas-stubs = "^2.2.3.250308"
 
 
 [tool.poetry.group.dev.dependencies]

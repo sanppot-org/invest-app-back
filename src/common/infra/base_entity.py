@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlalchemy import DateTime, String, TypeDecorator
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column, declarative_base
@@ -41,3 +42,8 @@ class BaseEntity(Base):
         onupdate=func.now(),  # UPDATE 시 자동 업데이트
         nullable=False,
     )
+
+    def update(self, entity: "BaseEntity"):
+        for key, value in entity.__dict__.items():
+            if not key.startswith("_") and key not in BaseEntity.__dict__:
+                setattr(self, key, value)

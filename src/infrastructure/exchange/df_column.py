@@ -1,0 +1,6 @@
+OPEN = "open"
+CLOSE = "close"
+HIGH = "high"
+LOW = "low"
+VOLUME = "volume"
+IS_MORNING = "is_morning"

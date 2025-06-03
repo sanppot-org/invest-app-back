@@ -1,6 +1,6 @@
 from src.common.type import BrokerType
-from src.infrastructure.exchange_client import ExchangeClient
-from src.infrastructure.upbit_exchange_client import UpbitExchangeClient
+from src.infrastructure.exchange.exchange_client import ExchangeClient
+from src.infrastructure.exchange.upbit_exchange_client import UpbitExchangeClient
 
 
 class ExchangeClientFactory:

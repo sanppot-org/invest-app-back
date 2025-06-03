@@ -1,18 +1,17 @@
-from typing import Generic, List, Type, TypeVar, Optional
+from typing import Generic, List, Type, Optional
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
 from src.common.exception import ExeptionType, InvestAppException
-from src.db.base_entity import BaseEntity
+from src.common.infra.type import E
 
 
-Entity = TypeVar("Entity", bound=BaseEntity)
-
-
-class SqlalchemyRepository(Generic[Entity]):
-    def __init__(self, entity_type: Type[Entity]):
+class SqlalchemyRepository(Generic[E]):
+    def __init__(self, entity_type: Type[E]):
         self.entity_type = entity_type
 
-    def save(self, entity: Entity, session: Session) -> Entity:
+    def save(self, entity: E, session: Session) -> E:
         if entity.id:
             session.merge(entity)
         else:
@@ -26,12 +25,12 @@ class SqlalchemyRepository(Generic[Entity]):
             session.delete(entity)
             session.flush()
             return id
-        raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id)
+        raise InvestAppException(ExeptionType.ENTITY_NOT_FOUND, id=id)
 
-    def find_all(self, session: Session) -> List[Entity]:
+    def find_all(self, session: Session) -> List[E]:
         stmt = select(self.entity_type)
         return list(session.scalars(stmt).all())
 
-    def find_by_id(self, id: int, session: Session) -> Optional[Entity]:
+    def find_by_id(self, id: int, session: Session) -> Optional[E]:
         stmt = select(self.entity_type).where(self.entity_type.id == id).execution_options(populate_existing=True)
         return session.scalars(stmt).one_or_none()
