@@ -1,6 +1,7 @@
 import pytest
-from account.account import Account
-from common.type import BrokerType
+
+from src.account.account import Account
+from src.common.type import BrokerType
 
 
 def test_account_creation_success():
@@ -52,4 +53,18 @@ def test_account_creation_failure():
             app_key="test_app_key",
             secret_key="test_secret_key",
             broker_type=None,
+        )
+
+
+def test_kis_account_creation_failure():
+    with pytest.raises(AssertionError, match="필수 필드가 누락되었습니다"):
+        Account(
+            name="name",
+            app_key="test_app_key",
+            secret_key="test_secret_key",
+            broker_type=BrokerType.KIS,
+            login_id='id',
+            product_code='code',
+            number='number',
+            url_base='',
         )
